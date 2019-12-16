@@ -1,63 +1,98 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/widget_margin"
-    android:background="@android:color/white">
+    android:background="@drawable/rounded_corners"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
 
     <LinearLayout
-        android:padding="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/prev_day_button"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:drawableTint="@android:color/white"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_keyboard_arrow_left" />
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_corners"
+        android:orientation="vertical"
+        android:padding="@dimen/widget_margin">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corners_top"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="10dp"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <TextView
-                android:id="@+id/date_text_view"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/prev_day_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:text="11/26 (火)"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
+                android:drawableStart="@drawable/ic_keyboard_arrow_left"
+                android:drawableTint="@android:color/white" />
 
-            <TextView
-                android:id="@+id/event_text_view"
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/date_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="11/26 (火)"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/event_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="イベント"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/next_day_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="推薦入試休み"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"/>
+                android:drawableStart="@drawable/ic_keyboard_arrow_right"
+                android:drawableTint="@android:color/white" />
+
         </LinearLayout>
 
-        <Button
-            android:id="@+id/next_day_button"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:drawableTint="@android:color/white"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_keyboard_arrow_right"/>
+        <ListView
+            android:id="@+id/period_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_corners_bottom"
+            android:divider="@null"
+            android:dividerHeight="0dp"></ListView>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/period_list_view"
+    <FrameLayout
+        android:id="@+id/widget_loading_wrapper"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.5"
+            android:background="@drawable/rounded_corners" />
+        <ProgressBar
+            android:layout_gravity="center"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
+</FrameLayout>

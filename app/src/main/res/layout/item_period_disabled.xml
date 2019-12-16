@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:alpha="0.5"
     android:padding="8dp">
 
     <LinearLayout
@@ -22,8 +23,7 @@
             android:backgroundTint="@color/colorPrimary"
             android:text="1"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/period_start_text_view"

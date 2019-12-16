@@ -1,5 +1,6 @@
 package net.twinte.android.widget
 
+import net.twinte.android.R
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -15,15 +16,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.twinte.android.R
+import net.twinte.android.MainActivity
 import net.twinte.android.Util
 import net.twinte.android.WebViewCookieJar
 import net.twinte.android.types.Calendar
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * ウィジットの実装
@@ -80,17 +81,21 @@ class TimetableWidget : AppWidgetProvider() {
 
                 Log.d("WIDGET", date)
 
+                // RemoteView作成
+                val views = RemoteViews(
+                    context.packageName,
+                    R.layout.timetable_widget
+                )
+
+                views.setViewVisibility(R.id.widget_loading_wrapper, View.VISIBLE)
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+
                 val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
                 val req = Request.Builder().url("https://dev.api.twinte.net/v1/school-calender/$date").build()
                 val res = withContext(Dispatchers.IO) {
                     client.newCall(req).execute().body?.string()
                 }
 
-                // RemoteView作成
-                val views = RemoteViews(
-                    context.packageName,
-                    R.layout.timetable_widget
-                )
 
                 if (!Util.isLoggedIn()) {
                     views.setTextViewText(R.id.date_text_view, "ログインしてください")
@@ -137,8 +142,22 @@ class TimetableWidget : AppWidgetProvider() {
                                 }, 0
                             )
                         )
+
+                        setPendingIntentTemplate(
+                            R.id.period_list_view,
+                            PendingIntent.getActivity(
+                                context,
+                                1,
+                                Intent(context, MainActivity::class.java).apply {
+                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                },
+                                0
+                            )
+                        )
                     }
                 }
+
+                views.setViewVisibility(R.id.widget_loading_wrapper, View.GONE)
 
                 // 時間割ListViewアダプタのデータを更新
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.period_list_view)
