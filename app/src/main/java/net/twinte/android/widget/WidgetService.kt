@@ -15,6 +15,10 @@ import net.twinte.android.types.Period
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import net.twinte.android.R
+import net.twinte.android.types.Day
+import net.twinte.android.types.Module
+import java.io.IOException
+import java.lang.Exception
 
 /**
  * 時間割ListViewのアダプタ
@@ -45,7 +49,7 @@ class WidgetService : RemoteViewsService() {
             AppWidgetManager.INVALID_APPWIDGET_ID
         )
 
-        private suspend fun updateTimetable() {
+        private suspend fun updateTimetable() = try {
             Log.d("WIDGET", "updateTimetable")
             val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
             val req =
@@ -58,6 +62,14 @@ class WidgetService : RemoteViewsService() {
                 periods = gson.fromJson<Array<Period>>(res.body?.string(), Array<Period>::class.java)
             }
             lastUpdate = TimetableWidget.date
+        } catch (e: IOException) {
+            periods = arrayOf(
+                Period("", e.message ?: "IO Error", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+            )
+        } catch (e: Exception) {
+            periods = arrayOf(
+                Period("", e.message ?: "Unknown Error", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+            )
         }
 
         override fun onCreate() {}

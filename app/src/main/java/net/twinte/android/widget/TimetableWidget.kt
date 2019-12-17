@@ -22,6 +22,7 @@ import net.twinte.android.WebViewCookieJar
 import net.twinte.android.types.Calendar
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -88,74 +89,84 @@ class TimetableWidget : AppWidgetProvider() {
                 )
 
                 views.setViewVisibility(R.id.widget_loading_wrapper, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_error_wrapper, View.GONE)
                 appWidgetManager.updateAppWidget(appWidgetId, views)
 
-                val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
-                val req = Request.Builder().url("https://dev.api.twinte.net/v1/school-calender/$date").build()
-                val res = withContext(Dispatchers.IO) {
-                    client.newCall(req).execute().body?.string()
-                }
-
-
-                if (!Util.isLoggedIn()) {
-                    views.setTextViewText(R.id.date_text_view, "ログインしてください")
-                } else {
-                    val gson = Gson()
-                    val calendar = gson.fromJson<Calendar>(res, Calendar::class.java)
-
-                    val eventText = when {
-                        calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日程です"
-                        calendar.event != null -> "${calendar.event.event_type.e} ${calendar.event.description}"
-                        else -> if (calendar.module != null) calendar.module.m + "モジュール" else ""
+                try {
+                    val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
+                    val req = Request.Builder().url("https://dev.api.twinte.net/v1/school-calender/$date").build()
+                    val res = withContext(Dispatchers.IO) {
+                        client.newCall(req).execute().body?.string()
                     }
 
-                    views.run {
-                        setTextViewText(R.id.date_text_view, date.label())
-                        setTextViewText(R.id.event_text_view, eventText)
-                        setViewVisibility(R.id.event_text_view, if (eventText.isBlank()) View.GONE else View.VISIBLE)
-                        setRemoteAdapter(R.id.period_list_view, Intent(context, WidgetService::class.java).apply {
-                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                            data = Uri.parse(this.toUri(Intent.URI_INTENT_SCHEME))
-                        })
 
-                        setOnClickPendingIntent(
-                            R.id.next_day_button,
-                            PendingIntent.getBroadcast(
-                                context,
-                                appWidgetId,
-                                Intent(context, TimetableWidget::class.java).apply {
-                                    action = TimetableWidget.NEXT_DATE
-                                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                                },
-                                0
-                            )
-                        )
+                    if (!Util.isLoggedIn()) {
+                        views.setTextViewText(R.id.date_text_view, "ログインしてください")
+                    } else {
+                        val gson = Gson()
+                        val calendar = gson.fromJson<Calendar>(res, Calendar::class.java)
 
-                        setOnClickPendingIntent(
-                            R.id.prev_day_button,
-                            PendingIntent.getBroadcast(
-                                context,
-                                appWidgetId,
-                                Intent(context, TimetableWidget::class.java).apply {
-                                    action = TimetableWidget.PREV_DATE
-                                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                                }, 0
-                            )
-                        )
+                        val eventText = when {
+                            calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日程です"
+                            calendar.event != null -> "${calendar.event.event_type.e} ${calendar.event.description}"
+                            else -> if (calendar.module != null) calendar.module.m + "モジュール" else ""
+                        }
 
-                        setPendingIntentTemplate(
-                            R.id.period_list_view,
-                            PendingIntent.getActivity(
-                                context,
-                                1,
-                                Intent(context, MainActivity::class.java).apply {
-                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                },
-                                0
+                        views.run {
+                            setTextViewText(R.id.date_text_view, date.label())
+                            setTextViewText(R.id.event_text_view, eventText)
+                            setViewVisibility(
+                                R.id.event_text_view,
+                                if (eventText.isBlank()) View.GONE else View.VISIBLE
                             )
-                        )
+                            setRemoteAdapter(R.id.period_list_view, Intent(context, WidgetService::class.java).apply {
+                                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                                data = Uri.parse(this.toUri(Intent.URI_INTENT_SCHEME))
+                            })
+
+                            setOnClickPendingIntent(
+                                R.id.next_day_button,
+                                PendingIntent.getBroadcast(
+                                    context,
+                                    appWidgetId,
+                                    Intent(context, TimetableWidget::class.java).apply {
+                                        action = TimetableWidget.NEXT_DATE
+                                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                                    },
+                                    0
+                                )
+                            )
+
+                            setOnClickPendingIntent(
+                                R.id.prev_day_button,
+                                PendingIntent.getBroadcast(
+                                    context,
+                                    appWidgetId,
+                                    Intent(context, TimetableWidget::class.java).apply {
+                                        action = TimetableWidget.PREV_DATE
+                                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                                    }, 0
+                                )
+                            )
+
+                            setPendingIntentTemplate(
+                                R.id.period_list_view,
+                                PendingIntent.getActivity(
+                                    context,
+                                    1,
+                                    Intent(context, MainActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    },
+                                    0
+                                )
+                            )
+                        }
                     }
+                } catch (e: Exception) {
+                    views.setViewVisibility(R.id.widget_error_wrapper, View.VISIBLE)
+                    views.setTextViewText(R.id.widget_error_text_view, e.message)
                 }
+
 
                 views.setViewVisibility(R.id.widget_loading_wrapper, View.GONE)
 

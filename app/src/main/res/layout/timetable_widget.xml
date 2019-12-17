@@ -94,5 +94,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </FrameLayout>
-
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/widget_error_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.5"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:background="@drawable/rounded_corners" />
+        <TextView
+            android:padding="16dp"
+            android:id="@+id/widget_error_text_view"
+            android:textColor="@android:color/white"
+            android:text="Error Report"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </FrameLayout>
