@@ -52,6 +52,12 @@ class MainActivity : AppCompatActivity() {
                     false
                 }
         }
+        main_webview.addJavascriptInterface(object {
+            @JavascriptInterface()
+            fun openSettings() {
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+            }
+        }, "android")
         main_webview.loadUrl("https://app.twinte.net")
     }
 
@@ -154,11 +160,14 @@ class MainActivity : AppCompatActivity() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         sendBroadcast(Intent(this, TimetableWidget::class.java).apply {
             action = "android.appwidget.action.APPWIDGET_UPDATE"
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
-                ComponentName(
-                    application,
-                    TimetableWidget::class.java
-                )))
+            putExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
+                    ComponentName(
+                        application,
+                        TimetableWidget::class.java
+                    )
+                )
+            )
         })
     }
 }
