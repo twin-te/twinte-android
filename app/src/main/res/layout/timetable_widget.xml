@@ -79,38 +79,54 @@
 
     <FrameLayout
         android:id="@+id/widget_loading_wrapper"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.5"
             android:background="@drawable/rounded_corners" />
+
         <ProgressBar
-            android:layout_gravity="center"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
     </FrameLayout>
+
     <FrameLayout
-        android:visibility="gone"
         android:id="@+id/widget_error_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha="0.5"
-            android:backgroundTint="@color/colorPrimaryDark"
-            android:background="@drawable/rounded_corners" />
+            android:alpha="0.7"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="@color/colorPrimaryDark" />
+
         <TextView
-            android:padding="16dp"
             android:id="@+id/widget_error_text_view"
-            android:textColor="@android:color/white"
-            android:text="Error Report"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:text="Error Report"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/widget_error_reload_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:drawableStart="@drawable/ic_reload"
+            android:drawableTint="@android:color/white"
+            android:text="再読み込み"
+            android:textColor="@android:color/white" />
     </FrameLayout>
 </FrameLayout>

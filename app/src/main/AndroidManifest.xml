@@ -35,11 +35,15 @@
         </receiver>
 
         <service
-            android:name=".widget.WidgetService"
+            android:name=".widget.WidgetListViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name=".widget.UpdateWidgetJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"></service>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 </manifest>

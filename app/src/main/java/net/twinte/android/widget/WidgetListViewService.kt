@@ -23,7 +23,7 @@ import java.lang.Exception
 /**
  * 時間割ListViewのアダプタ
  */
-class WidgetService : RemoteViewsService() {
+class WidgetListViewService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         return ListViewRemoteFactory(applicationContext, intent)
     }
