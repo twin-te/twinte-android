@@ -1,23 +1,18 @@
 package net.twinte.android.widget
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import com.google.gson.Gson
 import kotlinx.coroutines.*
-import net.twinte.android.MainActivity
-import net.twinte.android.WebViewCookieJar
+import net.twinte.android.HttpError
+import net.twinte.android.Network
 import net.twinte.android.types.Period
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import net.twinte.android.R
 import net.twinte.android.types.Day
 import net.twinte.android.types.Module
-import java.io.IOException
 import java.lang.Exception
 
 /**
@@ -51,20 +46,11 @@ class WidgetListViewService : RemoteViewsService() {
 
         private suspend fun updateTimetable() = try {
             Log.d("WIDGET", "updateTimetable")
-            val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
-            val req =
-                Request.Builder().url("https://dev.api.twinte.net/v1/timetables/?date=${TimetableWidget.date}").build()
-            val res = withContext(Dispatchers.IO) {
-                client.newCall(req).execute()
-            }
-            if (res.code == 200) {
-                val gson = Gson()
-                periods = gson.fromJson<Array<Period>>(res.body?.string(), Array<Period>::class.java)
-            }
+            periods = Network.fetchTimetable(TimetableWidget.date)
             lastUpdate = TimetableWidget.date
-        } catch (e: IOException) {
+        } catch (e: HttpError) {
             periods = arrayOf(
-                Period("", e.message ?: "IO Error", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+                Period("", e.message ?: "HttpError", "", 0, Module.Unknown, Day.Sun, 1, "", "")
             )
         } catch (e: Exception) {
             periods = arrayOf(

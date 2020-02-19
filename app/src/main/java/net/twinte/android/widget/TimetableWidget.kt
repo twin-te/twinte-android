@@ -1,6 +1,5 @@
 package net.twinte.android.widget
 
-import net.twinte.android.R
 import android.app.PendingIntent
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
@@ -18,9 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.twinte.android.MainActivity
-import net.twinte.android.Util
-import net.twinte.android.WebViewCookieJar
+import net.twinte.android.*
 import net.twinte.android.types.Calendar
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -132,19 +129,10 @@ class TimetableWidget : AppWidgetProvider() {
             appWidgetManager.updateAppWidget(appWidgetId, views)
 
             try {
-                val client = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
-                val req = Request.Builder().url("https://dev.api.twinte.net/v1/school-calender/$date").build()
-                val res = withContext(Dispatchers.IO) {
-                    client.newCall(req).execute().body?.string()
-                }
-
-
-                if (!Util.isLoggedIn()) {
+                val calendar = Network.fetchCalender(date)
+                if (!Network.isLoggedIn()) {
                     views.setTextViewText(R.id.date_text_view, "ログインしてください")
                 } else {
-                    val gson = Gson()
-                    val calendar = gson.fromJson<Calendar>(res, Calendar::class.java)
-
                     val eventText = when {
                         calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日程です"
                         calendar.event != null -> "${calendar.event.event_type.e} ${calendar.event.description}"
