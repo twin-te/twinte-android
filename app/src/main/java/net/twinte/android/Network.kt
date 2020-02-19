@@ -12,7 +12,7 @@ import okhttp3.Request
 import okhttp3.Response
 
 const val API_SCHEME = "https"
-const val API_HOST = "dev.api.twinte.net"
+const val API_HOST = "api.twinte.net"
 const val API_VERSION = "v1"
 
 class HttpError(val name: String, msg: String, val code: Int) : Exception(msg)
@@ -57,7 +57,6 @@ object Network {
             get("/users/me")
             true
         } catch (e: HttpError) {
-            Log.d("WIDGET", e.code.toString())
             if (e.code == 401)
                 false
             else

@@ -134,7 +134,7 @@ class TimetableWidget : AppWidgetProvider() {
                     views.setTextViewText(R.id.date_text_view, "ログインしてください")
                 } else {
                     val eventText = when {
-                        calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日程です"
+                        calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日課です"
                         calendar.event != null -> "${calendar.event.event_type.e} ${calendar.event.description}"
                         else -> if (calendar.module != null) calendar.module.m + "モジュール" else ""
                     }
