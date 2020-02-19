@@ -16,7 +16,7 @@ class WebViewCookieJar : CookieJar {
             Cookie.Builder()
                 .name(r.groups[1]?.value?.trim() ?: return@map null)
                 .value(r.groups[2]?.value ?: return@map null)
-                .domain("dev.api.twinte.net")
+                .domain(API_HOST)
                 .build()
         }.filterNotNull()
     }

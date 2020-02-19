@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        app:title="フィードバック">
+        <Preference
+            android:icon="@drawable/ic_twitter"
+            app:summary="リプライ、DMでご連絡ください"
+            app:title="Twin:te 公式Twitter">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://twitter.com/te_twin" />
+        </Preference>
+        <Preference
+            android:icon="@drawable/ic_mail_outline"
+            app:summary="info@twinte.net"
+            app:title="メール">
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="mailto:info@twinte.net" />
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:key="info"
+        app:title="情報">
+        <Preference
+            app:icon="@drawable/ic_source"
+            app:key="license"
+            app:title="オープンソースライセンス"
+            app:summary="" />
+
+        <Preference
+            app:icon="@drawable/ic_web"
+            app:title="公式サイト"
+            app:summary="https://www.twinte.net">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://www.twinte.net" />
+        </Preference>
+
+        <Preference
+            app:key="github"
+            app:icon="@drawable/ic_github"
+            app:title="Github"
+            app:summary="https://github.com/twin-te">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/twin-te" />
+        </Preference>
+
+        <Preference
+            app:icon="@drawable/ic_icon_small"
+            app:key="version"
+            app:title="Twin:te for Android"
+            app:summary="" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
