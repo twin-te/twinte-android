@@ -58,7 +58,11 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             }
         }, "android")
-        main_webview.loadUrl("https://app.twinte.net")
+
+        // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
+        val userLectureId = intent.getStringExtra("user_lecture_id")
+
+        main_webview.loadUrl(if (userLectureId != null) "https://app.twinte.net?user_lecture_id=${userLectureId}" else "https://app.twinte.net")
     }
 
     /**

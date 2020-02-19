@@ -94,7 +94,8 @@ class WidgetListViewService : RemoteViewsService() {
                 setTextViewText(R.id.period_room_text_view, p?.room ?: "")
                 if (p != null)
                     setOnClickFillInIntent(R.id.period_wrapper, Intent().apply {
-                        putExtra("period", position + 1)
+                        // タップした講義を判定するためにuserLectureIdを付与
+                        putExtra("user_lecture_id", p.user_lecture_id)
                     })
             }
 
