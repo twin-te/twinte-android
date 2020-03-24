@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         main_webview.addJavascriptInterface(object {
             @JavascriptInterface()
             fun openSettings() {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                ShareTimetable.share(main_webview)
+//                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             }
         }, "android")
 
