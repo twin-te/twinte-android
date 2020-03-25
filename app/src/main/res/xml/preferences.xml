@@ -1,8 +1,7 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        app:title="フィードバック">
+    <PreferenceCategory app:title="フィードバック">
         <Preference
             android:icon="@drawable/ic_twitter"
             app:summary="リプライ、DMでご連絡ください"
@@ -20,6 +19,22 @@
                 android:data="mailto:info@twinte.net" />
         </Preference>
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="schedule"
+        app:title="スケジュール">
+
+        <SwitchPreferenceCompat
+            app:key="enable_schedule_notification"
+            app:title="特殊日程を通知する" />
+        <MultiSelectListPreference
+            android:title="通知タイミング"
+            android:key="notification_timing"
+            android:dependency="enable_schedule_notification"
+            android:entryValues="@array/schedule_key"
+            android:entries="@array/schedule_label" />
+    </PreferenceCategory>
+
     <PreferenceCategory
         app:key="info"
         app:title="情報">
@@ -54,5 +69,4 @@
             app:title="Twin:te for Android"
             app:summary="" />
     </PreferenceCategory>
-
 </PreferenceScreen>

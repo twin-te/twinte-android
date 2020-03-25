@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sliding_content.*
+import net.twinte.android.schedule.ScheduleIndentReceiver
 import net.twinte.android.widget.TimetableWidget
 
 
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        ScheduleIndentReceiver.enable(this)
 
         cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
