@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -24,6 +25,21 @@ import java.util.*
 class ScheduleIndentReceiver : BroadcastReceiver() {
 
     companion object {
+
+        private fun getPendingIntent(context: Context): PendingIntent =
+            PendingIntent.getBroadcast(
+                context,
+                0,
+                Intent(context, ScheduleIndentReceiver::class.java).apply { action = "update" },
+                0
+            )
+
+        private fun Context.getListener() = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
+            resetAlarm()
+            setNextAlarm()
+        }
+
         fun enable(context: Context) = context.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = getString(R.string.channel_name)
@@ -37,48 +53,62 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
                 notificationManager.createNotificationChannel(channel)
             }
             PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-                    if (key != "enable_schedule_notification" && key != "notification_timing") return@registerOnSharedPreferenceChangeListener
-                    val notificationEnabled = sharedPreferences.getBoolean("enable_schedule_notification", false)
-                    val timing = sharedPreferences.getStringSet("notification_timing", emptySet())
-                    val alarmManager = getSystemService(AlarmManager::class.java)!!
+                .registerOnSharedPreferenceChangeListener(getListener())
+        }
 
-                    val pendingIntent =
-                        PendingIntent.getBroadcast(
-                            this,
-                            0,
-                            Intent(this, ScheduleIndentReceiver::class.java).apply { action = "update" },
-                            0
-                        )
+        private fun Context.resetAlarm() {
+            val alarmManager = getSystemService(AlarmManager::class.java)!!
+            alarmManager.cancel(getPendingIntent(this))
+        }
 
-                    alarmManager.cancel(pendingIntent)
+        fun Context.setNextAlarm() {
+            val cal = getNextAlarmDate()?.let {
+                setAlarm(it)
+            }
+        }
 
-                    if (notificationEnabled)
-                        timing?.forEach {
-                            val calendar: Calendar = Calendar.getInstance().apply {
-                                var time = it.toInt()
-                                if (time < 0) time += 24
-                                timeInMillis = System.currentTimeMillis()
-                                set(Calendar.HOUR_OF_DAY, it.toInt())
-                                set(Calendar.MINUTE, 1)
-                            }
-                            alarmManager.setRepeating(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                1000 * 60 * 60 * 24,
-                                pendingIntent
-                            )
-                        }
+        private fun Context.getNextAlarmDate(): Calendar? {
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+            val notificationEnabled = sharedPreferences.getBoolean("enable_schedule_notification", false)
+            val timing = sharedPreferences.getStringSet("notification_timing", emptySet())!!.map { it.toInt() }.sorted()
+            return if (timing.isNotEmpty()) {
+                val timingInToday = timing.find {
+                    Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, it)
+                        set(Calendar.MINUTE, 0)
+                    }.after(Calendar.getInstance())
                 }
+                if (timingInToday != null)
+                    Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, timingInToday)
+                        set(Calendar.MINUTE, 0)
+                    }
+                else Calendar.getInstance().apply {
+                    add(Calendar.DATE, 1)
+                    set(Calendar.HOUR_OF_DAY, timing.first())
+                    set(Calendar.MINUTE, 0)
+                }
+            } else null
+        }
+
+        private fun Context.setAlarm(calendar: Calendar) {
+            val alarmManager = getSystemService(AlarmManager::class.java)!!
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                getPendingIntent(this)
+            )
         }
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let { context ->
+            context.setNextAlarm()
             GlobalScope.launch {
                 val date =
                     if (Calendar.getInstance().get(Calendar.HOUR) < 18) TimetableWidget.simpleDateFormat.format(Date())
                     else TimetableWidget.simpleDateFormat.format(Date()).addDay(1)
+
                 val calendar = Network.fetchCalender(date)
                 val builder = NotificationCompat.Builder(context, "schedule")
                     .setSmallIcon(R.drawable.ic_icon)

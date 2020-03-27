@@ -5,6 +5,9 @@
     <string name="channel_name">特殊日程通知</string>
     <string name="channel_description">特殊日程を通知するチャンネル</string>
     <string-array name="schedule_label">
+        <item>前日17時</item>
+        <item>前日18時</item>
+        <item>前日19時</item>
         <item>前日20時</item>
         <item>前日21時</item>
         <item>前日22時</item>
@@ -20,10 +23,13 @@
         <item>当日8時</item>
     </string-array>
     <string-array name="schedule_key">
-        <item>-4</item>
-        <item>-3</item>
-        <item>-2</item>
-        <item>-1</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>
