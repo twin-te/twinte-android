@@ -34,11 +34,13 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
                 0
             )
 
-        private fun Context.getListener() = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
-            resetAlarm()
-            setNextAlarm()
-        }
+        private fun Context.getListener() =
+            SharedPreferences.OnSharedPreferenceChangeListener { sharedPreference, key ->
+                if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
+                resetAlarm()
+                if (sharedPreference.getBoolean("enable_schedule_notification", false))
+                    setNextAlarm()
+            }
 
         fun enable(context: Context) = context.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -52,8 +54,12 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
                 val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)!!
                 notificationManager.createNotificationChannel(channel)
             }
-            PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(getListener())
+            val sharedPreference = PreferenceManager.getDefaultSharedPreferences(this)
+            sharedPreference.registerOnSharedPreferenceChangeListener(getListener())
+
+            resetAlarm()
+            if (sharedPreference.getBoolean("enable_schedule_notification", false))
+                setNextAlarm()
         }
 
         private fun Context.resetAlarm() {
@@ -121,14 +127,11 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
                         )
                     )
 
+                val targetDate = if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 18) "今日" else "明日"
+
                 if (calendar.substituteDay != null) {
                     val notification = builder
-                        .setContentText("明日は${calendar.substituteDay.change_to}曜日課です")
-                        .build()
-                    NotificationManagerCompat.from(context).notify(1, notification)
-                } else {
-                    val notification = builder
-                        .setContentText("明日は通常日課です")
+                        .setContentText("${targetDate}は${calendar.substituteDay.change_to}曜日課です")
                         .build()
                     NotificationManagerCompat.from(context).notify(1, notification)
                 }
