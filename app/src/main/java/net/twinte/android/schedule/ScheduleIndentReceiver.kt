@@ -18,14 +18,13 @@ import kotlinx.coroutines.launch
 import net.twinte.android.MainActivity
 import net.twinte.android.Network
 import net.twinte.android.R
+import net.twinte.android.SettingsActivity
 import net.twinte.android.widget.TimetableWidget
 import net.twinte.android.widget.addDay
 import java.util.*
 
 class ScheduleIndentReceiver : BroadcastReceiver() {
-
     companion object {
-
         private fun getPendingIntent(context: Context): PendingIntent =
             PendingIntent.getBroadcast(
                 context,
@@ -125,13 +124,21 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
                             0,
                             Intent(context, MainActivity::class.java), 0
                         )
+                    ).addAction(
+                        R.drawable.ic_icon, "通知設定",
+                        PendingIntent.getActivity(
+                            context,
+                            0,
+                            Intent(context, SettingsActivity::class.java), 0
+                        )
                     )
 
                 val targetDate = if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 18) "今日" else "明日"
 
                 if (calendar.substituteDay != null) {
                     val notification = builder
-                        .setContentText("${targetDate}は${calendar.substituteDay.change_to}曜日課です")
+                        .setContentTitle("${targetDate}は${calendar.substituteDay.change_to}曜日課です")
+                        .setContentText("日程はウィジットで確認できます")
                         .build()
                     NotificationManagerCompat.from(context).notify(1, notification)
                 }
