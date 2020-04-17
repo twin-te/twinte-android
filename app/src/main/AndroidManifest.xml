@@ -34,6 +34,13 @@
                 android:resource="@xml/timetable_widget_info" />
         </receiver>
 
+        <receiver android:name=".schedule.ScheduleIndentReceiver">
+            <intent-filter>
+                <action android:name="update" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".widget.WidgetListViewService"
             android:exported="false"

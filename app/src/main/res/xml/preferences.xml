@@ -2,7 +2,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        app:title="フィードバック">
+        app:key="schedule"
+        app:title="スケジュール">
+
+        <SwitchPreferenceCompat
+            app:key="enable_schedule_notification"
+            app:title="振替日程を通知する"
+            app:summary="本来の曜日とは異なる授業日程の場合にお知らせします"
+            app:icon="@drawable/ic_event"
+            app:defaultValue="true"
+            />
+        <MultiSelectListPreference
+            android:title="通知のタイミング"
+            android:key="notification_timing"
+            android:dependency="enable_schedule_notification"
+            android:defaultValue="@array/default_schedule"
+            android:entryValues="@array/schedule_key"
+            android:entries="@array/schedule_label" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="フィードバック">
         <Preference
             android:icon="@drawable/ic_twitter"
             app:summary="リプライ、DMでご連絡ください"
@@ -20,6 +39,7 @@
                 android:data="mailto:info@twinte.net" />
         </Preference>
     </PreferenceCategory>
+
     <PreferenceCategory
         app:key="info"
         app:title="情報">
@@ -54,5 +74,4 @@
             app:title="Twin:te for Android"
             app:summary="" />
     </PreferenceCategory>
-
 </PreferenceScreen>
