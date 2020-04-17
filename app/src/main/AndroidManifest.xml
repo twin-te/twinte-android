@@ -41,6 +41,16 @@
         <service
             android:name=".widget.UpdateWidgetJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"></service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="net.twinte.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
