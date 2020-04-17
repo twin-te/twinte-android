@@ -97,6 +97,8 @@ class WidgetListViewService : RemoteViewsService() {
                         // タップした講義を判定するためにuserLectureIdを付与
                         putExtra("user_lecture_id", p.user_lecture_id)
                     })
+                else
+                    setOnClickFillInIntent(R.id.period_wrapper, Intent())
             }
 
             return rv
