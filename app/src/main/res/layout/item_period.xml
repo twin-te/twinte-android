@@ -71,6 +71,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="講師"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="14sp" />
 
         <TextView
@@ -78,6 +80,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="3A202"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="14sp" />
     </LinearLayout>
 </LinearLayout>
