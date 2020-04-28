@@ -167,6 +167,14 @@ class MainActivity : AppCompatActivity() {
         external_webview.alpha = 0f
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
+        intent.getStringExtra("user_lecture_id")?.let { userLectureId ->
+            main_webview.loadUrl("https://app.twinte.net?user_lecture_id=${userLectureId}")
+        }
+    }
+
     private fun updateWidgets() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         sendBroadcast(Intent(this, TimetableWidget::class.java).apply {
