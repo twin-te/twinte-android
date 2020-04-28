@@ -7,9 +7,11 @@ import kotlinx.coroutines.withContext
 import net.twinte.android.types.Calendar
 import net.twinte.android.types.Error
 import net.twinte.android.types.Period
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.util.concurrent.TimeUnit
 
 const val API_SCHEME = "https"
 const val API_HOST = "api.twinte.net"
@@ -18,7 +20,12 @@ const val API_VERSION = "v1"
 class HttpError(val name: String, msg: String, val code: Int) : Exception(msg)
 
 object Network {
-    val httpClient = OkHttpClient.Builder().cookieJar(WebViewCookieJar()).build()
+    val httpClient = OkHttpClient.Builder()
+        .connectTimeout(1000, TimeUnit.MILLISECONDS)
+        .retryOnConnectionFailure(true)
+        .readTimeout(1000, TimeUnit.MILLISECONDS)
+        .connectionPool(ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
+        .cookieJar(WebViewCookieJar()).build()
     val gson = Gson()
 
     data class SimpleResponse(val body: String, val code: Int)

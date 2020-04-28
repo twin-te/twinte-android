@@ -137,7 +137,7 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
 
                 if (calendar.substituteDay != null) {
                     val notification = builder
-                        .setContentTitle("${targetDate}は${calendar.substituteDay.change_to}曜日課です")
+                        .setContentTitle("${targetDate}は${calendar.substituteDay.change_to.d}曜日課です")
                         .setContentText("日程はウィジットで確認できます")
                         .build()
                     NotificationManagerCompat.from(context).notify(1, notification)
