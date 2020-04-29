@@ -111,7 +111,8 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
             context.setNextAlarm()
             GlobalScope.launch {
                 val date =
-                    if (Calendar.getInstance().get(Calendar.HOUR) < 18) TimetableWidget.simpleDateFormat.format(Date())
+                    if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 18)
+                        TimetableWidget.simpleDateFormat.format(Date())
                     else TimetableWidget.simpleDateFormat.format(Date()).addDay(1)
 
                 val calendar = Network.fetchCalender(date)
