@@ -204,7 +204,6 @@ class TimetableWidget : AppWidgetProvider() {
                         )
                     )
                 }
-                throw e
             } finally {
                 views.setViewVisibility(R.id.widget_loading_wrapper, View.GONE)
 

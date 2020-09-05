@@ -12,6 +12,7 @@ import net.twinte.android.Network
 import net.twinte.android.types.Period
 import net.twinte.android.R
 import net.twinte.android.types.Day
+import net.twinte.android.types.Format
 import net.twinte.android.types.Module
 import java.lang.Exception
 
@@ -50,11 +51,11 @@ class WidgetListViewService : RemoteViewsService() {
             lastUpdate = TimetableWidget.date
         } catch (e: HttpError) {
             periods = arrayOf(
-                Period("", e.message ?: "HttpError", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+                Period("", e.message ?: "HttpError", "", 0, Module.Unknown, Day.Sun, 1, "", "", emptyArray())
             )
         } catch (e: Exception) {
             periods = arrayOf(
-                Period("", e.message ?: "Unknown Error", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+                Period("", e.message ?: "Unknown Error", "", 0, Module.Unknown, Day.Sun, 1, "", "", emptyArray())
             )
         }
 
@@ -92,6 +93,18 @@ class WidgetListViewService : RemoteViewsService() {
                 setTextViewText(R.id.period_name_text_view, p?.lecture_name ?: "")
                 setTextViewText(R.id.period_instructor_text_view, p?.instructor ?: "")
                 setTextViewText(R.id.period_room_text_view, p?.room ?: "")
+                setImageViewResource(
+                    R.id.icon_face2face,
+                    if (p?.formats?.contains(Format.FaceToFace) == true) R.drawable.ic_face2face else R.drawable.ic_face2face_disabled
+                )
+                setImageViewResource(
+                    R.id.icon_synchronous,
+                    if (p?.formats?.contains(Format.OnlineSynchronous) == true) R.drawable.ic_synchronous else R.drawable.ic_synchronous_disabled
+                )
+                setImageViewResource(
+                    R.id.icon_asynchronous,
+                    if (p?.formats?.contains(Format.OnlineAsynchronous) == true) R.drawable.ic_asynchronous else R.drawable.ic_asynchronous_disabled
+                )
                 if (p != null)
                     setOnClickFillInIntent(R.id.period_wrapper, Intent().apply {
                         // タップした講義を判定するためにuserLectureIdを付与

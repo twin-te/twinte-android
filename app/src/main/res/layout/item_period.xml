@@ -57,11 +57,11 @@
 
         <TextView
             android:id="@+id/period_name_text_view"
-            android:maxLines="1"
-            android:ellipsize="end"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="講義名"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -70,18 +70,44 @@
             android:id="@+id/period_instructor_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="講師"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
+            android:text="講師"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/period_room_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="3A202"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
+            android:text="3A202"
             android:textSize="14sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="84dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/icon_face2face"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_face2face_disabled"/>
+        <ImageView
+            android:id="@+id/icon_synchronous"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_synchronous_disabled"/>
+        <ImageView
+            android:id="@+id/icon_asynchronous"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_asynchronous_disabled"/>
+    </LinearLayout>
+
 </LinearLayout>
