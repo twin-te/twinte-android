@@ -8,6 +8,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.util.Log
 import android.view.View
@@ -121,7 +122,10 @@ class TimetableWidget : AppWidgetProvider() {
             // RemoteView作成
             val views = RemoteViews(
                 context.packageName,
-                R.layout.timetable_widget
+                if(context.isDarkMode())
+                    R.layout.timetable_widget_night
+                else
+                    R.layout.timetable_widget
             )
             // 初期化
             views.setViewVisibility(R.id.widget_loading_wrapper, View.VISIBLE)
@@ -230,3 +234,5 @@ fun String.label(): String {
     c.time = TimetableWidget.simpleDateFormat.parse(this) ?: throw Exception()
     return SimpleDateFormat("MM/dd (E)", Locale.JAPAN).format(c.time)
 }
+
+fun Context.isDarkMode() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
