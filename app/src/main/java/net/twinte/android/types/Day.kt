@@ -3,18 +3,18 @@ package net.twinte.android.types
 import com.google.gson.annotations.SerializedName
 
 enum class Day(val d: String) {
-    @SerializedName("日")
+    @SerializedName("Sun")
     Sun("日"),
-    @SerializedName("月")
+    @SerializedName("Mon")
     Mon("月"),
-    @SerializedName("火")
+    @SerializedName("Tue")
     Tue("火"),
-    @SerializedName("水")
+    @SerializedName("Wed")
     Wed("水"),
-    @SerializedName("木")
+    @SerializedName("Thu")
     Thu("木"),
-    @SerializedName("金")
+    @SerializedName("Fri")
     Fri("金"),
-    @SerializedName("土")
+    @SerializedName("Sat")
     Sat("土")
 }

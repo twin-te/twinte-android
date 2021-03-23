@@ -13,15 +13,9 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.twinte.android.*
-import net.twinte.android.types.Calendar
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -133,10 +127,10 @@ class TimetableWidget : AppWidgetProvider() {
             appWidgetManager.updateAppWidget(appWidgetId, views)
 
             try {
-                val calendar = Network.fetchCalender(date)
                 if (!Network.isLoggedIn()) {
                     views.setTextViewText(R.id.date_text_view, "ログインしてください")
                 } else {
+                    val calendar = Network.fetchCalender(date)
                     val eventText = when {
                         calendar.substituteDay != null -> "今日は${calendar.substituteDay.change_to.d}曜日課です"
                         calendar.event != null -> "${calendar.event.event_type.e} ${calendar.event.description}"
