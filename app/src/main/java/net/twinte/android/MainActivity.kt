@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AlphaAnimation
@@ -21,10 +22,12 @@ import net.twinte.android.widget.TimetableWidget
 
 // TODO url変更
 const val APP_URL = "https://app.dev.twinte.net"
+const val FILE_CHOOSER_REQUEST = 1
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var cookieManager: CookieManager
+    var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +70,17 @@ class MainActivity : AppCompatActivity() {
                     false
                 }
         }
+        main_webview.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>,
+                fileChooserParams: FileChooserParams
+            ): Boolean {
+                this@MainActivity.filePathCallback = filePathCallback
+                startActivityForResult(fileChooserParams.createIntent(), FILE_CHOOSER_REQUEST)
+                return true
+            }
+        }
         main_webview.addJavascriptInterface(object {
             @JavascriptInterface()
             fun openSettings() {
@@ -95,7 +109,8 @@ class MainActivity : AppCompatActivity() {
 
         external_webview.settings.javaScriptEnabled = true
         external_webview.settings.domStorageEnabled = true
-        external_webview.settings.userAgentString = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
+        external_webview.settings.userAgentString =
+            "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
         cookieManager.setAcceptThirdPartyCookies(external_webview, true)
 
         external_webview.webViewClient = object : WebViewClient() {
@@ -178,6 +193,15 @@ class MainActivity : AppCompatActivity() {
         sliding_layout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
         external_webview.clearHistory()
         external_webview.alpha = 0f
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == FILE_CHOOSER_REQUEST) {
+            if(resultCode == RESULT_OK)
+                filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
+            else
+                filePathCallback?.onReceiveValue(null)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
