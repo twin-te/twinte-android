@@ -10,5 +10,7 @@ enum class EventType(val e: String) {
     @SerializedName("Exam")
     Exam("試験"),
     @SerializedName("SubstituteDay")
-    SubstituteDay("振替授業日")
+    SubstituteDay("振替授業日"),
+    @SerializedName("Other")
+    Other("その他")
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -17,6 +18,9 @@ import kotlinx.android.synthetic.main.sliding_content.*
 import net.twinte.android.schedule.ScheduleIndentReceiver
 import net.twinte.android.widget.TimetableWidget
 
+
+// TODO url変更
+const val APP_URL = "https://app.dev.twinte.net"
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,16 +43,24 @@ class MainActivity : AppCompatActivity() {
         main_webview.settings.userAgentString = "TwinteAppforAndroid"
         main_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (!request.url.toString().startsWith("https://app.twinte.net")) {
+                if (!request.url.toString().startsWith(APP_URL) || request.url.toString()
+                        .startsWith(Network.apiUrl(""))
+                ) {
                     initSlidingContent()
 
-                    sliding_layout.isTouchEnabled = false
-                    sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+                    // GoogleMap対応
+                    if (request.url.toString().startsWith("https://www.google.com/maps/")) {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            data = request.url
+                        })
+                    } else {
+                        sliding_layout.isTouchEnabled = false
+                        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
 
-                    external_webview.settings.userAgentString =
-                        if (request.url.toString().endsWith("/auth/google")) "TwinteAppforAndroid" else null
-                    external_webview.clearHistory()
-                    external_webview.loadUrl(request.url.toString())
+                        external_webview.clearHistory()
+                        external_webview.loadUrl(request.url.toString())
+                    }
+
                     true
                 } else {
                     view.loadUrl(request.url.toString())
@@ -69,8 +81,7 @@ class MainActivity : AppCompatActivity() {
 
         // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
         val userLectureId = intent.getStringExtra("user_lecture_id")
-        // TODO url変更
-        main_webview.loadUrl(if (userLectureId != null) "https://app.twinte.net?user_lecture_id=${userLectureId}" else "https://api.dev.twinte.net/v3/login")
+        main_webview.loadUrl(if (userLectureId != null && userLectureId.isNotEmpty()) "$APP_URL/course/${userLectureId}" else APP_URL)
     }
 
     /**
@@ -84,14 +95,15 @@ class MainActivity : AppCompatActivity() {
 
         external_webview.settings.javaScriptEnabled = true
         external_webview.settings.domStorageEnabled = true
+        external_webview.settings.userAgentString = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
         cookieManager.setAcceptThirdPartyCookies(external_webview, true)
 
         external_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (request.url.toString().startsWith("https://app.twinte.net")) {
+                if (request.url.toString().startsWith(APP_URL)) {
                     cookieManager.flush()
                     closePanel()
-                    main_webview.reload()
+                    main_webview.loadUrl(APP_URL)
                     updateWidgets()
                     true
                 } else {
@@ -172,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
         intent.getStringExtra("user_lecture_id")?.let { userLectureId ->
-            main_webview.loadUrl("https://app.twinte.net?user_lecture_id=${userLectureId}")
+            main_webview.loadUrl(if (userLectureId.isNotEmpty()) "$APP_URL/course/${userLectureId}" else APP_URL)
         }
     }
 

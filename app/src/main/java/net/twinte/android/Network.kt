@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit
 
 // TODO url変更
 const val API_SCHEME = "https"
-const val API_HOST = "api.dev.twinte.net"
-const val API_VERSION = "v3"
+const val API_HOST = "app.dev.twinte.net"
+const val API_VERSION = "api/v3"
 
 class HttpError(val name: String, msg: String, val code: Int) : Exception(msg)
 
@@ -33,7 +33,7 @@ object Network {
 
     data class SimpleResponse(val body: String, val code: Int)
 
-    private fun apiUrl(path: String) =
+    fun apiUrl(path: String) =
         "${API_SCHEME}://${API_HOST}/${API_VERSION}${if (!path.startsWith("/")) "/" else ""}${path}"
 
     /**
