@@ -3,12 +3,14 @@ package net.twinte.android.types
 import com.google.gson.annotations.SerializedName
 
 enum class EventType(val e: String) {
-    @SerializedName("休日")
+    @SerializedName("Holiday")
     Holiday("休日"),
-    @SerializedName("祝日")
+    @SerializedName("PublicHoliday")
     PublicHoliday("祝日"),
-    @SerializedName("試験")
+    @SerializedName("Exam")
     Exam("試験"),
-    @SerializedName("振替授業日")
-    SubstituteDay("振替授業日")
+    @SerializedName("SubstituteDay")
+    SubstituteDay("振替授業日"),
+    @SerializedName("Other")
+    Other("その他")
 }

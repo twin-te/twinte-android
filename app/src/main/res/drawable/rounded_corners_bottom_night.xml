@@ -7,7 +7,7 @@
                 android:bottomLeftRadius="10dp"
                 />
             <solid
-                android:color="?android:attr/colorBackground"
+                android:color="@color/darkBack"
                 />
         </shape>
     </item>

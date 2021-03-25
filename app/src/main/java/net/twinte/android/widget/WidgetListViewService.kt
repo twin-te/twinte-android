@@ -12,6 +12,7 @@ import net.twinte.android.Network
 import net.twinte.android.types.Period
 import net.twinte.android.R
 import net.twinte.android.types.Day
+import net.twinte.android.types.Format
 import net.twinte.android.types.Module
 import java.lang.Exception
 
@@ -50,11 +51,11 @@ class WidgetListViewService : RemoteViewsService() {
             lastUpdate = TimetableWidget.date
         } catch (e: HttpError) {
             periods = arrayOf(
-                Period("", e.message ?: "HttpError", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+                Period("", e.message ?: "HttpError", "", 0, Module.Unknown, Day.Sun, 1, "", "", emptyArray())
             )
         } catch (e: Exception) {
             periods = arrayOf(
-                Period("", e.message ?: "Unknown Error", "", 0, Module.Unknown, Day.Sun, 1, "", "")
+                Period("", e.message ?: "Unknown Error", "", 0, Module.Unknown, Day.Sun, 1, "", "", emptyArray())
             )
         }
 
@@ -82,7 +83,10 @@ class WidgetListViewService : RemoteViewsService() {
             val p = periods.find { it.period == position + 1 }
             val rv = RemoteViews(
                 mContext.packageName,
-                if (p != null) R.layout.item_period else R.layout.item_period_disabled
+                if (mContext.isDarkMode())
+                    if (p != null) R.layout.item_period_night else R.layout.item_period_disabled_night
+                else
+                    if (p != null) R.layout.item_period else R.layout.item_period_disabled
             )
 
             rv.run {
@@ -92,6 +96,27 @@ class WidgetListViewService : RemoteViewsService() {
                 setTextViewText(R.id.period_name_text_view, p?.lecture_name ?: "")
                 setTextViewText(R.id.period_instructor_text_view, p?.instructor ?: "")
                 setTextViewText(R.id.period_room_text_view, p?.room ?: "")
+                setImageViewResource(
+                    R.id.icon_face2face,
+                    if (mContext.isDarkMode())
+                        if (p?.formats?.contains(Format.FaceToFace) == true) R.drawable.ic_face2face_night else R.drawable.ic_face2face_disabled_night
+                    else
+                        if (p?.formats?.contains(Format.FaceToFace) == true) R.drawable.ic_face2face else R.drawable.ic_face2face_disabled
+                )
+                setImageViewResource(
+                    R.id.icon_synchronous,
+                    if (mContext.isDarkMode())
+                        if (p?.formats?.contains(Format.OnlineSynchronous) == true) R.drawable.ic_synchronous_night else R.drawable.ic_synchronous_disabled_night
+                    else
+                        if (p?.formats?.contains(Format.OnlineSynchronous) == true) R.drawable.ic_synchronous else R.drawable.ic_synchronous_disabled
+                )
+                setImageViewResource(
+                    R.id.icon_asynchronous,
+                    if (mContext.isDarkMode())
+                        if (p?.formats?.contains(Format.OnlineAsynchronous) == true) R.drawable.ic_asynchronous_night else R.drawable.ic_asynchronous_disabled_night
+                    else
+                        if (p?.formats?.contains(Format.OnlineAsynchronous) == true) R.drawable.ic_asynchronous else R.drawable.ic_asynchronous_disabled
+                )
                 if (p != null)
                     setOnClickFillInIntent(R.id.period_wrapper, Intent().apply {
                         // タップした講義を判定するためにuserLectureIdを付与

@@ -3,24 +3,24 @@ package net.twinte.android.types
 import com.google.gson.annotations.SerializedName
 
 enum class Module(val m: String) {
-    @SerializedName("春A")
+    @SerializedName("SpringA")
     SpringA("春A"),
-    @SerializedName("春B")
+    @SerializedName("SpringB")
     SpringB("春B"),
-    @SerializedName("春C")
+    @SerializedName("SpringC")
     SpringC("春C"),
-    @SerializedName("秋A")
+    @SerializedName("FallA")
     FallA("秋A"),
-    @SerializedName("秋B")
+    @SerializedName("FallB")
     FallB("秋B"),
-    @SerializedName("秋C")
+    @SerializedName("FallC")
     FallC("秋C"),
-    @SerializedName("夏季休業中")
+    @SerializedName("SummerVacation")
     SummerVacation("夏季休業中"),
-    @SerializedName("春季休業中")
+    @SerializedName("SpringVacation")
     SpringVacation("春季休業中"),
-    @SerializedName("通年")
+    @SerializedName("Annual")
     Annual("通年"),
-    @SerializedName("不明")
+    @SerializedName("Unknown")
     Unknown("不明")
 }

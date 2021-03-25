@@ -9,5 +9,6 @@ data class Period(
     val day: Day,
     val period: Int,
     val room: String,
-    val user_lecture_id: String
+    val user_lecture_id: String,
+    val formats: Array<Format>
 )

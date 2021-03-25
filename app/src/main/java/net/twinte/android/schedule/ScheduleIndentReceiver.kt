@@ -111,7 +111,8 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
             context.setNextAlarm()
             GlobalScope.launch {
                 val date =
-                    if (Calendar.getInstance().get(Calendar.HOUR) < 18) TimetableWidget.simpleDateFormat.format(Date())
+                    if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 18)
+                        TimetableWidget.simpleDateFormat.format(Date())
                     else TimetableWidget.simpleDateFormat.format(Date()).addDay(1)
 
                 val calendar = Network.fetchCalender(date)
@@ -137,7 +138,7 @@ class ScheduleIndentReceiver : BroadcastReceiver() {
 
                 if (calendar.substituteDay != null) {
                     val notification = builder
-                        .setContentTitle("${targetDate}は${calendar.substituteDay.change_to}曜日課です")
+                        .setContentTitle("${targetDate}は${calendar.substituteDay.change_to.d}曜日課です")
                         .setContentText("日程はウィジットで確認できます")
                         .build()
                     NotificationManagerCompat.from(context).notify(1, notification)
