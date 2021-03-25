@@ -40,15 +40,13 @@ class MainActivity : AppCompatActivity() {
         cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(main_webview, true)
-
+        WebView.setWebContentsDebuggingEnabled(true)
         main_webview.settings.javaScriptEnabled = true
         main_webview.settings.domStorageEnabled = true
         main_webview.settings.userAgentString = "TwinteAppforAndroid"
         main_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (!request.url.toString().startsWith(APP_URL) || request.url.toString()
-                        .startsWith(Network.apiUrl(""))
-                ) {
+                if (!request.url.toString().startsWith(APP_URL) || request.url.toString().startsWith("$APP_URL/auth/")) {
                     initSlidingContent()
 
                     // GoogleMap対応
@@ -197,7 +195,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FILE_CHOOSER_REQUEST) {
-            if(resultCode == RESULT_OK)
+            if (resultCode == RESULT_OK)
                 filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
             else
                 filePathCallback?.onReceiveValue(null)
