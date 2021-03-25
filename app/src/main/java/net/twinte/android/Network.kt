@@ -15,9 +15,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-// TODO url変更
 const val API_SCHEME = "https"
-const val API_HOST = "app.dev.twinte.net"
+const val API_HOST = "app.twinte.net"
 const val API_VERSION = "api/v3"
 
 class HttpError(val name: String, msg: String, val code: Int) : Exception(msg)

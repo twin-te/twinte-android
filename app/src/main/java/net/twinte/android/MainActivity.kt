@@ -20,8 +20,7 @@ import net.twinte.android.schedule.ScheduleIndentReceiver
 import net.twinte.android.widget.TimetableWidget
 
 
-// TODO url変更
-const val APP_URL = "https://app.dev.twinte.net"
+const val APP_URL = "https://app.twinte.net"
 const val FILE_CHOOSER_REQUEST = 1
 
 class MainActivity : AppCompatActivity() {
