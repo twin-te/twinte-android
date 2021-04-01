@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         external_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (request.url.toString().startsWith(APP_URL)) {
+                if (request.url.toString().startsWith(APP_URL) && !request.url.toString().startsWith("$APP_URL/auth/")) {
                     cookieManager.flush()
                     closePanel()
                     main_webview.loadUrl(APP_URL)
