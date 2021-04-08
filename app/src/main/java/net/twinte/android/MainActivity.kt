@@ -1,5 +1,6 @@
 package net.twinte.android
 
+import android.content.res.Configuration
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme_Main  )
+        setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
         main_webview.setup()
         main_webview.loadUrl("https://app.twinte.net/")
@@ -30,6 +31,21 @@ class MainActivity : AppCompatActivity() {
         settings.userAgentString = "TwinteAppforAndroid"
         webViewClient = object : WebViewClientCompat() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = false
+        }
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+
+            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                // ダークモードサポートだったら
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    // ダークモード有効
+                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_ON)
+                    // ダークモードのスタイリングはページが行う
+                    WebSettingsCompat.setForceDarkStrategy(settings, WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY)
+                }
+                Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_OFF)
+                }
+            }
         }
     }
 
