@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(main_webview, true)
-        WebView.setWebContentsDebuggingEnabled(true)
         main_webview.settings.javaScriptEnabled = true
         main_webview.settings.domStorageEnabled = true
         main_webview.settings.userAgentString = "TwinteAppforAndroid"
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         external_webview.settings.javaScriptEnabled = true
         external_webview.settings.domStorageEnabled = true
         external_webview.settings.userAgentString =
-            "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
+            "Mozilla/5.0 (Linux; Android ${android.os.Build.VERSION.RELEASE}; ${android.os.Build.MODEL}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
         cookieManager.setAcceptThirdPartyCookies(external_webview, true)
 
         external_webview.webViewClient = object : WebViewClient() {
