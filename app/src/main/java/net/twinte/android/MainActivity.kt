@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.webkit.*
@@ -16,10 +17,17 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sliding_content.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.twinte.android.schedule.ScheduleIndentReceiver
 import net.twinte.android.widget.TimetableWidget
+import net.twinte.android.widget.isAppDarkMode
+import net.twinte.android.widget.isDarkMode
+import kotlin.math.log
 
 
+var isDarkMode = false
 const val APP_URL = "https://app.twinte.net"
 const val FILE_CHOOSER_REQUEST = 1
 
@@ -44,7 +52,9 @@ class MainActivity : AppCompatActivity() {
         main_webview.settings.userAgentString = "TwinteAppforAndroid"
         main_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (!request.url.toString().startsWith(APP_URL) || request.url.toString().startsWith("$APP_URL/auth/")) {
+                if (!request.url.toString().startsWith(APP_URL) || request.url.toString()
+                        .startsWith("$APP_URL/auth/")
+                ) {
                     initSlidingContent()
 
                     // GoogleMap対応
@@ -66,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                     false
                 }
         }
+
         main_webview.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
@@ -80,13 +91,25 @@ class MainActivity : AppCompatActivity() {
         main_webview.addJavascriptInterface(object {
             @JavascriptInterface()
             fun openSettings() {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                main_webview.post {
+                    main_webview.loadUrl("javascript:window.android.openSettings(document.documentElement.outerHTML);")
+                }
             }
 
             @JavascriptInterface()
             fun share(body: String) {
                 main_webview.shareScreen(body)
             }
+
+            @JavascriptInterface
+            fun openSettings(document: String) = GlobalScope.launch {
+                isDarkMode = isAppDarkMode(document)
+                startActivity(
+                    Intent(this@MainActivity, SettingsActivity::class.java)
+                        .putExtra("dark_mode", isDarkMode)
+                )
+            }
+
         }, "android")
 
         // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
@@ -111,7 +134,9 @@ class MainActivity : AppCompatActivity() {
 
         external_webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (request.url.toString().startsWith(APP_URL) && !request.url.toString().startsWith("$APP_URL/auth/")) {
+                if (request.url.toString().startsWith(APP_URL) && !request.url.toString()
+                        .startsWith("$APP_URL/auth/")
+                ) {
                     cookieManager.flush()
                     closePanel()
                     main_webview.loadUrl(APP_URL)
@@ -150,7 +175,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         external_webview.webChromeClient = object : WebChromeClient() {
-            override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
+            override fun onJsConfirm(
+                view: WebView,
+                url: String,
+                message: String,
+                result: JsResult
+            ): Boolean {
                 AlertDialog.Builder(this@MainActivity)
                     .setMessage(message)
                     .setPositiveButton("OK") { _, _ -> result.confirm() }
@@ -159,7 +189,12 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
 
-            override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+            override fun onJsAlert(
+                view: WebView,
+                url: String,
+                message: String,
+                result: JsResult
+            ): Boolean {
                 AlertDialog.Builder(this@MainActivity)
                     .setMessage(message)
                     .setPositiveButton("OK") { _, _ -> result.confirm() }
@@ -192,6 +227,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_REQUEST) {
             if (resultCode == RESULT_OK)
                 filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)

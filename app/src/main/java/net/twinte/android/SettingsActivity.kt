@@ -9,6 +9,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import net.twinte.android.widget.isDarkMode
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -17,6 +18,12 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        if (isDarkMode() || intent.getBooleanExtra("dark_mode", false))
+            setTheme(R.style.NoActionBatDarkTheme)
+        else
+            setTheme(R.style.NoActionBarTheme)
+
         title = "Androidアプリの設定"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportFragmentManager

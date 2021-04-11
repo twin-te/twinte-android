@@ -230,3 +230,5 @@ fun String.label(): String {
 }
 
 fun Context.isDarkMode() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+fun Context.isAppDarkMode(document: String) = document.contains("body class=\"dark\"")

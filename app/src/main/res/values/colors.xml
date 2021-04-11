@@ -6,4 +6,6 @@
 
     <color name="darkBack">#303030</color>
     <color name="darkText">#C1C1C1</color>
+
+    <color name="darkBackground">#1e2430</color>
 </resources>
