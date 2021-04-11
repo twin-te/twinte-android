@@ -13,12 +13,12 @@
             app:defaultValue="true"
             />
         <MultiSelectListPreference
-            android:title="通知のタイミング"
-            android:key="notification_timing"
-            android:dependency="enable_schedule_notification"
             android:defaultValue="@array/default_schedule"
+            android:dependency="enable_schedule_notification"
+            android:entries="@array/schedule_label"
             android:entryValues="@array/schedule_key"
-            android:entries="@array/schedule_label" />
+            android:key="notification_timing"
+            android:title="通知のタイミング..." />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="フィードバック">
