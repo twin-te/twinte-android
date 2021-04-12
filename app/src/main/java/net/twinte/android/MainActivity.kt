@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         cookieManager.setAcceptCookie(true)
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
 
@@ -51,17 +51,22 @@ class MainActivity : AppCompatActivity() {
         cookieManager.setAcceptThirdPartyCookies(this, true)
         webViewClient = object : WebViewClientCompat() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                return if (request.url.host == "accounts.google.com") {
-                    val clientId = getString(R.string.google_server_client_id)
-                    val signInClient = GoogleSignIn.getClient(
-                        this@MainActivity,
-                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(clientId).build()
-                    )
-                    startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
-                    true
-                } else {
-                    false
+                return when {
+                    request.url.host == "accounts.google.com" -> {
+                        val clientId = getString(R.string.google_server_client_id)
+                        val signInClient = GoogleSignIn.getClient(
+                            this@MainActivity,
+                            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(clientId).build()
+                        )
+                        startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
+                        true
+                    }
+                    request.url.host != DOMAIN -> {
+                        SubWebViewFragment.open(request.url.toString(), supportFragmentManager)
+                        true
+                    }
+                    else -> false
                 }
             }
         }
