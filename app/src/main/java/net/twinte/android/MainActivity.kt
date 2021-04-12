@@ -8,10 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.CookieManager
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.appcompat.app.AlertDialog
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
@@ -71,7 +68,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-
             when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                 // ダークモードサポートだったら
                 Configuration.UI_MODE_NIGHT_YES -> {
@@ -88,6 +84,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        addJavascriptInterface(object {
+            @JavascriptInterface()
+            fun openSettings() {
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+            }
+
+            @JavascriptInterface()
+            fun share(body: String) {
+                main_webview.shareScreen(body)
+            }
+        }, "android")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
