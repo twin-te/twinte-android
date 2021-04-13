@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_rounded_bg">
+
+    <LinearLayout
+        android:layout_width="120dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="top|start"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/day_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="秋A 10/1(金)"
+            android:textColor="@color/widget_text_main"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/event_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="通常日課"
+            android:textColor="@color/widget_text_sub"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/course_count_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6件の授業"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="1dp"
+        android:background="@drawable/widget_rounded_bg_stroke">
+
+        <ImageView
+            android:layout_gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_corner_radius"
+            android:src="@drawable/widget_inner_shadow_gradient_dark_vertical" />
+
+        <ImageView
+            android:layout_width="@dimen/widget_corner_radius"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:src="@drawable/widget_inner_shadow_gradient_dark_horizontal" />
+
+        <ImageView
+            android:layout_width="@dimen/widget_corner_radius"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:rotation="180"
+            android:src="@drawable/widget_inner_shadow_gradient_light_horizontal" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_corner_radius"
+            android:layout_gravity="bottom"
+            android:rotation="180"
+            android:src="@drawable/widget_inner_shadow_gradient_light_vertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="17dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="現在の授業"
+                    android:textColor="@color/widget_text_main"
+                    android:textSize="10sp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/widget_divider" />
+            </LinearLayout>
+
+            <include
+                layout="@layout/widget_v3_course_item"
+                android:id="@+id/current_course_item_wrapper" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="次の授業"
+                    android:textColor="@color/widget_text_main"
+                    android:textSize="10sp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/widget_divider" />
+            </LinearLayout>
+
+            <include
+                layout="@layout/widget_v3_course_item"
+                android:id="@+id/next_course_item_wrapper" />
+
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
