@@ -26,6 +26,28 @@
             android:name=".SettingsActivity"
             android:theme="@style/AppTheme"></activity>
 
+        <receiver android:name=".widget.V3SmallWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_v3_small" />
+        </receiver>
+        <receiver android:name=".widget.V3MediumWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_v3_medium" />
+        </receiver>
+        <receiver android:name=".widget.V3LargeWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_v3_large" />
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="net.twinte.android.fileprovider"

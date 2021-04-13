@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">Twin:te</string>
+    <string-array name="schedule_label">
+        <item>前日19時</item>
+        <item>前日20時</item>
+        <item>前日21時</item>
+        <item>前日22時</item>
+        <item>前日23時</item>
+        <item>当日0時</item>
+        <item>当日1時</item>
+        <item>当日2時</item>
+        <item>当日3時</item>
+        <item>当日4時</item>
+        <item>当日5時</item>
+        <item>当日6時</item>
+        <item>当日7時</item>
+        <item>当日8時</item>
+    </string-array>
+    <string-array name="schedule_key">
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="default_schedule">
+        <item>21</item>
+        <item>6</item>
+    </string-array>
+
+    <string name="google_server_client_id">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
 </resources>

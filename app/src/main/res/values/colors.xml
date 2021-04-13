@@ -6,4 +6,7 @@
 
     <color name="background">#eff1f6</color>
     <color name="ic_launcher_background">#FFFFFF</color>
+
+    <color name="widget_text_main">#626A76</color>
+    <color name="widget_text_sub">#838E95</color>
 </resources>
