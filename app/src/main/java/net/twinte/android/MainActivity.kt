@@ -21,6 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.twinte.android.repository.UserRepository
+import net.twinte.android.work.UpdateScheduleWorker
 
 class MainActivity : AppCompatActivity() {
     val RC_SIGN_IN = 1
@@ -30,6 +32,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
+
+        UpdateScheduleWorker.scheduleNextUpdate(this)
 
         cookieManager.setAcceptCookie(true)
 
@@ -103,13 +107,18 @@ class MainActivity : AppCompatActivity() {
             val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
             GlobalScope.launch {
                 account?.idToken?.let {
-                    Network.validateGoogleIdToken(it)
+                    UserRepository.validateGoogleIdToken(it)
                 }
                 withContext(Dispatchers.Main) {
                     main_webview.loadUrl(TwinteUrlBuilder().buildUrl())
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cookieManager.flush()
     }
 
     override fun onBackPressed() {
