@@ -36,6 +36,8 @@
         <item>21</item>
         <item>6</item>
     </string-array>
-
+    <string name="schedule_notify_channel_id">schedule</string>
+    <string name="schedule_notify_channel_name">日程通知</string>
+    <string name="schedule_notify_channel_description">学年暦の日程を通知します</string>
     <string name="google_server_client_id">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
 </resources>

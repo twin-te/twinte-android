@@ -2,17 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/widget_rounded_bg">
 
     <LinearLayout
-        android:layout_width="120dp"
+        android:layout_width="130dp"
         android:layout_height="match_parent"
         android:layout_gravity="top|start"
         android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/day_textView"
+            android:id="@+id/date_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="秋A 10/1(金)"
@@ -77,56 +78,13 @@
             android:orientation="vertical"
             android:padding="17dp">
 
-            <LinearLayout
+            <ListView
+                android:id="@+id/course_listView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="現在の授業"
-                    android:textColor="@color/widget_text_main"
-                    android:textSize="10sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/widget_divider" />
-            </LinearLayout>
-
-            <include
-                layout="@layout/widget_v3_course_item"
-                android:id="@+id/current_course_item_wrapper" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:layout_marginTop="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="次の授業"
-                    android:textColor="@color/widget_text_main"
-                    android:textSize="10sp" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/widget_divider" />
-            </LinearLayout>
-
-            <include
-                layout="@layout/widget_v3_course_item"
-                android:id="@+id/next_course_item_wrapper" />
+                android:layout_height="match_parent"
+                android:dividerHeight="16dp"
+                android:divider="@null"
+                tools:listitem="@layout/widget_v3_course_item_with_header" />
 
         </LinearLayout>
     </FrameLayout>
