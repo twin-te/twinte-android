@@ -1,10 +1,7 @@
 package net.twinte.android.model
 
-/**
- * 新しいAPIに対応するための一時的な型
- * 次のアプデでOpenAPIによる型生成に切り替える
- */
 data class Timetable(
+    val date: String,
     val module: CurrentModule,
     val events: Array<Event>,
     val courses: Array<Course>

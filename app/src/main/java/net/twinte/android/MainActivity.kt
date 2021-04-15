@@ -1,5 +1,6 @@
 package net.twinte.android
 
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -21,7 +22,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.twinte.android.repository.ScheduleRepository
 import net.twinte.android.repository.UserRepository
+import net.twinte.android.widget.WidgetUpdater
+import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
 
 class MainActivity : AppCompatActivity() {
@@ -34,6 +38,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         UpdateScheduleWorker.scheduleNextUpdate(this)
+        ScheduleNotifier.schedule(this)
+        GlobalScope.launch {
+            ScheduleRepository(this@MainActivity).update()
+            WidgetUpdater.updateAllWidget(this@MainActivity)
+        }
+
+        val appWidgetManager = getSystemService(AppWidgetManager::class.java)
+        appWidgetManager.installedProviders
 
         cookieManager.setAcceptCookie(true)
 
@@ -119,6 +131,10 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         cookieManager.flush()
+        GlobalScope.launch {
+            ScheduleRepository(this@MainActivity).update()
+            WidgetUpdater.updateAllWidget(this@MainActivity)
+        }
     }
 
     override fun onBackPressed() {

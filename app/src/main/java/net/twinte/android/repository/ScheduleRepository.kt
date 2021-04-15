@@ -26,6 +26,7 @@ class ScheduleRepository(private val context: Context) {
         )
     ) = withContext(Dispatchers.IO) {
         with(pref.edit()) {
+            clear()
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
                 val res = Network.httpClient.newCall(
                     Request.Builder()

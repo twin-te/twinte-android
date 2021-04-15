@@ -9,4 +9,5 @@
 
     <color name="widget_text_main">#626A76</color>
     <color name="widget_text_sub">#838E95</color>
+    <color name="widget_text_disabled">#ADADAD</color>
 </resources>
