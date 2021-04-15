@@ -1,14 +1,15 @@
 package net.twinte.android.widget
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.os.Debug
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import kotlinx.coroutines.runBlocking
+import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.model.Timetable
 import net.twinte.android.repository.ScheduleRepository
@@ -60,6 +61,13 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                 })
 
+            views.setPendingIntentTemplate(
+                R.id.course_listView,
+                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                }, PendingIntent.FLAG_UPDATE_CURRENT)
+            )
+
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -93,7 +101,14 @@ class V3LargeWidgetRemoteViewService : RemoteViewsService() {
             )
 
             views.setTextViewText(R.id.period_number_textView, "${position + 1}")
-            views.applyCourseItem(context, schedule?.courseViewModel(position + 1))
+            val course = schedule?.courseViewModel(position + 1)
+            views.applyCourseItem(context, course)
+
+            views.setOnClickFillInIntent(R.id.period_item_wrapper, Intent().apply {
+                course?.id?.let {
+                    putExtra("REGISTERED_COURSE_ID", it)
+                }
+            })
 
             return views
         }

@@ -19,7 +19,6 @@ object WidgetUpdater {
     }
 
     data class PeriodTime(val start: SimpleTime, val end: SimpleTime)
-    data class WidgetCourseViewModel(val name: String, val room: String, val time: String)
 
     /**
      * 時限の開始時刻と終了時刻

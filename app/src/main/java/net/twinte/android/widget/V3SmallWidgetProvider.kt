@@ -1,11 +1,14 @@
 package net.twinte.android.widget
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import kotlinx.coroutines.runBlocking
+import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.repository.ScheduleRepository
 
@@ -47,8 +50,20 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
             )
             views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
             views.setTextViewText(R.id.event_textView, schedule.eventLabel())
-            val nextCourse = schedule.courseViewModel(period + 1)
+            val nextCourse = schedule.nextCourseViewModel(period)
             views.applyCourseItem(context, nextCourse)
+
+            // タップした授業の詳細画面を表示するIntentを作成
+            views.setOnClickPendingIntent(
+                R.id.next_course_wrapper,
+                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    nextCourse?.id?.let {
+                        putExtra("REGISTERED_COURSE_ID", it)
+                    }
+                }, PendingIntent.FLAG_UPDATE_CURRENT)
+            )
+
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
     }

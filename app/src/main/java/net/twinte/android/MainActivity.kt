@@ -54,7 +54,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         main_webview.setup()
-        main_webview.loadUrl(TwinteUrlBuilder().buildUrl())
+
+        val url = intent.getStringExtra("REGISTERED_COURSE_ID")
+            ?.let { TwinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
+            ?: TwinteUrlBuilder().buildUrl()
+
+        main_webview.loadUrl(url)
     }
 
     private fun WebView.setup() {
@@ -135,6 +140,14 @@ class MainActivity : AppCompatActivity() {
             ScheduleRepository(this@MainActivity).update()
             WidgetUpdater.updateAllWidget(this@MainActivity)
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra("REGISTERED_COURSE_ID")
+            ?.let {
+                main_webview.loadUrl(TwinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
+            }
     }
 
     override fun onBackPressed() {

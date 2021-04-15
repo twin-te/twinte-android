@@ -9,12 +9,22 @@ import net.twinte.android.model.Timetable
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * ウィジットで表示される授業のVM
+ */
+data class WidgetCourseViewModel(val name: String, val room: String, val time: String, val id: String?)
 
+/**
+ * Module名 + 日付
+ */
 fun Timetable.dateLabel(calendar: Calendar): String {
     val formatter = SimpleDateFormat("MM/dd (E)", Locale.JAPAN)
     return "${module.module.m} ${formatter.format(calendar.time)}"
 }
 
+/**
+ * イベントラベル
+ */
 fun Timetable.eventLabel(): String {
     if (events.isEmpty()) return "通常日課"
 
@@ -24,6 +34,9 @@ fun Timetable.eventLabel(): String {
     return events.first().eventType.e
 }
 
+/**
+ * ○コマの授業
+ */
 fun Timetable.courseCountLabel(): String {
     val module = module.module
     val parsedDate =
@@ -39,7 +52,10 @@ fun Timetable.courseCountLabel(): String {
     return "${count}コマの授業"
 }
 
-fun Timetable.courseViewModel(period: Int): WidgetUpdater.WidgetCourseViewModel? {
+/**
+ * 指定された時限の授業の表示用データを作成
+ */
+fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
     val module = module.module
     val parsedDate =
         SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN).let { f -> Calendar.getInstance().apply { time = f.parse(date) } }
@@ -50,10 +66,11 @@ fun Timetable.courseViewModel(period: Int): WidgetUpdater.WidgetCourseViewModel?
     }
 
     if (targets.isEmpty()) return null
-    else if (targets.size > 1) return WidgetUpdater.WidgetCourseViewModel(
+    else if (targets.size > 1) return WidgetCourseViewModel(
         "${targets.size}件の授業重複あり",
         "-",
-        WidgetUpdater.getPeriodStartTime(period).toString()
+        WidgetUpdater.getPeriodStartTime(period).toString(),
+        null
     )
 
     val target = targets.first()
@@ -62,13 +79,30 @@ fun Timetable.courseViewModel(period: Int): WidgetUpdater.WidgetCourseViewModel?
     val schedule = target.schedules ?: target.course!!.schedules
     val targetSchedule = schedule.find { it.module == module && it.period == period }
 
-    return WidgetUpdater.WidgetCourseViewModel(
+    return WidgetCourseViewModel(
         targetName, targetSchedule!!.room,
-        WidgetUpdater.getPeriodStartTime(period).toString()
+        WidgetUpdater.getPeriodStartTime(period).toString(),
+        target.id
     )
 }
 
-fun RemoteViews.applyCourseItem(context: Context, model: WidgetUpdater.WidgetCourseViewModel?) {
+/**
+ * 指定された時限以降で一番早い授業の表示用データを作成
+ */
+fun Timetable.nextCourseViewModel(period: Int): WidgetCourseViewModel? {
+    var nextCourse: WidgetCourseViewModel? = null
+    var p = period + 1
+    while(p <= 6 && nextCourse == null) {
+        nextCourse = courseViewModel(p)
+        p++
+    }
+    return nextCourse
+}
+
+/**
+ * 授業表示のコントロールを持つViewに内容を適用する
+ */
+fun RemoteViews.applyCourseItem(context: Context, model: WidgetCourseViewModel?) {
     setTextViewText(R.id.course_name_textView, model?.name ?: "授業がありません")
     setTextViewText(R.id.course_room_textView, model?.room ?: "-")
     setTextViewText(R.id.course_time_textView, model?.time ?: "-")

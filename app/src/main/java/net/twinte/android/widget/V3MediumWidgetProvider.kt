@@ -1,5 +1,6 @@
 package net.twinte.android.widget
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
@@ -8,6 +9,7 @@ import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import kotlinx.coroutines.runBlocking
+import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.model.Timetable
 import net.twinte.android.repository.ScheduleRepository
@@ -23,6 +25,7 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
     override fun onEnabled(context: Context) {
         WidgetUpdater.schedule(context, this::class.java)
     }
+
     /**
      * Mediumウィジットが全て無くなると呼び出される
      */
@@ -58,6 +61,13 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                 })
 
+            views.setPendingIntentTemplate(
+                R.id.course_listView,
+                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                }, PendingIntent.FLAG_UPDATE_CURRENT)
+            )
+
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -91,8 +101,16 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
                 R.layout.widget_v3_course_item_with_header
             )
 
-            views.setTextViewText(R.id.course_header_textView, if (position == 0) "現在の授業" else "次の授業")
-            views.applyCourseItem(context, schedule?.courseViewModel(period + position))
+            val course = if (position == 0) schedule?.courseViewModel(period) else schedule?.nextCourseViewModel(period)
+            val headerLabel = if (position == 0) "現在の授業" else "次の授業"
+            views.setTextViewText(R.id.course_header_textView, headerLabel)
+            views.applyCourseItem(context, course)
+
+            views.setOnClickFillInIntent(R.id.course_item_with_header_wrapper, Intent().apply {
+                course?.id?.let {
+                    putExtra("REGISTERED_COURSE_ID", it)
+                }
+            })
 
             return views
         }
