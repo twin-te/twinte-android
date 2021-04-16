@@ -33,7 +33,7 @@
             android:id="@+id/course_count_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="6件の授業"
+            android:text="6コマの授業"
             android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             android:layout_marginTop="4dp" />

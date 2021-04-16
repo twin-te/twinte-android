@@ -29,6 +29,7 @@
             android:src="@drawable/ic_place" />
 
         <TextView
+            android:layout_weight="1"
             android:id="@+id/course_room_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

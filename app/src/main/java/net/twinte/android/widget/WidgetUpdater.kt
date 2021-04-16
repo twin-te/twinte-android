@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Debug
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
@@ -61,10 +62,7 @@ object WidgetUpdater {
      */
     private fun scheduleDailyAt(context: Context, clazz: Class<*>, time: SimpleTime, offsetMinute: Int = 0) {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
-        val at = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, time.hour)
-            set(Calendar.MINUTE, time.minute)
-            set(Calendar.SECOND, 0)
+        val at = time.toCalendar().apply {
             add(Calendar.MINUTE, offsetMinute)
             if (before(Calendar.getInstance()))
                 add(Calendar.DATE, 1)
@@ -140,17 +138,23 @@ object WidgetUpdater {
     /**
      * 「現在の授業」として表示すべき授業の日付と時限を返す
      */
-    fun getShouldShowCurrentDate(current: Calendar = Calendar.getInstance()): Pair<Calendar, Int> {
-        return if (current.get(Calendar.HOUR_OF_DAY) > 18)
-            Pair(current.apply { add(Calendar.DATE, 1) }, 0)
-        else {
-            val currentPeriod = periods.findLast {
-                current.after(Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, it.start.hour)
-                    set(Calendar.MINUTE, it.start.minute)
-                })
-            } ?: return Pair(current, 0)
-            Pair(current, periods.indexOf(currentPeriod) + 1)
+    fun getShouldShowCurrentDate(
+        current: Calendar = Calendar.getInstance()
+    ): Pair<Calendar, Int> {
+        return when {
+            // 19時以降は明日の0限を表示
+            current.get(Calendar.HOUR_OF_DAY) > 18 -> Pair(current.apply { add(Calendar.DATE, 1) }, 0)
+            // 1限開始前は今日の0限を表示
+            current.before(periods.first().start.toCalendar()) -> Pair(current, 0)
+            // 6現終了後は7限(空)を表示
+            current.after(periods.last().end.toCalendar()) -> Pair(current, 7)
+            // 1~6限中
+            else -> {
+                val currentPeriod = periods.findLast {
+                    current.after(it.start.toCalendar())
+                } ?: return Pair(current, 0)
+                Pair(current, periods.indexOf(currentPeriod) + 1)
+            }
         }
     }
 
@@ -166,18 +170,20 @@ object WidgetUpdater {
      */
     fun schedule(context: Context, clazz: Class<*>) {
         when (clazz) {
-            // Smallウィジットは各授業の開始時刻と18:30に表示を更新する
+            // Smallウィジットは各授業の開始時刻から30分遅れて更新
             V3SmallWidgetProvider::class.java -> {
-                scheduleAtPeriodStart(context, clazz, 0)
-                scheduleDailyAt(context, clazz, SimpleTime(18, 30))
+                scheduleAtPeriodStart(context, clazz, 30)
+                scheduleDailyAt(context, clazz, SimpleTime(18, 0)) // 空になる
+                scheduleDailyAt(context, clazz, SimpleTime(19, 0)) // 明日の授業が表示
             }
-            // Mediumウィジットは各授業の開始時刻と18:30に表示を更新する
+            // Mediumウィジットは各授業の開始時刻に更新する
             V3MediumWidgetProvider::class.java -> {
                 scheduleAtPeriodStart(context, clazz, 0)
-                scheduleDailyAt(context, clazz, SimpleTime(18, 30))
+                scheduleDailyAt(context, clazz, SimpleTime(18, 0)) // 空になる
+                scheduleDailyAt(context, clazz, SimpleTime(19, 0)) // 明日の授業が表示
             }
-            // Largeウィジットはその日の授業が終了した後18:30の一回のみ表示を更新する
-            V3LargeWidgetProvider::class.java -> scheduleDailyAt(context, clazz, SimpleTime(18, 30))
+            // Largeウィジットはその日の授業が終了した後19:00の一回のみ表示を更新する
+            V3LargeWidgetProvider::class.java -> scheduleDailyAt(context, clazz, SimpleTime(19, 0))
         }
     }
 
@@ -188,14 +194,23 @@ object WidgetUpdater {
         when (clazz) {
             V3SmallWidgetProvider::class.java -> {
                 cancelScheduleAtPeriodStart(context, clazz)
-                cancelDailyAt(context, clazz, SimpleTime(18, 30))
+                cancelDailyAt(context, clazz, SimpleTime(18, 0))
+                cancelDailyAt(context, clazz, SimpleTime(19, 0))
             }
             V3MediumWidgetProvider::class.java -> {
                 cancelScheduleAtPeriodStart(context, clazz)
-                cancelDailyAt(context, clazz, SimpleTime(18, 30))
+                cancelDailyAt(context, clazz, SimpleTime(18, 0))
+                cancelDailyAt(context, clazz, SimpleTime(19, 0))
             }
             V3LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(18, 30))
         }
+    }
+
+    private fun SimpleTime.toCalendar(): Calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
     }
 }
 

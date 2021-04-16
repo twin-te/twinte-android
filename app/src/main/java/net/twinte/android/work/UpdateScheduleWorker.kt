@@ -10,6 +10,7 @@ import androidx.work.*
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.repository.ScheduleRepository
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -24,11 +25,11 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
         fun scheduleNextUpdate(context: Context) {
             val currentDate = Calendar.getInstance()
 
-            // Set Execution around 12:00:00
+            // Set Execution around 18:00 ~ 18:30
             val dueDate = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 12)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
+                set(Calendar.HOUR_OF_DAY, 18)
+                set(Calendar.MINUTE, (Math.random() * 30).toInt())
+                set(Calendar.SECOND, (Math.random() * 59).toInt())
             }
 
             if (dueDate.before(currentDate)) {
@@ -48,7 +49,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .addTag(TAG).build()
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
-            Log.d("UpdateScheduleWorker", "work enqueued")
+            Log.d("UpdateScheduleWorker", "work enqueued at ${SimpleDateFormat("MM/dd HH:mm:ss").format(dueDate.time)}")
         }
     }
 

@@ -10,4 +10,12 @@
     <color name="widget_text_main">#626A76</color>
     <color name="widget_text_sub">#838E95</color>
     <color name="widget_text_disabled">#ADADAD</color>
+    <color name="widget_text_danger">#ED7F93</color>
+
+    <!--  ウィジットがNightMode非対応なためここにリソースを書く必要がある  -->
+    <color name="n_colorPrimary">#19C6C6</color>
+    <color name="n_widget_text_main">#DFE6F0</color>
+    <color name="n_widget_text_sub">#95A5AE</color>
+    <color name="n_widget_text_disabled">#475258</color>
+    <color name="n_widget_text_danger">#ED7F93</color>
 </resources>

@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.BuildConfig
 import net.twinte.android.MainActivity
+import net.twinte.android.Network
 import net.twinte.android.R
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
@@ -44,39 +45,61 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
     ) = runBlocking {
         Log.d("V3SmallWidgetProvider", "OnUpdate received")
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
-        val schedule = ScheduleRepository(context).getSchedule(current.time)
 
-        appWidgetIds.forEach { appWidgetId ->
-            val views: RemoteViews = RemoteViews(
-                context.packageName,
-                R.layout.widget_v3_small
-            )
-            views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
-            views.setTextViewText(R.id.event_textView, schedule.eventLabel())
-            val nextCourse = schedule.nextCourseViewModel(period)
-            views.applyCourseItem(context, nextCourse)
+        try {
+            val schedule = ScheduleRepository(context).getSchedule(current.time)
 
-            // タップした授業の詳細画面を表示するIntentを作成
-            views.setOnClickPendingIntent(
-                R.id.next_course_wrapper,
-                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    nextCourse?.id?.let {
-                        putExtra("REGISTERED_COURSE_ID", it)
-                    }
-                }, PendingIntent.FLAG_UPDATE_CURRENT)
-            )
+            appWidgetIds.forEach { appWidgetId ->
+                val views: RemoteViews = RemoteViews(
+                    context.packageName,
+                    R.layout.widget_v3_small
+                )
+                views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
+                schedule.eventLabel().let { (label, attention) ->
+                    views.setTextViewText(R.id.event_textView, label)
+                    views.setTextColor(
+                        R.id.event_textView,
+                        context.getColor(if (attention) R.color.widget_text_danger else R.color.widget_text_main)
+                    )
+                }
+                val nextCourse = schedule.nextCourseViewModel(period)
+                views.applyCourseItem(context, nextCourse)
 
-            if (BuildConfig.DEBUG)
-                views.setTextViewText(
-                    R.id.debug_textView,
-                    "last update: " + SimpleDateFormat(
-                        "MM/dd HH:mm:ss",
-                        Locale.JAPAN
-                    ).format(Calendar.getInstance().time)
+                // タップした授業の詳細画面を表示するIntentを作成
+                views.setOnClickPendingIntent(
+                    R.id.next_course_wrapper,
+                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        nextCourse?.id?.let {
+                            putExtra("REGISTERED_COURSE_ID", it)
+                        }
+                    }, PendingIntent.FLAG_UPDATE_CURRENT)
                 )
 
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+                if (BuildConfig.DEBUG)
+                    views.setTextViewText(
+                        R.id.debug_textView,
+                        "last update: " + SimpleDateFormat(
+                            "MM/dd HH:mm:ss",
+                            Locale.JAPAN
+                        ).format(Calendar.getInstance().time)
+                    )
+
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+            }
+
+        } catch (e: Network.NotLoggedInException) {
+            appWidgetIds.forEach { appWidgetId ->
+                appWidgetManager.updateAppWidget(appWidgetId, ErrorView(context, appWidgetId, "ログインしてください"))
+            }
+        } catch (e: Throwable) {
+            appWidgetIds.forEach { appWidgetId ->
+                appWidgetManager.updateAppWidget(
+                    appWidgetId,
+                    ErrorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                )
+            }
         }
+
     }
 }

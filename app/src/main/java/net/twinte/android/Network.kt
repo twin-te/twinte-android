@@ -42,4 +42,6 @@ object Network {
             cookieManager.flush()
         }
     }
+
+    class NotLoggedInException(cause: Throwable? = null): Throwable("Not Logged in", cause)
 }

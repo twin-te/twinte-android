@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#1e2430</color>
+
+    <color name="colorPrimary">@color/n_colorPrimary</color>
+    <color name="widget_text_main">@color/n_widget_text_main</color>
+    <color name="widget_text_sub">@color/n_widget_text_sub</color>
+    <color name="widget_text_disabled">@color/n_widget_text_disabled</color>
+    <color name="widget_text_danger">@color/n_widget_text_danger</color>
 </resources>

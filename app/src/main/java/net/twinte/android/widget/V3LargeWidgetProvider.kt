@@ -11,6 +11,7 @@ import android.widget.RemoteViewsService
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.BuildConfig
 import net.twinte.android.MainActivity
+import net.twinte.android.Network
 import net.twinte.android.R
 import net.twinte.android.model.Timetable
 import net.twinte.android.repository.ScheduleRepository
@@ -46,42 +47,62 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
     ) = runBlocking {
         Log.d("V3LargeWidgetProvider", "OnUpdate received")
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
-        val schedule = ScheduleRepository(context).getSchedule(current.time)
 
-        appWidgetIds.forEach { appWidgetId ->
-            val views: RemoteViews = RemoteViews(
-                context.packageName,
-                R.layout.widget_v3_large
-            )
+        try {
+            val schedule = ScheduleRepository(context).getSchedule(current.time)
 
-            views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
-            views.setTextViewText(R.id.event_textView, schedule.eventLabel())
-            views.setTextViewText(R.id.course_count_textView, schedule.courseCountLabel())
-
-            if (BuildConfig.DEBUG)
-                views.setTextViewText(
-                    R.id.debug_textView,
-                    "last update: " + SimpleDateFormat(
-                        "MM/dd HH:mm:ss",
-                        Locale.JAPAN
-                    ).format(Calendar.getInstance().time)
+            appWidgetIds.forEach { appWidgetId ->
+                val views = RemoteViews(
+                    context.packageName,
+                    R.layout.widget_v3_large
                 )
 
-            views.setRemoteAdapter(
-                R.id.course_listView,
-                Intent(context, V3LargeWidgetRemoteViewService::class.java).apply {
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                })
+                views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
+                schedule.eventLabel().let { (label, attention) ->
+                    views.setTextViewText(R.id.event_textView, label)
+                    views.setTextColor(
+                        R.id.event_textView,
+                        context.getColor(if (attention) R.color.widget_text_danger else R.color.widget_text_main)
+                    )
+                }
+                views.setTextViewText(R.id.course_count_textView, schedule.courseCountLabel())
 
-            views.setPendingIntentTemplate(
-                R.id.course_listView,
-                PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                }, PendingIntent.FLAG_UPDATE_CURRENT)
-            )
+                if (BuildConfig.DEBUG)
+                    views.setTextViewText(
+                        R.id.debug_textView,
+                        "last update: " + SimpleDateFormat(
+                            "MM/dd HH:mm:ss",
+                            Locale.JAPAN
+                        ).format(Calendar.getInstance().time)
+                    )
 
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+                views.setRemoteAdapter(
+                    R.id.course_listView,
+                    Intent(context, V3LargeWidgetRemoteViewService::class.java).apply {
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                    })
+
+                views.setPendingIntentTemplate(
+                    R.id.course_listView,
+                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }, PendingIntent.FLAG_UPDATE_CURRENT)
+                )
+
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+            }
+        } catch (e: Network.NotLoggedInException) {
+            appWidgetIds.forEach { appWidgetId ->
+                appWidgetManager.updateAppWidget(appWidgetId, ErrorView(context, appWidgetId, "ログインしてください"))
+            }
+        } catch (e: Throwable) {
+            appWidgetIds.forEach { appWidgetId ->
+                appWidgetManager.updateAppWidget(
+                    appWidgetId,
+                    ErrorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                )
+            }
         }
     }
 }
@@ -98,6 +119,7 @@ class V3LargeWidgetRemoteViewService : RemoteViewsService() {
         override fun onCreate() {}
 
         override fun onDataSetChanged() = runBlocking {
+            Log.d("LargeFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
             schedule = ScheduleRepository(context).getSchedule(current.time)
         }
@@ -107,7 +129,7 @@ class V3LargeWidgetRemoteViewService : RemoteViewsService() {
         override fun getCount() = 6
 
         override fun getViewAt(position: Int): RemoteViews {
-            val views: RemoteViews = RemoteViews(
+            val views = RemoteViews(
                 context.packageName,
                 R.layout.widget_v3_period_item
             )

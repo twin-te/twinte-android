@@ -40,7 +40,11 @@ class MainActivity : AppCompatActivity() {
         UpdateScheduleWorker.scheduleNextUpdate(this)
         ScheduleNotifier.schedule(this)
         GlobalScope.launch {
-            ScheduleRepository(this@MainActivity).update()
+            try {
+                ScheduleRepository(this@MainActivity).update()
+            } catch (e: Network.NotLoggedInException) {
+                // 未ログイン時は失敗するが何もしない
+            }
             WidgetUpdater.updateAllWidget(this@MainActivity)
         }
 
@@ -137,7 +141,11 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         cookieManager.flush()
         GlobalScope.launch {
-            ScheduleRepository(this@MainActivity).update()
+            try {
+                ScheduleRepository(this@MainActivity).update()
+            } catch (e: Network.NotLoggedInException) {
+                // 未ログイン時は失敗するが何もしない
+            }
             WidgetUpdater.updateAllWidget(this@MainActivity)
         }
     }

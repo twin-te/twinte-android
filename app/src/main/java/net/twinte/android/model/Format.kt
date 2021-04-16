@@ -2,13 +2,13 @@ package net.twinte.android.model
 
 import com.google.gson.annotations.SerializedName
 
-enum class Format(f: String) {
+enum class Format(val f: String) {
     @SerializedName("Asynchronous")
-    OnlineAsynchronous("Asynchronous"),
+    OnlineAsynchronous("オンデマンド"),
     @SerializedName("Synchronous")
-    OnlineSynchronous("Synchronous"),
+    OnlineSynchronous("同時双方向"),
     @SerializedName("FaceToFace")
-    FaceToFace("FaceToFace"),
+    FaceToFace("対面"),
     @SerializedName("Others")
-    Others("Others")
+    Others("その他")
 }
