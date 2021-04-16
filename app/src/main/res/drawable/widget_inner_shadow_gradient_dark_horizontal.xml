@@ -4,9 +4,9 @@
     <corners
         android:topLeftRadius="@dimen/widget_corner_radius"  android:bottomLeftRadius="@dimen/widget_corner_radius"/>
     <gradient
-        android:startColor="#E2E6ED"
-        android:centerColor="#00E2E6ED"
-        android:endColor="#00E2E6ED"
+        android:startColor="@color/widget_shadow_g1"
+        android:centerColor="@color/widget_shadow_g2"
+        android:endColor="@color/widget_shadow_g2"
         android:angle="0"
         />
 </shape>
