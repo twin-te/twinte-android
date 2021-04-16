@@ -8,6 +8,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -37,7 +38,16 @@ object WidgetUpdater {
      */
     private fun updateWidgetIntent(context: Context, clazz: Class<*>, time: SimpleTime) =
         Intent(context, clazz).let { intent ->
+            val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            intent.putExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
+                    ComponentName(
+                        context,
+                        clazz
+                    )
+                )
+            )
             PendingIntent.getBroadcast(
                 context,
                 "${time.hour}${time.minute}".toInt(),
@@ -51,19 +61,24 @@ object WidgetUpdater {
      */
     private fun scheduleDailyAt(context: Context, clazz: Class<*>, time: SimpleTime, offsetMinute: Int = 0) {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
+        val at = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, time.hour)
+            set(Calendar.MINUTE, time.minute)
+            set(Calendar.SECOND, 0)
+            add(Calendar.MINUTE, offsetMinute)
+            if (before(Calendar.getInstance()))
+                add(Calendar.DATE, 1)
+        }
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
-            Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, time.hour)
-                set(Calendar.MINUTE, time.minute)
-                add(Calendar.MINUTE, offsetMinute)
-                if (before(Calendar.getInstance()))
-                    add(Calendar.DATE, 1)
-            }.timeInMillis,
+            at.timeInMillis,
             1000 * 60 * 60 * 24,
             updateWidgetIntent(context, clazz, time)
         )
-        Log.d("WidgetUpdater", "scheduled ${clazz.simpleName} at $time")
+        Log.d(
+            "WidgetUpdater",
+            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(at.time)}"
+        )
     }
 
     /**
@@ -171,8 +186,14 @@ object WidgetUpdater {
      */
     fun cancel(context: Context, clazz: Class<*>) {
         when (clazz) {
-            V3SmallWidgetProvider::class.java -> cancelScheduleAtPeriodStart(context, clazz)
-            V3MediumWidgetProvider::class.java -> cancelScheduleAtPeriodStart(context, clazz)
+            V3SmallWidgetProvider::class.java -> {
+                cancelScheduleAtPeriodStart(context, clazz)
+                cancelDailyAt(context, clazz, SimpleTime(18, 30))
+            }
+            V3MediumWidgetProvider::class.java -> {
+                cancelScheduleAtPeriodStart(context, clazz)
+                cancelDailyAt(context, clazz, SimpleTime(18, 30))
+            }
             V3LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(18, 30))
         }
     }

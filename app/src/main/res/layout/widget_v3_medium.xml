@@ -37,6 +37,16 @@
             android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/debug_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:gravity="bottom"
+            android:layout_weight="1"
+            android:textColor="@color/widget_text_sub"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <FrameLayout
