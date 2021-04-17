@@ -2,6 +2,7 @@ package net.twinte.android.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.twinte.android.AUTH_PATH
 import net.twinte.android.Network
 import net.twinte.android.TwinteUrlBuilder
 import net.twinte.android.buildUrl
@@ -12,7 +13,9 @@ object UserRepository {
         val res = Network.httpClient.newCall(
             Request.Builder()
                 .url(
-                    TwinteUrlBuilder().appendPath("auth/v3/google/idToken").appendQueryParameter("token", idToken)
+                    TwinteUrlBuilder().appendPath(AUTH_PATH)
+                        .appendPath("/google/idToken")
+                        .appendQueryParameter("token", idToken)
                         .buildUrl()
                 )
                 .build()

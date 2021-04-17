@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit
 
 const val DOMAIN = "app.twinte.net"
 const val SCHEME = "https"
+const val API_PATH = "/api/v3"
+const val AUTH_PATH = "/auth/v3"
 
 fun TwinteUrlBuilder() = Uri.Builder().scheme(SCHEME).path(DOMAIN)
 
@@ -26,6 +28,7 @@ object Network {
         val cookieManager = CookieManager.getInstance().apply {
             setAcceptCookie(true)
         }
+
         override fun loadForRequest(url: HttpUrl): List<Cookie> {
             val cookiesStr = cookieManager.getCookie(url.toUrl().toString()) ?: return emptyList()
             return cookiesStr.split(";").map {
@@ -37,6 +40,7 @@ object Network {
                     .build()
             }.filterNotNull()
         }
+
         override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
             cookies.forEach {
                 cookieManager.setCookie(url.toString(), it.toString())
@@ -45,5 +49,5 @@ object Network {
         }
     }
 
-    class NotLoggedInException(cause: Throwable? = null): Throwable("Not Logged in", cause)
+    class NotLoggedInException(cause: Throwable? = null) : Throwable("Not Logged in", cause)
 }

@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.webkit.*
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
@@ -29,7 +30,7 @@ import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     val RC_SIGN_IN = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -156,9 +157,21 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        if (fragment is SubWebViewFragment) {
+            fragment.callback = this
+        }
+    }
+
     override fun onBackPressed() {
         if (main_webview.canGoBack()) main_webview.goBack()
         else
             super.onBackPressed()
+    }
+
+    // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
+    override fun subWebViewCallback(url: String) {
+        main_webview.loadUrl(url)
     }
 }

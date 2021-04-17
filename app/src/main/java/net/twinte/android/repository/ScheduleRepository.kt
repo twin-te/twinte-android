@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.twinte.android.API_PATH
 import net.twinte.android.Network
 import net.twinte.android.TwinteUrlBuilder
 import net.twinte.android.buildUrl
@@ -30,7 +31,7 @@ class ScheduleRepository(private val context: Context) {
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
                 val res = Network.httpClient.newCall(
                     Request.Builder()
-                        .url(TwinteUrlBuilder().appendPath("/api/v3/timetable").appendPath(d).buildUrl())
+                        .url(TwinteUrlBuilder().appendPath(API_PATH).appendPath("/timetable").appendPath(d).buildUrl())
                         .build()
                 ).execute()
                 if (!res.isSuccessful) {

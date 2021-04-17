@@ -20,7 +20,8 @@ import kotlinx.android.synthetic.main.fragment_sub_webview.*
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
 
 class SubWebViewFragment : BottomSheetDialogFragment() {
-    var positionY = 0
+    private var positionY = 0
+    var callback: Callback? = null
 
     companion object {
         fun open(url: String, manager: FragmentManager) = SubWebViewFragment().apply {
@@ -48,7 +49,18 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
             settings.javaScriptEnabled = true
             cookieManager.setAcceptThirdPartyCookies(this, true)
             webViewClient = object : WebViewClientCompat() {
-                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = false
+                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
+                    // Twin:teのアプリケーションページに飛ぶときはダイアログを閉じてメインで表示
+                    if (
+                        request.url.host == DOMAIN &&
+                        request.url.path?.startsWith(API_PATH) != true &&
+                        request.url.path?.startsWith(AUTH_PATH) != true
+                    ) {
+                        callback?.subWebViewCallback(request.url.toString())
+                        dismiss()
+                        true
+                    } else false
+
                 override fun onPageFinished(view: WebView, url: String) {
                     // Twinsからインポート
                     if (url.startsWith("https://twins.tsukuba.ac.jp")) {
@@ -103,5 +115,9 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_sub_webview, container, false)
+    }
+
+    interface Callback {
+        fun subWebViewCallback(url: String)
     }
 }
