@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.twinte.android.Network.WebViewCookieJar.cookieManager
 import net.twinte.android.repository.ScheduleRepository
 import net.twinte.android.repository.UserRepository
 import net.twinte.android.widget.WidgetUpdater
@@ -30,7 +31,6 @@ import net.twinte.android.work.UpdateScheduleWorker
 
 class MainActivity : AppCompatActivity() {
     val RC_SIGN_IN = 1
-    val cookieManager = CookieManager.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +50,6 @@ class MainActivity : AppCompatActivity() {
 
         val appWidgetManager = getSystemService(AppWidgetManager::class.java)
         appWidgetManager.installedProviders
-
-        cookieManager.setAcceptCookie(true)
 
         if (BuildConfig.DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)

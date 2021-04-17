@@ -6,14 +6,18 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentManager
 import androidx.webkit.WebViewClientCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_sub_webview.*
+import net.twinte.android.Network.WebViewCookieJar.cookieManager
 
 class SubWebViewFragment : BottomSheetDialogFragment() {
     var positionY = 0
@@ -42,8 +46,39 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         }
         sub_webview.apply {
             settings.javaScriptEnabled = true
+            cookieManager.setAcceptThirdPartyCookies(this, true)
             webViewClient = object : WebViewClientCompat() {
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = false
+                override fun onPageFinished(view: WebView, url: String) {
+                    // Twinsからインポート
+                    if (url.startsWith("https://twins.tsukuba.ac.jp")) {
+                        view.evaluateJavascript(
+                            """
+                        var script = document.createElement('script');
+                        script.src = 'https://scripts.twinte.net/sp.js';
+                        document.head.appendChild(script);
+                        """.trimIndent()
+                        ) {}
+                    }
+                }
+            }
+            webChromeClient = object : WebChromeClient() {
+                override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
+                    AlertDialog.Builder(context)
+                        .setMessage(message)
+                        .setPositiveButton("OK") { _, _ -> result.confirm() }
+                        .setNegativeButton("Cancel") { _, _ -> result.cancel() }
+                        .show()
+                    return true
+                }
+
+                override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+                    AlertDialog.Builder(context)
+                        .setMessage(message)
+                        .setPositiveButton("OK") { _, _ -> result.confirm() }
+                        .show()
+                    return true
+                }
             }
             loadUrl(arguments?.getString("url", "") ?: "")
             setOnScrollChangeListener { _, _, y, _, _ ->

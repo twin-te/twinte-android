@@ -23,7 +23,9 @@ object Network {
         .cookieJar(WebViewCookieJar).build()
 
     object WebViewCookieJar : CookieJar {
-        val cookieManager = CookieManager.getInstance()
+        val cookieManager = CookieManager.getInstance().apply {
+            setAcceptCookie(true)
+        }
         override fun loadForRequest(url: HttpUrl): List<Cookie> {
             val cookiesStr = cookieManager.getCookie(url.toUrl().toString()) ?: return emptyList()
             return cookiesStr.split(";").map {
