@@ -24,6 +24,8 @@ import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
 
+const val TWINTE_DEBUG = true
+
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     val RC_SIGN_IN = 1
     val FILE_CHOOSER_REQUEST = 2
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             WidgetUpdater.scheduleAllIfExists(this@MainActivity)
         }
 
-        if (BuildConfig.DEBUG) {
+        if (TWINTE_DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
 

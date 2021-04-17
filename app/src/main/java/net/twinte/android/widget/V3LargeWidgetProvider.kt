@@ -9,10 +9,7 @@ import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.BuildConfig
-import net.twinte.android.MainActivity
-import net.twinte.android.Network
-import net.twinte.android.R
+import net.twinte.android.*
 import net.twinte.android.model.Timetable
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
@@ -67,7 +64,7 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
                 }
                 views.setTextViewText(R.id.course_count_textView, schedule.courseCountLabel())
 
-                if (BuildConfig.DEBUG)
+                if (TWINTE_DEBUG)
                     views.setTextViewText(
                         R.id.debug_textView,
                         "last update: " + SimpleDateFormat(

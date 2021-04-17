@@ -8,10 +8,7 @@ import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.BuildConfig
-import net.twinte.android.MainActivity
-import net.twinte.android.Network
-import net.twinte.android.R
+import net.twinte.android.*
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.*
@@ -76,7 +73,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                     }, PendingIntent.FLAG_UPDATE_CURRENT)
                 )
 
-                if (BuildConfig.DEBUG)
+                if (TWINTE_DEBUG)
                     views.setTextViewText(
                         R.id.debug_textView,
                         "last update: " + SimpleDateFormat(

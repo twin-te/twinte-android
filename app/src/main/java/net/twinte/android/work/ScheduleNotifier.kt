@@ -12,10 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.BuildConfig
-import net.twinte.android.MainActivity
-import net.twinte.android.R
-import net.twinte.android.SettingsActivity
+import net.twinte.android.*
 import net.twinte.android.model.Day
 import net.twinte.android.repository.ScheduleRepository
 import java.util.*
@@ -59,7 +56,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 scheduleAt(context, notifyDate.timeInMillis, hour)
             }
 
-            if (BuildConfig.DEBUG) {
+            if (TWINTE_DEBUG) {
                 scheduleAt(context, Calendar.getInstance().timeInMillis + 10000, 24)
             }
         }
@@ -100,9 +97,9 @@ class ScheduleNotifier : BroadcastReceiver() {
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) createSubstituteDayNotification(context, substitute)
+            else if (TWINTE_DEBUG)
+                createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module.module.m}")
 
-            if (BuildConfig.DEBUG)
-                createNotification(context, "ScheduleNotifier", schedule.module.module.m)
         } catch (e: Throwable) {
             // TODO エラー処理
             Log.d("ScheduleNotifier", "$e")

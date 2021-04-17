@@ -74,10 +74,10 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,
-                    0,
+                    1,
                     Intent(context, MainActivity::class.java), 0
                 )
-            ).setContentTitle("UpdateScheduleWorker")
+            ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
             .build()
         notificationManager.notify(2, notification)
