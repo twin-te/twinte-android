@@ -7,7 +7,7 @@
     android:paddingBottom="8dp">
 
     <TextView
-        android:textColor="@color/n_widget_text_main"
+        android:textColor="@color/widget_text_main"
         android:id="@+id/period_number_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
