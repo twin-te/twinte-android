@@ -1,22 +1,16 @@
 package net.twinte.android
 
-import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import android.webkit.*
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +26,9 @@ import net.twinte.android.work.UpdateScheduleWorker
 
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     val RC_SIGN_IN = 1
+    val FILE_CHOOSER_REQUEST = 2
+
+    var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +45,6 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
             WidgetUpdater.updateAllWidget(this@MainActivity)
         }
-
-        val appWidgetManager = getSystemService(AppWidgetManager::class.java)
-        appWidgetManager.installedProviders
 
         if (BuildConfig.DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
@@ -91,6 +85,17 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 }
             }
         }
+        webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>,
+                fileChooserParams: FileChooserParams
+            ): Boolean {
+                this@MainActivity.filePathCallback = filePathCallback
+                startActivityForResult(fileChooserParams.createIntent(), FILE_CHOOSER_REQUEST)
+                return true
+            }
+        }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                 // ダークモードサポートだったら
@@ -123,15 +128,25 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
-            val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
-            GlobalScope.launch {
-                account?.idToken?.let {
-                    UserRepository.validateGoogleIdToken(it)
+        when (requestCode) {
+            // Googleログイン時
+            RC_SIGN_IN -> {
+                val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+                GlobalScope.launch {
+                    account?.idToken?.let {
+                        UserRepository.validateGoogleIdToken(it)
+                    }
+                    withContext(Dispatchers.Main) {
+                        main_webview.loadUrl(TwinteUrlBuilder().buildUrl())
+                    }
                 }
-                withContext(Dispatchers.Main) {
-                    main_webview.loadUrl(TwinteUrlBuilder().buildUrl())
-                }
+            }
+            // ファイル選択時
+            FILE_CHOOSER_REQUEST -> {
+                if (resultCode == RESULT_OK)
+                    filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
+                else
+                    filePathCallback?.onReceiveValue(null)
             }
         }
     }
