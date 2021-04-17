@@ -150,4 +150,10 @@ class ScheduleNotifier : BroadcastReceiver() {
             .build()
         notificationManager.notify(1, notification)
     }
+
+    class OnBootComplete : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            schedule(context)
+        }
+    }
 }

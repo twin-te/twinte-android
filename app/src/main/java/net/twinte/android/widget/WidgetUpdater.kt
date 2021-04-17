@@ -212,19 +212,21 @@ object WidgetUpdater {
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }
-}
 
-/**
- * スマホが再起動した時にウィジットの更新をスケジュールし直す
- */
-class WidgetUpdaterSchedulerOnBootComplete : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent?) {
-        val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java)).isNotEmpty())
-            WidgetUpdater.schedule(context, V3SmallWidgetProvider::class.java)
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java)).isNotEmpty())
-            WidgetUpdater.schedule(context, V3MediumWidgetProvider::class.java)
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java)).isNotEmpty())
-            WidgetUpdater.schedule(context, V3LargeWidgetProvider::class.java)
+
+    /**
+     * スマホが再起動した時にウィジットの更新をスケジュールし直す
+     */
+    class OnBootComplete : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java)).isNotEmpty())
+                WidgetUpdater.schedule(context, V3SmallWidgetProvider::class.java)
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java)).isNotEmpty())
+                WidgetUpdater.schedule(context, V3MediumWidgetProvider::class.java)
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java)).isNotEmpty())
+                WidgetUpdater.schedule(context, V3LargeWidgetProvider::class.java)
+        }
     }
 }
+

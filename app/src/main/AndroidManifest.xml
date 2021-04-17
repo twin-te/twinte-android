@@ -12,6 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!--    メイン画面    -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -22,54 +24,76 @@
             </intent-filter>
         </activity>
 
+        <!--    設定画面    -->
         <activity
             android:name=".SettingsActivity"
             android:theme="@style/AppTheme"></activity>
 
-        <receiver android:name=".widget.V3SmallWidgetProvider" >
+        <!--    ウィジット関連    -->
+        <!--    小ウィジット    -->
+        <receiver android:name=".widget.V3SmallWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_v3_small" />
         </receiver>
-        <receiver android:name=".widget.V3MediumWidgetProvider" >
+        <!--    中ウィジット    -->
+        <receiver android:name=".widget.V3MediumWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_v3_medium" />
         </receiver>
-        <receiver android:name=".widget.V3LargeWidgetProvider" >
+        <!--    大ウィジット    -->
+        <receiver android:name=".widget.V3LargeWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_v3_large" />
         </receiver>
 
-        <receiver android:name=".work.ScheduleNotifier">
-            <intent-filter>
-                <action android:name="net.twinte.android.action.ScheduleNotifier" />
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".widget.WidgetUpdaterSchedulerOnBootComplete">
+        <!--    スマホ再起動時の再スケジュール用    -->
+        <receiver android:name=".widget.WidgetUpdater$OnBootComplete">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
+        <!--    中ウィジットのデータ供給用Service    -->
         <service
             android:name=".widget.V3MediumWidgetRemoteViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!--    大ウィジットのデータ供給用Service    -->
         <service
             android:name=".widget.V3LargeWidgetRemoteViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!--    ウィジット関連終わり    -->
+
+        <!--    日程通知関連    -->
+        <!--    通知日時になったら降ってくるBroadCastのReceiver    -->
+        <receiver android:name=".work.ScheduleNotifier">
+            <intent-filter>
+                <action android:name="net.twinte.android.action.ScheduleNotifier" />
+            </intent-filter>
+        </receiver>
+        <!--    スマホ再起動時の再スケジュール用    -->
+        <receiver android:name=".work.ScheduleNotifier$OnBootComplete">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <!--    日程通知関連終わり    -->
+
+        <!--    時間割スクショシェア時に外部アプリに画像を渡すのに使うProvider    -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="net.twinte.android.fileprovider"
