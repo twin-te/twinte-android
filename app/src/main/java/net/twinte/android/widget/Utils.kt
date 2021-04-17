@@ -143,9 +143,9 @@ fun AppWidgetProvider.ErrorView(context: Context, widgetId: Int, title: String, 
             PendingIntent.getBroadcast(
                 context,
                 widgetId,
-                Intent(context, this::class.java).apply {
+                Intent(context, this@ErrorView::class.java).apply {
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, arrayOf(widgetId))
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                 },
                 0
             )
