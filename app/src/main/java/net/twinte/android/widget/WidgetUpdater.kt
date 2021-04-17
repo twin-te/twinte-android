@@ -188,6 +188,22 @@ object WidgetUpdater {
         }
     }
 
+    fun scheduleAllIfExists(context: Context) {
+        val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
+                .isNotEmpty()
+        )
+            schedule(context, V3SmallWidgetProvider::class.java)
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
+                .isNotEmpty()
+        )
+            schedule(context, V3MediumWidgetProvider::class.java)
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
+                .isNotEmpty()
+        )
+            schedule(context, V3LargeWidgetProvider::class.java)
+    }
+
     /**
      * 指定されたウィジットの更新をキャンセルする
      */
@@ -218,21 +234,10 @@ object WidgetUpdater {
     /**
      * スマホが再起動した時にウィジットの更新をスケジュールし直す
      */
-    class OnBootComplete : BroadcastReceiver() {
+    class OnBootCompleteOrPackageReplaced : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
-            val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
-                    .isNotEmpty()
-            )
-                WidgetUpdater.schedule(context, V3SmallWidgetProvider::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
-                    .isNotEmpty()
-            )
-                WidgetUpdater.schedule(context, V3MediumWidgetProvider::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
-                    .isNotEmpty()
-            )
-                WidgetUpdater.schedule(context, V3LargeWidgetProvider::class.java)
+            Log.d("WidgetUpdater", "onReceived ${intent?.action}")
+            scheduleAllIfExists(context)
         }
     }
 }

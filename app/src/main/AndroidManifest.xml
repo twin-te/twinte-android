@@ -58,10 +58,11 @@
                 android:resource="@xml/widget_v3_large" />
         </receiver>
 
-        <!--    スマホ再起動時の再スケジュール用    -->
-        <receiver android:name=".widget.WidgetUpdater$OnBootComplete">
+        <!--    スマホ再起動時 / アプリアップデートの再スケジュール用    -->
+        <receiver android:name=".widget.WidgetUpdater$OnBootCompleteOrPackageReplaced">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
@@ -85,10 +86,11 @@
                 <action android:name="net.twinte.android.action.ScheduleNotifier" />
             </intent-filter>
         </receiver>
-        <!--    スマホ再起動時の再スケジュール用    -->
-        <receiver android:name=".work.ScheduleNotifier$OnBootComplete">
+        <!--    スマホ再起動時 / アプリアップデートの再スケジュール用    -->
+        <receiver android:name=".work.ScheduleNotifier$OnBootCompleteOrPackageReplaced">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         <!--    日程通知関連終わり    -->

@@ -47,8 +47,6 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) = runBlocking {
         Log.d("V3MediumWidgetProvider", "OnUpdate received")
-        WidgetUpdater.schedule(context, this@V3MediumWidgetProvider::class.java)
-
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
         try {
             val schedule = ScheduleRepository(context).getSchedule(current.time)

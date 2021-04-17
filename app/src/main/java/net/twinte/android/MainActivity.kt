@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 // 未ログイン時は失敗するが何もしない
             }
             WidgetUpdater.updateAllWidget(this@MainActivity)
+            WidgetUpdater.scheduleAllIfExists(this@MainActivity)
         }
 
         if (BuildConfig.DEBUG) {

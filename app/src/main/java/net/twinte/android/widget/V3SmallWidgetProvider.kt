@@ -44,8 +44,6 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) = runBlocking {
         Log.d("V3SmallWidgetProvider", "OnUpdate received")
-        WidgetUpdater.schedule(context, this@V3SmallWidgetProvider::class.java)
-
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {

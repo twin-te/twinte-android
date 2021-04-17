@@ -151,8 +151,9 @@ class ScheduleNotifier : BroadcastReceiver() {
         notificationManager.notify(1, notification)
     }
 
-    class OnBootComplete : BroadcastReceiver() {
+    class OnBootCompleteOrPackageReplaced : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
+            Log.d("ScheduleNotifier", "onReceived ${intent?.action}")
             schedule(context)
         }
     }
