@@ -31,7 +31,9 @@
 
         <!--    ウィジット関連    -->
         <!--    小ウィジット    -->
-        <receiver android:name=".widget.V3SmallWidgetProvider">
+        <receiver
+            android:name=".widget.V3SmallWidgetProvider"
+            android:label="@string/widget_small_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -40,7 +42,9 @@
                 android:resource="@xml/widget_v3_small" />
         </receiver>
         <!--    中ウィジット    -->
-        <receiver android:name=".widget.V3MediumWidgetProvider">
+        <receiver
+            android:name=".widget.V3MediumWidgetProvider"
+            android:label="@string/widget_medium_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -49,7 +53,9 @@
                 android:resource="@xml/widget_v3_medium" />
         </receiver>
         <!--    大ウィジット    -->
-        <receiver android:name=".widget.V3LargeWidgetProvider">
+        <receiver
+            android:name=".widget.V3LargeWidgetProvider"
+            android:label="@string/widget_large_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
