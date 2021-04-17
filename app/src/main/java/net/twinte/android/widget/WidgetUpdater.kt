@@ -169,6 +169,7 @@ object WidgetUpdater {
      * 指定されたウィジットの更新をスケジュールする
      */
     fun schedule(context: Context, clazz: Class<*>) {
+        cancel(context, clazz)
         when (clazz) {
             // Smallウィジットは各授業の開始時刻から30分遅れて更新
             V3SmallWidgetProvider::class.java -> {
@@ -202,7 +203,7 @@ object WidgetUpdater {
                 cancelDailyAt(context, clazz, SimpleTime(18, 0))
                 cancelDailyAt(context, clazz, SimpleTime(19, 0))
             }
-            V3LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(18, 30))
+            V3LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(19, 0))
         }
     }
 
@@ -220,11 +221,17 @@ object WidgetUpdater {
     class OnBootComplete : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
             val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java)).isNotEmpty())
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
+                    .isNotEmpty()
+            )
                 WidgetUpdater.schedule(context, V3SmallWidgetProvider::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java)).isNotEmpty())
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
+                    .isNotEmpty()
+            )
                 WidgetUpdater.schedule(context, V3MediumWidgetProvider::class.java)
-            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java)).isNotEmpty())
+            if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
+                    .isNotEmpty()
+            )
                 WidgetUpdater.schedule(context, V3LargeWidgetProvider::class.java)
         }
     }
