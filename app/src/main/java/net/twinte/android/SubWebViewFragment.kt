@@ -1,6 +1,8 @@
 package net.twinte.android
 
 import android.app.Dialog
+import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -61,7 +63,12 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                         true
                     } else false
 
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    sub_webview_progressBar.visibility = View.VISIBLE
+                }
+
                 override fun onPageFinished(view: WebView, url: String) {
+                    sub_webview_progressBar.visibility = View.GONE
                     // Twinsからインポート
                     if (url.startsWith("https://twins.tsukuba.ac.jp")) {
                         view.evaluateJavascript(
@@ -115,6 +122,12 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_sub_webview, container, false)
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        if (sub_webview.url?.startsWith("https://twins.tsukuba.ac.jp") == true)
+            callback?.subWebViewCallback(TwinteUrlBuilder().buildUrl())
+        super.onDismiss(dialog)
     }
 
     interface Callback {
