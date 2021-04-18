@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import net.twinte.android.R
@@ -127,7 +126,7 @@ fun RemoteViews.applyCourseItem(context: Context, model: WidgetCourseViewModel?)
     setInt(R.id.course_time_imageView, "setColorFilter", iconColor)
 }
 
-fun AppWidgetProvider.ErrorView(context: Context, widgetId: Int, title: String, detail: String? = null) =
+fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, detail: String? = null) =
     RemoteViews(
         context.packageName,
         R.layout.widget_v3_error
@@ -143,7 +142,7 @@ fun AppWidgetProvider.ErrorView(context: Context, widgetId: Int, title: String, 
             PendingIntent.getBroadcast(
                 context,
                 widgetId,
-                Intent(context, this@ErrorView::class.java).apply {
+                Intent(context, this@errorView::class.java).apply {
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                 },

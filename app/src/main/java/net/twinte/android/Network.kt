@@ -2,8 +2,6 @@ package net.twinte.android
 
 import android.net.Uri
 import android.webkit.CookieManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +10,7 @@ const val SCHEME = "https"
 const val API_PATH = "/api/v3"
 const val AUTH_PATH = "/auth/v3"
 
-fun TwinteUrlBuilder() = Uri.Builder().scheme(SCHEME).path(DOMAIN)
+fun twinteUrlBuilder(): Uri.Builder = Uri.Builder().scheme(SCHEME).path(DOMAIN)
 
 fun Uri.Builder.buildUrl() = build().toString()
 
@@ -25,7 +23,7 @@ object Network {
         .cookieJar(WebViewCookieJar).build()
 
     object WebViewCookieJar : CookieJar {
-        val cookieManager = CookieManager.getInstance().apply {
+        val cookieManager: CookieManager = CookieManager.getInstance().apply {
             setAcceptCookie(true)
         }
 

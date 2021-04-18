@@ -49,7 +49,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .addTag(TAG).build()
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
-            Log.d("UpdateScheduleWorker", "work enqueued at ${SimpleDateFormat("MM/dd HH:mm:ss").format(dueDate.time)}")
+            Log.d("UpdateScheduleWorker", "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}")
         }
     }
 

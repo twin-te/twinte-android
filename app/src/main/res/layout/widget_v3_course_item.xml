@@ -31,12 +31,11 @@
         <TextView
             android:layout_weight="1"
             android:id="@+id/course_room_textView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="人社A207"
             android:textColor="@color/widget_text_sub"
             android:textSize="10sp"
-            android:lineHeight="14dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:singleLine="true"
@@ -55,7 +54,6 @@
             android:layout_height="wrap_content"
             android:text="10:10~"
             android:textColor="@color/widget_text_sub"
-            android:textSize="10sp"
-            android:lineHeight="14dp" />
+            android:textSize="10sp" />
     </LinearLayout>
 </LinearLayout>

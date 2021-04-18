@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.twinte.android.API_PATH
 import net.twinte.android.Network
-import net.twinte.android.TwinteUrlBuilder
+import net.twinte.android.twinteUrlBuilder
 import net.twinte.android.buildUrl
 import net.twinte.android.model.Timetable
 import okhttp3.Request
@@ -15,7 +15,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ScheduleRepository(private val context: Context) {
+class ScheduleRepository(context: Context) {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
     private val gson = Gson()
@@ -31,7 +31,7 @@ class ScheduleRepository(private val context: Context) {
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
                 val res = Network.httpClient.newCall(
                     Request.Builder()
-                        .url(TwinteUrlBuilder().appendPath(API_PATH).appendPath("/timetable").appendPath(d).buildUrl())
+                        .url(twinteUrlBuilder().appendPath(API_PATH).appendPath("/timetable").appendPath(d).buildUrl())
                         .build()
                 ).execute()
                 if (!res.isSuccessful) {

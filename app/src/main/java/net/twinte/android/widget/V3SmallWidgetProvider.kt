@@ -47,7 +47,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
             val schedule = ScheduleRepository(context).getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
-                val views: RemoteViews = RemoteViews(
+                val views = RemoteViews(
                     context.packageName,
                     R.layout.widget_v3_small
                 )
@@ -87,13 +87,13 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
 
         } catch (e: Network.NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
-                appWidgetManager.updateAppWidget(appWidgetId, ErrorView(context, appWidgetId, "ログインしてください"))
+                appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }
         } catch (e: Throwable) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(
                     appWidgetId,
-                    ErrorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                    errorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
                 )
             }
         }

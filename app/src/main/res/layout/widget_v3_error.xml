@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/colorPrimary"
-            android:drawableLeft="@drawable/ic_refresh"
+            android:drawableStart="@drawable/ic_refresh"
             android:drawableTint="@color/colorPrimary"
             android:text="リロード"
             style="@style/Widget.AppCompat.Button.Borderless"

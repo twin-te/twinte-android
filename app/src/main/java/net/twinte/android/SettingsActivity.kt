@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.gms.oss.licenses.OssLicensesActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import java.util.*
 import kotlin.concurrent.schedule
@@ -35,8 +34,8 @@ class SettingsActivity : AppCompatActivity() {
 
     class SettingsFragment : PreferenceFragmentCompat() {
 
-        var versionTapTime = 0L
-        var versionTapCount = 0
+        private var versionTapTime = 0L
+        private var versionTapCount = 0
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             when (preference.key) {
                 "license" -> startActivity(Intent(this.context, OssLicensesMenuActivity::class.java))

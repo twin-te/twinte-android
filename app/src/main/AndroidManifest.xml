@@ -27,7 +27,7 @@
         <!--    設定画面    -->
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
 
         <!--    ウィジット関連    -->
         <!--    小ウィジット    -->
@@ -87,7 +87,9 @@
 
         <!--    日程通知関連    -->
         <!--    通知日時になったら降ってくるBroadCastのReceiver    -->
-        <receiver android:name=".work.ScheduleNotifier">
+        <receiver
+            android:name=".work.ScheduleNotifier"
+            android:exported="false">
             <intent-filter>
                 <action android:name="net.twinte.android.action.ScheduleNotifier" />
             </intent-filter>

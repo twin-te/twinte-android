@@ -1,5 +1,6 @@
 package net.twinte.android
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -56,12 +57,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         main_webview.setup()
 
         val url = intent.getStringExtra("REGISTERED_COURSE_ID")
-            ?.let { TwinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
-            ?: TwinteUrlBuilder().buildUrl()
+            ?.let { twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
+            ?: twinteUrlBuilder().buildUrl()
 
         main_webview.loadUrl(url)
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun WebView.setup() {
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
@@ -130,12 +132,12 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
         }
         addJavascriptInterface(object {
-            @JavascriptInterface()
+            @JavascriptInterface
             fun openSettings() {
                 startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             }
 
-            @JavascriptInterface()
+            @JavascriptInterface
             fun share(body: String) {
                 main_webview.shareScreen(body)
             }
@@ -153,7 +155,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         UserRepository.validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
-                        main_webview.loadUrl(TwinteUrlBuilder().buildUrl())
+                        main_webview.loadUrl(twinteUrlBuilder().buildUrl())
                     }
                 }
             }
@@ -184,7 +186,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onNewIntent(intent)
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
-                main_webview.loadUrl(TwinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
+                main_webview.loadUrl(twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
             }
     }
 

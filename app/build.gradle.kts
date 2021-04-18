@@ -1,4 +1,4 @@
-val kotlin_version: String by project
+val kotlinVersion: String by project
 
 plugins {
     id("com.android.application")
@@ -38,15 +38,15 @@ android {
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
     implementation("androidx.core:core-ktx:1.5.0-rc01")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.work:work-runtime-ktx:2.5.0")
     implementation("com.google.android.material:material:1.3.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.4")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.4")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
     implementation("androidx.preference:preference-ktx:1.1.1")
     implementation("androidx.webkit:webkit:1.4.0")
     implementation("com.google.android.gms:play-services-auth:19.0.0")

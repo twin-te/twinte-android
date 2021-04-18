@@ -8,7 +8,6 @@ import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import android.widget.TextView
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.*
 import net.twinte.android.model.Timetable
@@ -91,13 +90,13 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
             }
         } catch (e: Network.NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
-                appWidgetManager.updateAppWidget(appWidgetId, ErrorView(context, appWidgetId, "ログインしてください"))
+                appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }
         } catch (e: Throwable) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(
                     appWidgetId,
-                    ErrorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                    errorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
                 )
             }
         }
@@ -110,7 +109,7 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
 class V3MediumWidgetRemoteViewService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent)
 
-    class Factory(val context: Context, val intent: Intent?) : RemoteViewsService.RemoteViewsFactory {
+    class Factory(val context: Context, val intent: Intent?) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
         override fun onCreate() {}
@@ -127,7 +126,7 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
 
         override fun getViewAt(position: Int): RemoteViews {
             val (_, period) = WidgetUpdater.getShouldShowCurrentDate()
-            val views: RemoteViews = RemoteViews(
+            val views = RemoteViews(
                 context.packageName,
                 R.layout.widget_v3_course_item_with_header
             )

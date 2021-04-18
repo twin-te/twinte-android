@@ -91,13 +91,13 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
             }
         } catch (e: Network.NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
-                appWidgetManager.updateAppWidget(appWidgetId, ErrorView(context, appWidgetId, "ログインしてください"))
+                appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }
         } catch (e: Throwable) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(
                     appWidgetId,
-                    ErrorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                    errorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
                 )
             }
         }
@@ -110,7 +110,7 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
 class V3LargeWidgetRemoteViewService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent)
 
-    class Factory(val context: Context, val intent: Intent?) : RemoteViewsService.RemoteViewsFactory {
+    class Factory(val context: Context, val intent: Intent?) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
         override fun onCreate() {}

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Twin:te</string>
     <string-array name="schedule_label">
         <item>前日19時</item>
@@ -42,5 +42,5 @@
     <string name="widget_small_label">小ウィジット</string>
     <string name="widget_medium_label">中ウィジット</string>
     <string name="widget_large_label">大ウィジット</string>
-    <string name="google_server_client_id">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
+    <string name="google_server_client_id" tools:ignore="TypographyDashes">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
 </resources>

@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Debug
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
@@ -75,7 +74,7 @@ object WidgetUpdater {
         )
         Log.d(
             "WidgetUpdater",
-            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(at.time)}"
+            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat.getDateTimeInstance().format(at.time)}"
         )
     }
 

@@ -1,5 +1,6 @@
 package net.twinte.android
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Bitmap
@@ -31,6 +32,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -122,7 +124,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         if (sub_webview.url?.startsWith("https://twins.tsukuba.ac.jp") == true)
-            callback?.subWebViewCallback(TwinteUrlBuilder().buildUrl())
+            callback?.subWebViewCallback(twinteUrlBuilder().buildUrl())
         super.onDismiss(dialog)
     }
 

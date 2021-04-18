@@ -41,7 +41,7 @@
         <TextView
             android:id="@+id/debug_textView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:text=""
             android:gravity="bottom"
             android:layout_weight="1"
@@ -66,14 +66,16 @@
             android:layout_width="@dimen/widget_corner_radius"
             android:layout_height="match_parent"
             android:layout_gravity="left"
-            android:src="@drawable/widget_inner_shadow_gradient_dark_horizontal" />
+            android:src="@drawable/widget_inner_shadow_gradient_dark_horizontal"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
             android:layout_width="@dimen/widget_corner_radius"
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:rotation="180"
-            android:src="@drawable/widget_inner_shadow_gradient_light_horizontal" />
+            android:src="@drawable/widget_inner_shadow_gradient_light_horizontal"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
             android:layout_width="match_parent"
