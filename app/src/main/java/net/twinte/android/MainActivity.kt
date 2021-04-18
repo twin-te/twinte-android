@@ -68,8 +68,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         settings.userAgentString = "TwinteAppforAndroid"
         cookieManager.setAcceptThirdPartyCookies(this, true)
         webViewClient = object : WebViewClientCompat() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                return when {
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
+                when {
+                    // Googleログイン
                     request.url.host == "accounts.google.com" -> {
                         val clientId = getString(R.string.google_server_client_id)
                         val signInClient = GoogleSignIn.getClient(
@@ -80,14 +81,22 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
                         true
                     }
+                    // GoogleMap対応
+                    request.url.toString().startsWith("https://www.google.com/maps") -> {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            data = request.url
+                        })
+                        true
+                    }
+                    // その他の外部サイト
                     request.url.host != DOMAIN -> {
                         SubWebViewFragment.open(request.url.toString(), supportFragmentManager)
                         true
                     }
                     else -> false
                 }
-            }
         }
+
         webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
@@ -99,7 +108,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 return true
             }
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+
+        if (
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) &&
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)
+        ) {
             when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                 // ダークモードサポートだったら
                 Configuration.UI_MODE_NIGHT_YES -> {

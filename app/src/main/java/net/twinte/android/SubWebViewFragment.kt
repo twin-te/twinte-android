@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.fragment_sub_webview.*
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
 
 class SubWebViewFragment : BottomSheetDialogFragment() {
-    private var positionY = 0
     var callback: Callback? = null
 
     companion object {
@@ -40,7 +39,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {}
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING && positionY > 0) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING && sub_webview.scrollY > 0) {
                         behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     }
                 }
@@ -100,9 +99,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                 }
             }
             loadUrl(arguments?.getString("url", "") ?: "")
-            setOnScrollChangeListener { _, _, y, _, _ ->
-                positionY = y
-            }
         }
     }
 

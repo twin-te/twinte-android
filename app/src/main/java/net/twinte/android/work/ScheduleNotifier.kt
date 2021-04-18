@@ -55,10 +55,6 @@ class ScheduleNotifier : BroadcastReceiver() {
 
                 scheduleAt(context, notifyDate.timeInMillis, hour)
             }
-
-            if (TWINTE_DEBUG) {
-                scheduleAt(context, Calendar.getInstance().timeInMillis + 10000, 24)
-            }
         }
 
         private fun cancelAll(context: Context) {
