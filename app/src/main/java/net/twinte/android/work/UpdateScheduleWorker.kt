@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import net.twinte.android.MainActivity
 import net.twinte.android.R
+import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,7 +50,10 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .addTag(TAG).build()
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
-            Log.d("UpdateScheduleWorker", "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}")
+            Log.d(
+                "UpdateScheduleWorker",
+                "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}"
+            )
         }
     }
 
@@ -57,15 +61,17 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
         ScheduleRepository(applicationContext).update()
         scheduleNextUpdate(applicationContext)
         Log.d("UpdateScheduleWorker", "work success")
-        test(applicationContext, "success")
+        if (TWINTE_DEBUG)
+            debugNotification(applicationContext, "success")
         Result.success()
     } catch (e: Throwable) {
         Log.d("UpdateScheduleWorker", "work failure $e")
-        test(applicationContext, "$e")
+        if (TWINTE_DEBUG)
+            debugNotification(applicationContext, "$e")
         Result.retry()
     }
 
-    private fun test(context: Context, msg: String) {
+    private fun debugNotification(context: Context, msg: String) {
         val notificationManager = NotificationManagerCompat.from(context)
 
         val notification = NotificationCompat.Builder(context, context.getString(R.string.schedule_notify_channel_id))
@@ -79,6 +85,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 )
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
+            .setChannelId(context.getString(R.string.schedule_notify_channel_id))
             .build()
         notificationManager.notify(2, notification)
     }

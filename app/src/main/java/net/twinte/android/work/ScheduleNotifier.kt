@@ -37,9 +37,9 @@ class ScheduleNotifier : BroadcastReceiver() {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             sharedPreferences
                 .registerOnSharedPreferenceChangeListener(getPreferenceChangeListener(context))
-            if (!sharedPreferences.getBoolean("enable_schedule_notification", false)) return
+            if (!sharedPreferences.getBoolean("enable_schedule_notification", true)) return
 
-            val timing = sharedPreferences.getStringSet("notification_timing", emptySet())?.map { it.toInt() }?.sorted()
+            val timing = sharedPreferences.getStringSet("notification_timing", setOf("21", "6"))?.map { it.toInt() }?.sorted()
                 ?: emptyList()
 
             timing.forEach { hour ->
@@ -114,7 +114,7 @@ class ScheduleNotifier : BroadcastReceiver() {
         val name = getString(R.string.schedule_notify_channel_name)
         val descriptionText = getString(R.string.schedule_notify_channel_description)
         val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
-        val channel = NotificationChannelCompat.Builder("schedule", importance)
+        val channel = NotificationChannelCompat.Builder(context.getString(R.string.schedule_notify_channel_id), importance)
             .setName(name)
             .setDescription(descriptionText)
             .build()
@@ -140,6 +140,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 )
             ).setContentTitle(title)
             .setContentText(text)
+            .setChannelId(context.getString(R.string.schedule_notify_channel_id))
             .build()
         notificationManager.notify(1, notification)
     }
