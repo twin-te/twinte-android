@@ -1,72 +1,105 @@
 package net.twinte.android
 
 import android.annotation.SuppressLint
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.view.animation.AlphaAnimation
-import android.webkit.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import android.webkit.*
+import androidx.fragment.app.Fragment
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewClientCompat
+import androidx.webkit.WebViewFeature
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.sliding_content.*
-import net.twinte.android.schedule.ScheduleIndentReceiver
-import net.twinte.android.widget.TimetableWidget
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.twinte.android.Network.WebViewCookieJar.cookieManager
+import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.UserRepository
+import net.twinte.android.widget.WidgetUpdater
+import net.twinte.android.work.ScheduleNotifier
+import net.twinte.android.work.UpdateScheduleWorker
 
+const val TWINTE_DEBUG = false
 
-const val APP_URL = "https://app.twinte.net"
-const val FILE_CHOOSER_REQUEST = 1
+class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
+    val RC_SIGN_IN = 1
+    val FILE_CHOOSER_REQUEST = 2
 
-class MainActivity : AppCompatActivity() {
-
-    lateinit var cookieManager: CookieManager
     var filePathCallback: ValueCallback<Array<Uri>>? = null
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.NoActionBarTheme)
         super.onCreate(savedInstanceState)
+        setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
 
-        ScheduleIndentReceiver.enable(this)
+        UpdateScheduleWorker.scheduleNextUpdate(this)
+        ScheduleNotifier.schedule(this)
+        GlobalScope.launch {
+            try {
+                ScheduleRepository(this@MainActivity).update()
+            } catch (e: Network.NotLoggedInException) {
+                // 未ログイン時は失敗するが何もしない
+            }
+            WidgetUpdater.updateAllWidget(this@MainActivity)
+            WidgetUpdater.scheduleAllIfExists(this@MainActivity)
+        }
 
-        cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        cookieManager.setAcceptThirdPartyCookies(main_webview, true)
-        main_webview.settings.javaScriptEnabled = true
-        main_webview.settings.domStorageEnabled = true
-        main_webview.settings.userAgentString = "TwinteAppforAndroid"
-        main_webview.webViewClient = object : WebViewClient() {
+        if (TWINTE_DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true)
+        }
+
+        main_webview.setup()
+
+        val url = intent.getStringExtra("REGISTERED_COURSE_ID")
+            ?.let { twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
+            ?: twinteUrlBuilder().buildUrl()
+
+        main_webview.loadUrl(url)
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun WebView.setup() {
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.userAgentString = "TwinteAppforAndroid"
+        cookieManager.setAcceptThirdPartyCookies(this, true)
+        webViewClient = object : WebViewClientCompat() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (!request.url.toString().startsWith(APP_URL) || request.url.toString().startsWith("$APP_URL/auth/")) {
-                    initSlidingContent()
-
+                when {
+                    // Googleログイン
+                    request.url.host == "accounts.google.com" -> {
+                        val clientId = getString(R.string.google_server_client_id)
+                        val signInClient = GoogleSignIn.getClient(
+                            this@MainActivity,
+                            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(clientId).build()
+                        )
+                        startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
+                        true
+                    }
                     // GoogleMap対応
-                    if (request.url.toString().startsWith("https://www.google.com/maps/")) {
+                    request.url.toString().startsWith("https://www.google.com/maps") -> {
                         startActivity(Intent(Intent.ACTION_VIEW).apply {
                             data = request.url
                         })
-                    } else {
-                        sliding_layout.isTouchEnabled = false
-                        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
-
-                        external_webview.clearHistory()
-                        external_webview.loadUrl(request.url.toString())
+                        true
                     }
-
-                    true
-                } else {
-                    view.loadUrl(request.url.toString())
-                    false
+                    // その他の外部サイト
+                    request.url.host != DOMAIN -> {
+                        SubWebViewFragment.open(request.url.toString(), supportFragmentManager)
+                        true
+                    }
+                    else -> false
                 }
         }
-        main_webview.webChromeClient = object : WebChromeClient() {
+
+        webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>,
@@ -77,149 +110,101 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
-        main_webview.addJavascriptInterface(object {
-            @JavascriptInterface()
+
+        if (
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) &&
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)
+        ) {
+            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                // ダークモードサポートだったら
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    // ダークモード有効
+                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_ON)
+                    // ダークモードのスタイリングはページが行う
+                    WebSettingsCompat.setForceDarkStrategy(
+                        settings,
+                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY
+                    )
+                }
+                Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_OFF)
+                }
+            }
+        }
+        addJavascriptInterface(object {
+            @JavascriptInterface
             fun openSettings() {
                 startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             }
 
-            @JavascriptInterface()
+            @JavascriptInterface
             fun share(body: String) {
                 main_webview.shareScreen(body)
             }
         }, "android")
-
-        // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
-        val userLectureId = intent.getStringExtra("user_lecture_id")
-        main_webview.loadUrl(if (userLectureId != null && userLectureId.isNotEmpty()) "$APP_URL/course/${userLectureId}" else APP_URL)
-    }
-
-    /**
-     * 起動時に必要ない部分は遅延読み込み
-     */
-    @SuppressLint("SetJavaScriptEnabled")
-    fun initSlidingContent() {
-        if (stub == null) return
-
-        stub.visibility = View.VISIBLE
-
-        external_webview.settings.javaScriptEnabled = true
-        external_webview.settings.domStorageEnabled = true
-        external_webview.settings.userAgentString =
-            "Mozilla/5.0 (Linux; Android ${android.os.Build.VERSION.RELEASE}; ${android.os.Build.MODEL}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Mobile Safari/537.36"
-        cookieManager.setAcceptThirdPartyCookies(external_webview, true)
-
-        external_webview.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
-                if (request.url.toString().startsWith(APP_URL) && !request.url.toString().startsWith("$APP_URL/auth/")) {
-                    cookieManager.flush()
-                    closePanel()
-                    main_webview.loadUrl(APP_URL)
-                    updateWidgets()
-                    true
-                } else {
-                    false
-                }
-
-            override fun onPageFinished(view: WebView, url: String) {
-                super.onPageFinished(view, url)
-                external_progressbar.startAnimation(AlphaAnimation(1f, 0f).apply { duration = 300 })
-                view.startAnimation(AlphaAnimation(0.5f, 1f).apply { duration = 300 })
-                view.alpha = 1f
-                external_progressbar.visibility = View.GONE
-                external_title_textview.text = view.title
-                external_url_textview.text = view.url
-                if (url.startsWith("https://twins.tsukuba.ac.jp")) {
-                    external_webview.evaluateJavascript(
-                        """
-                        var script = document.createElement('script');
-                        script.src = 'https://scripts.twinte.net/sp.js';
-                        document.head.appendChild(script);
-                        """.trimIndent()
-                    ) {}
-                }
-            }
-
-            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                external_progressbar.startAnimation(AlphaAnimation(0f, 1f).apply { duration = 300 })
-                view.startAnimation(AlphaAnimation(1f, 0.5f).apply { duration = 300 })
-                view.alpha = 0.5f
-                external_progressbar.visibility = View.VISIBLE
-            }
-        }
-
-        external_webview.webChromeClient = object : WebChromeClient() {
-            override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
-                AlertDialog.Builder(this@MainActivity)
-                    .setMessage(message)
-                    .setPositiveButton("OK") { _, _ -> result.confirm() }
-                    .setNegativeButton("Cancel") { _, _ -> result.cancel() }
-                    .show()
-                return true
-            }
-
-            override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
-                AlertDialog.Builder(this@MainActivity)
-                    .setMessage(message)
-                    .setPositiveButton("OK") { _, _ -> result.confirm() }
-                    .show()
-                return true
-            }
-        }
-
-        external_close_button.setOnClickListener {
-            closePanel()
-            if (external_webview.url.startsWith("https://twins.tsukuba.ac.jp/")) {
-                main_webview.reload()
-                updateWidgets()
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (sliding_layout.panelState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            if (external_webview.canGoBack()) external_webview.goBack()
-            else closePanel()
-        } else if (main_webview.canGoBack()) main_webview.goBack()
-        else super.onBackPressed()
-    }
-
-    fun closePanel() {
-        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
-        external_webview.clearHistory()
-        external_webview.alpha = 0f
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FILE_CHOOSER_REQUEST) {
-            if (resultCode == RESULT_OK)
-                filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
-            else
-                filePathCallback?.onReceiveValue(null)
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            // Googleログイン時
+            RC_SIGN_IN -> {
+                val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+                GlobalScope.launch {
+                    account?.idToken?.let {
+                        UserRepository.validateGoogleIdToken(it)
+                    }
+                    withContext(Dispatchers.Main) {
+                        main_webview.loadUrl(twinteUrlBuilder().buildUrl())
+                    }
+                }
+            }
+            // ファイル選択時
+            FILE_CHOOSER_REQUEST -> {
+                if (resultCode == RESULT_OK)
+                    filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
+                else
+                    filePathCallback?.onReceiveValue(null)
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cookieManager.flush()
+        GlobalScope.launch {
+            try {
+                ScheduleRepository(this@MainActivity).update()
+            } catch (e: Network.NotLoggedInException) {
+                // 未ログイン時は失敗するが何もしない
+            }
+            WidgetUpdater.updateAllWidget(this@MainActivity)
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        // ウィジットタップから起動した場合、タップした講義のuserLectureIdが入る、それ以外はnull
-        intent.getStringExtra("user_lecture_id")?.let { userLectureId ->
-            main_webview.loadUrl(if (userLectureId.isNotEmpty()) "$APP_URL/course/${userLectureId}" else APP_URL)
+        intent.getStringExtra("REGISTERED_COURSE_ID")
+            ?.let {
+                main_webview.loadUrl(twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
+            }
+    }
+
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        if (fragment is SubWebViewFragment) {
+            fragment.callback = this
         }
     }
 
-    private fun updateWidgets() {
-        val appWidgetManager = AppWidgetManager.getInstance(this)
-        sendBroadcast(Intent(this, TimetableWidget::class.java).apply {
-            action = "android.appwidget.action.APPWIDGET_UPDATE"
-            putExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
-                    ComponentName(
-                        application,
-                        TimetableWidget::class.java
-                    )
-                )
-            )
-        })
+    override fun onBackPressed() {
+        if (main_webview.canGoBack()) main_webview.goBack()
+        else
+            super.onBackPressed()
+    }
+
+    // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
+    override fun subWebViewCallback(url: String) {
+        main_webview.loadUrl(url)
     }
 }

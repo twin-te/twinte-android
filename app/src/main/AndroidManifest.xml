@@ -2,53 +2,108 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.twinte.android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".SettingsActivity"
-            android:theme="@style/AppTheme"></activity>
 
+        <!--    メイン画面    -->
         <activity
             android:name=".MainActivity"
-            android:theme="@style/NoActionBarSplashTheme">
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".widget.TimetableWidget">
+        <!--    設定画面    -->
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@style/AppTheme" />
+
+        <!--    ウィジット関連    -->
+        <!--    小ウィジット    -->
+        <receiver
+            android:name=".widget.V3SmallWidgetProvider"
+            android:label="@string/widget_small_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="NEXT_DATE" />
-                <action android:name="PREV_DATE" />
             </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/timetable_widget_info" />
+                android:resource="@xml/widget_v3_small" />
+        </receiver>
+        <!--    中ウィジット    -->
+        <receiver
+            android:name=".widget.V3MediumWidgetProvider"
+            android:label="@string/widget_medium_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_v3_medium" />
+        </receiver>
+        <!--    大ウィジット    -->
+        <receiver
+            android:name=".widget.V3LargeWidgetProvider"
+            android:label="@string/widget_large_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_v3_large" />
         </receiver>
 
-        <receiver android:name=".schedule.ScheduleIndentReceiver">
+        <!--    スマホ再起動時 / アプリアップデートの再スケジュール用    -->
+        <receiver android:name=".widget.WidgetUpdater$OnBootCompleteOrPackageReplaced">
             <intent-filter>
-                <action android:name="update" />
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
+        <!--    中ウィジットのデータ供給用Service    -->
         <service
-            android:name=".widget.WidgetListViewService"
+            android:name=".widget.V3MediumWidgetRemoteViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!--    大ウィジットのデータ供給用Service    -->
         <service
-            android:name=".widget.UpdateWidgetJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"></service>
+            android:name=".widget.V3LargeWidgetRemoteViewService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!--    ウィジット関連終わり    -->
+
+        <!--    日程通知関連    -->
+        <!--    通知日時になったら降ってくるBroadCastのReceiver    -->
+        <receiver
+            android:name=".work.ScheduleNotifier"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="net.twinte.android.action.ScheduleNotifier" />
+            </intent-filter>
+        </receiver>
+        <!--    スマホ再起動時 / アプリアップデートの再スケジュール用    -->
+        <receiver android:name=".work.ScheduleNotifier$OnBootCompleteOrPackageReplaced">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <!--    日程通知関連終わり    -->
+
+        <!--    時間割スクショシェア時に外部アプリに画像を渡すのに使うProvider    -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="net.twinte.android.fileprovider"
@@ -59,8 +114,4 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
 </manifest>

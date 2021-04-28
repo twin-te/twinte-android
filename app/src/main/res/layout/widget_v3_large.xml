@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/widget_rounded_bg">
+
+    <LinearLayout
+        android:layout_width="130dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="top|start"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/date_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="秋A 10/1(金)"
+            android:textColor="@color/widget_text_main"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/event_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="通常日課"
+            android:textColor="@color/widget_text_sub"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/course_count_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6コマの授業"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/debug_textView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text=""
+            android:gravity="bottom"
+            android:layout_weight="1"
+            android:textColor="@color/widget_text_sub"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="1dp"
+        android:background="@drawable/widget_rounded_bg_stroke">
+
+        <ImageView
+            android:layout_gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_corner_radius"
+            android:src="@drawable/widget_inner_shadow_gradient_dark_vertical" />
+
+        <ImageView
+            android:layout_width="@dimen/widget_corner_radius"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:src="@drawable/widget_inner_shadow_gradient_dark_horizontal"
+            tools:ignore="RtlHardcoded" />
+
+        <ImageView
+            android:layout_width="@dimen/widget_corner_radius"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:rotation="180"
+            android:src="@drawable/widget_inner_shadow_gradient_light_horizontal"
+            tools:ignore="RtlHardcoded" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_corner_radius"
+            android:layout_gravity="bottom"
+            android:rotation="180"
+            android:src="@drawable/widget_inner_shadow_gradient_light_vertical" />
+
+        <ListView
+            android:id="@+id/course_listView"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="0dp"
+            android:divider="@null"
+            tools:listitem="@layout/widget_v3_period_item"/>
+    </FrameLayout>
+</LinearLayout>

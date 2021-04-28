@@ -18,7 +18,8 @@
             android:dependency="enable_schedule_notification"
             android:defaultValue="@array/default_schedule"
             android:entryValues="@array/schedule_key"
-            android:entries="@array/schedule_label" />
+            android:entries="@array/schedule_label"
+            android:icon="@drawable/ic_alarm"/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="フィードバック">

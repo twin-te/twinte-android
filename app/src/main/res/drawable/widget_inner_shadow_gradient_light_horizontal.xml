@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners
+        android:bottomLeftRadius="@dimen/widget_corner_radius"  android:topLeftRadius="@dimen/widget_corner_radius"/>
+    <gradient
+        android:startColor="@color/widget_light_g1"
+        android:centerColor="@color/widget_light_g2"
+        android:endColor="@color/widget_light_g2"
+        android:angle="0"
+        />
+</shape>

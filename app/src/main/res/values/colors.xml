@@ -4,6 +4,27 @@
     <color name="colorPrimaryDark">#007B8B</color>
     <color name="colorAccent">#4380f8</color>
 
-    <color name="darkBack">#303030</color>
-    <color name="darkText">#C1C1C1</color>
+    <color name="background">#eff1f6</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+
+    <color name="widget_text_main">#626A76</color>
+    <color name="widget_text_sub">#838E95</color>
+    <color name="widget_text_disabled">#ADADAD</color>
+    <color name="widget_text_danger">#ED7F93</color>
+
+    <color name="widget_bg_g1">#F3F5FA</color>
+    <color name="widget_bg_g2">#EBEDF2</color>
+    <color name="widget_bg_stroke">#FFFFFF</color>
+    <color name="widget_shadow_g1">#E2E6ED</color>
+    <color name="widget_shadow_g2">#00E2E6ED</color>
+    <color name="widget_light_g1">#FAFAFA</color>
+    <color name="widget_light_g2">#00FAFAFA</color>
+    <color name="widget_divider_shadow">#D0DCE5</color>
+    <color name="widget_divider_light">#EEF0F5</color>
+
+    <color name="n_colorPrimary">#19C6C6</color>
+    <color name="n_widget_text_main">#DFE6F0</color>
+    <color name="n_widget_text_sub">#95A5AE</color>
+    <color name="n_widget_text_disabled">#475258</color>
+    <color name="n_widget_text_danger">#ED7F93</color>
 </resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:background="@drawable/widget_rounded_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="4dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/widget_text_main"
+                android:src="@drawable/ic_error" />
+
+            <TextView
+                android:id="@+id/error_title_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="エラー"
+                android:textColor="@color/widget_text_main"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/error_detail_textView"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:text="エラー"
+            android:textColor="@color/widget_text_sub"
+            android:textSize="12dp"
+            android:maxLines="5"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/error_reload_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
+            android:drawableStart="@drawable/ic_refresh"
+            android:drawableTint="@color/colorPrimary"
+            android:text="リロード"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+
+</FrameLayout>

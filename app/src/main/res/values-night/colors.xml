@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#1e2430</color>
+
+    <color name="colorPrimary">@color/n_colorPrimary</color>
+    <color name="widget_text_main">@color/n_widget_text_main</color>
+    <color name="widget_text_sub">@color/n_widget_text_sub</color>
+    <color name="widget_text_disabled">@color/n_widget_text_disabled</color>
+    <color name="widget_text_danger">@color/n_widget_text_danger</color>
+
+    <color name="widget_bg_g1">#1B202D</color>
+    <color name="widget_bg_g2">#03050B</color>
+    <color name="widget_bg_stroke">#1B202C</color>
+    <color name="widget_shadow_g1">#141821</color>
+    <color name="widget_shadow_g2">#00141821</color>
+    <color name="widget_light_g1">#131720</color>
+    <color name="widget_light_g2">#00131720</color>
+    <color name="widget_divider_shadow">#141A22</color>
+    <color name="widget_divider_light">#1C2734</color>
+</resources>
