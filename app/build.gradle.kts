@@ -15,8 +15,8 @@ android {
         applicationId = "net.twinte.android"
         minSdkVersion(23)
         targetSdkVersion (30)
-        versionCode = 15
-        versionName = "2.0.0-beta02"
+        versionCode = 16
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

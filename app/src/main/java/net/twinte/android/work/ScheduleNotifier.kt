@@ -66,10 +66,10 @@ class ScheduleNotifier : BroadcastReceiver() {
         private fun scheduleAt(context: Context, timeInMillis: Long, requestCode: Int) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
             // 指定された時刻付近で１日おきに設定
-            alarmManager.setInexactRepeating(
+            alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,
                 timeInMillis,
-                AlarmManager.INTERVAL_DAY,
+                1000 * 60 * 60 * 24,
                 alarmIntent(context, requestCode)
             )
             Log.d("ScheduleNotifier", "Scheduled at $timeInMillis $requestCode")

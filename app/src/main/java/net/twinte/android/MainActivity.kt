@@ -25,7 +25,7 @@ import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
 
-const val TWINTE_DEBUG = true
+const val TWINTE_DEBUG = false
 
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     val RC_SIGN_IN = 1
