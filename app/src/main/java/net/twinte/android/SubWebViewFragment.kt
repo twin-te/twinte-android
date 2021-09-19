@@ -13,6 +13,7 @@ import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentManager
 import androidx.webkit.WebViewClientCompat
@@ -65,11 +66,16 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                     } else false
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                    sub_webview_progressBar.visibility = View.VISIBLE
+                    sub_webview_progressBar?.visibility = View.VISIBLE
                 }
 
                 override fun onPageFinished(view: WebView, url: String) {
-                    sub_webview_progressBar.visibility = View.GONE
+                    view.layoutParams =
+                        FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            if (view.height < 200.toPx()) 300.toPx() else FrameLayout.LayoutParams.MATCH_PARENT
+                        )
+                    sub_webview_progressBar?.visibility = View.GONE
                     // Twinsからインポート
                     if (url.startsWith("https://twins.tsukuba.ac.jp")) {
                         view.evaluateJavascript(
@@ -131,4 +137,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
     interface Callback {
         fun subWebViewCallback(url: String)
     }
+
+    fun Int.toPx() = ((context?.resources?.displayMetrics?.density ?: 1f) * this).toInt()
 }
