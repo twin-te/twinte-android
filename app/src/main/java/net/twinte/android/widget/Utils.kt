@@ -24,7 +24,10 @@ data class WidgetCourseViewModel(val name: String, val room: String, val time: S
  */
 fun Timetable.dateLabel(calendar: Calendar): String {
     val formatter = SimpleDateFormat("MM/dd (E)", Locale.JAPAN)
-    return "${module.module.m} ${formatter.format(calendar.time)}"
+    val date = formatter.format(calendar.time)
+    return if(module?.module?.m == null)
+        date
+    else "${module.module.m} $date"
 }
 
 /**
@@ -43,7 +46,7 @@ fun Timetable.eventLabel(): Pair<String, Boolean> {
  * ○コマの授業
  */
 fun Timetable.courseCountLabel(): String {
-    val module = module.module
+    val module = module?.module ?: return "0コマの授業"
     val parsedDate =
         SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN).let { f -> Calendar.getInstance().apply { time = f.parse(date) } }
 
@@ -61,7 +64,7 @@ fun Timetable.courseCountLabel(): String {
  * 指定された時限の授業の表示用データを作成
  */
 fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
-    val module = module.module
+    val module = module?.module ?: return null
     val parsedDate =
         SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN).let { f -> Calendar.getInstance().apply { time = f.parse(date) } }
     val day = events.find { it.changeTo != null }?.changeTo ?: Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1]

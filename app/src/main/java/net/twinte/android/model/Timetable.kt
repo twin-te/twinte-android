@@ -2,7 +2,7 @@ package net.twinte.android.model
 
 data class Timetable(
     val date: String,
-    val module: CurrentModule,
+    val module: CurrentModule?,
     val events: Array<Event>,
     val courses: Array<Course>
 ) {
