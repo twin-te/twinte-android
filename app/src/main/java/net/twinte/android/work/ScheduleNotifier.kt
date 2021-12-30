@@ -94,7 +94,7 @@ class ScheduleNotifier : BroadcastReceiver() {
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) createSubstituteDayNotification(context, substitute)
             else if (TWINTE_DEBUG)
-                createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module.module.m}")
+                createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module?.module?.m}")
 
         } catch (e: Throwable) {
             // TODO エラー処理
