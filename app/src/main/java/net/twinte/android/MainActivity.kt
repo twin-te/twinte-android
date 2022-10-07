@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 ScheduleRepository(this@MainActivity).update()
             } catch (e: Network.NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
+            } catch (e: Exception) {
+                // それ以外の予期せぬエラー
             }
             WidgetUpdater.updateAllWidget(this@MainActivity)
             WidgetUpdater.scheduleAllIfExists(this@MainActivity)
