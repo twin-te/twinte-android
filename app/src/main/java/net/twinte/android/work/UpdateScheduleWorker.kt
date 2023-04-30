@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
+import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
@@ -44,7 +45,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
-                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    MIN_BACKOFF_MILLIS,
                     TimeUnit.MILLISECONDS
                 )
                 .addTag(TAG).build()
@@ -81,7 +82,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 PendingIntent.getActivity(
                     context,
                     1,
-                    Intent(context, MainActivity::class.java), 0
+                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
                 )
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
