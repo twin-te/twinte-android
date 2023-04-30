@@ -3,7 +3,7 @@ buildscript {
     val kotlinVersion by extra("1.6.21")
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath ("com.android.tools.build:gradle:8.0.0")
@@ -18,7 +18,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
