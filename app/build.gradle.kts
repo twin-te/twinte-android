@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(31)
+    compileSdkVersion(33)
 
     defaultConfig {
         applicationId = "net.twinte.android"
@@ -42,7 +42,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.work:work-runtime-ktx:2.6.0")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
