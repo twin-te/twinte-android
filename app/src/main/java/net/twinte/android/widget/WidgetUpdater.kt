@@ -52,7 +52,7 @@ object WidgetUpdater {
                 context,
                 "${time.hour}${time.minute}".toInt(),
                 intent,
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
     android:background="@drawable/widget_rounded_bg"
     android:layout_width="match_parent"
@@ -21,8 +22,8 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tint="@color/widget_text_main"
-                android:src="@drawable/ic_error" />
+                android:src="@drawable/ic_error"
+                app:tint="@color/widget_text_main" />
 
             <TextView
                 android:id="@+id/error_title_textView"

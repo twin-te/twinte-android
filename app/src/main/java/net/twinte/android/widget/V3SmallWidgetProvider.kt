@@ -70,7 +70,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                         nextCourse?.id?.let {
                             putExtra("REGISTERED_COURSE_ID", it)
                         }
-                    }, PendingIntent.FLAG_UPDATE_CURRENT)
+                    }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
 
                 if (TWINTE_DEBUG)

@@ -78,7 +78,12 @@ class ScheduleNotifier : BroadcastReceiver() {
         private fun alarmIntent(context: Context, requestCode: Int) =
             Intent(context, ScheduleNotifier::class.java).let { intent ->
                 intent.action = "net.twinte.android.action.ScheduleNotifier"
-                PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getBroadcast(
+                    context,
+                    requestCode,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
             }
     }
 
@@ -129,14 +134,14 @@ class ScheduleNotifier : BroadcastReceiver() {
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, MainActivity::class.java), 0
+                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
                 )
             ).addAction(
                 R.drawable.ic_icon, "通知設定",
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, SettingsActivity::class.java), 0
+                    Intent(context, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE
                 )
             ).setContentTitle(title)
             .setContentText(text)

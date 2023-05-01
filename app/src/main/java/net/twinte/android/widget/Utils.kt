@@ -149,7 +149,7 @@ fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, 
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                 },
-                0
+                PendingIntent.FLAG_IMMUTABLE
             )
         )
     }
