@@ -32,9 +32,6 @@ import net.twinte.android.work.UpdateScheduleWorker
 const val TWINTE_DEBUG = false
 
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
-    val RC_SIGN_IN = 1
-    val FILE_CHOOSER_REQUEST = 2
-
     var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,5 +209,10 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
         main_webview.loadUrl(url)
+    }
+
+    companion object {
+        const val RC_SIGN_IN = 1
+        const val FILE_CHOOSER_REQUEST = 2
     }
 }

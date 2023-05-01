@@ -51,7 +51,7 @@ naming:
     active: true
 
   VariableNaming:
-    active: false
+    active: true
 
 empty-blocks:
   active: false
