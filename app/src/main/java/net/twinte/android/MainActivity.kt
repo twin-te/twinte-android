@@ -88,9 +88,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     }
                     // GoogleMap対応
                     request.url.toString().startsWith("https://www.google.com/maps") -> {
-                        startActivity(Intent(Intent.ACTION_VIEW).apply {
-                            data = request.url
-                        })
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = request.url
+                            }
+                        )
                         true
                     }
                     // その他の外部サイト
@@ -134,17 +136,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 }
             }
         }
-        addJavascriptInterface(object {
-            @JavascriptInterface
-            fun openSettings() {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            }
+        addJavascriptInterface(
+            object {
+                @JavascriptInterface
+                fun openSettings() {
+                    startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                }
 
-            @JavascriptInterface
-            fun share(body: String) {
-                main_webview.shareScreen(body)
-            }
-        }, "android")
+                @JavascriptInterface
+                fun share(body: String) {
+                    main_webview.shareScreen(body)
+                }
+            },
+            "android"
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

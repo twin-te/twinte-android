@@ -97,4 +97,4 @@ formatting:
   TrailingCommaOnDeclarationSite:
     active: false
   Wrapping:
-    active: false
+    active: true

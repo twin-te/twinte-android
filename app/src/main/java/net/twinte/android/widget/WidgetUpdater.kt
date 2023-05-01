@@ -122,18 +122,20 @@ object WidgetUpdater {
             V3MediumWidgetProvider::class.java,
             V3LargeWidgetProvider::class.java
         ).forEach { clazz ->
-            context.sendBroadcast(Intent(context, clazz).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_IDS,
-                    appWidgetManager.getAppWidgetIds(
-                        ComponentName(
-                            context,
-                            clazz
+            context.sendBroadcast(
+                Intent(context, clazz).apply {
+                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                    putExtra(
+                        AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                        appWidgetManager.getAppWidgetIds(
+                            ComponentName(
+                                context,
+                                clazz
+                            )
                         )
                     )
-                )
-            })
+                }
+            )
         }
     }
 

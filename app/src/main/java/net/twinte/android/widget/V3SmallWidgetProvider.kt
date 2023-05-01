@@ -69,12 +69,17 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                 // タップした授業の詳細画面を表示するIntentを作成
                 views.setOnClickPendingIntent(
                     R.id.next_course_wrapper,
-                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        nextCourse?.id?.let {
-                            putExtra("REGISTERED_COURSE_ID", it)
-                        }
-                    }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            nextCourse?.id?.let {
+                                putExtra("REGISTERED_COURSE_ID", it)
+                            }
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
                 )
 
                 if (TWINTE_DEBUG) {

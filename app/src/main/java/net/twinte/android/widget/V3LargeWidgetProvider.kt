@@ -87,9 +87,14 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
 
                 views.setPendingIntentTemplate(
                     R.id.course_listView,
-                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
                 )
 
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
@@ -141,11 +146,14 @@ class V3LargeWidgetRemoteViewService : RemoteViewsService() {
             val course = schedule?.courseViewModel(position + 1)
             views.applyCourseItem(context, course)
 
-            views.setOnClickFillInIntent(R.id.period_item_wrapper, Intent().apply {
-                course?.id?.let {
-                    putExtra("REGISTERED_COURSE_ID", it)
+            views.setOnClickFillInIntent(
+                R.id.period_item_wrapper,
+                Intent().apply {
+                    course?.id?.let {
+                        putExtra("REGISTERED_COURSE_ID", it)
+                    }
                 }
-            })
+            )
 
             return views
         }

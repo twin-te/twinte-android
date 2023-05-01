@@ -86,9 +86,14 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
 
                 views.setPendingIntentTemplate(
                     R.id.course_listView,
-                    PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
                 )
 
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
@@ -142,11 +147,14 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
             views.setTextViewText(R.id.course_header_textView, headerLabel)
             views.applyCourseItem(context, course)
 
-            views.setOnClickFillInIntent(R.id.course_item_with_header_wrapper, Intent().apply {
-                course?.id?.let {
-                    putExtra("REGISTERED_COURSE_ID", it)
+            views.setOnClickFillInIntent(
+                R.id.course_item_with_header_wrapper,
+                Intent().apply {
+                    course?.id?.let {
+                        putExtra("REGISTERED_COURSE_ID", it)
+                    }
                 }
-            })
+            )
 
             return views
         }
