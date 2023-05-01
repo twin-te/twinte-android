@@ -5,8 +5,12 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
-import android.webkit.*
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
@@ -28,9 +32,6 @@ import net.twinte.android.work.UpdateScheduleWorker
 const val TWINTE_DEBUG = false
 
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
-    val RC_SIGN_IN = 1
-    val FILE_CHOOSER_REQUEST = 2
-
     var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,16 +81,18 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         val signInClient = GoogleSignIn.getClient(
                             this@MainActivity,
                             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                .requestIdToken(clientId).build()
+                                .requestIdToken(clientId).build(),
                         )
                         startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
                         true
                     }
                     // GoogleMap対応
                     request.url.toString().startsWith("https://www.google.com/maps") -> {
-                        startActivity(Intent(Intent.ACTION_VIEW).apply {
-                            data = request.url
-                        })
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = request.url
+                            },
+                        )
                         true
                     }
                     // その他の外部サイト
@@ -105,7 +108,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: FileChooserParams
+                fileChooserParams: FileChooserParams,
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
                 startActivityForResult(fileChooserParams.createIntent(), FILE_CHOOSER_REQUEST)
@@ -125,7 +128,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     // ダークモードのスタイリングはページが行う
                     WebSettingsCompat.setForceDarkStrategy(
                         settings,
-                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY
+                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY,
                     )
                 }
                 Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
@@ -133,17 +136,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 }
             }
         }
-        addJavascriptInterface(object {
-            @JavascriptInterface
-            fun openSettings() {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            }
+        addJavascriptInterface(
+            object {
+                @JavascriptInterface
+                fun openSettings() {
+                    startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                }
 
-            @JavascriptInterface
-            fun share(body: String) {
-                main_webview.shareScreen(body)
-            }
-        }, "android")
+                @JavascriptInterface
+                fun share(body: String) {
+                    main_webview.shareScreen(body)
+                }
+            },
+            "android",
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -163,10 +169,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
             // ファイル選択時
             FILE_CHOOSER_REQUEST -> {
-                if (resultCode == RESULT_OK)
+                if (resultCode == RESULT_OK) {
                     filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
-                else
+                } else {
                     filePathCallback?.onReceiveValue(null)
+                }
             }
         }
     }
@@ -200,13 +207,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     override fun onBackPressed() {
-        if (main_webview.canGoBack()) main_webview.goBack()
-        else
+        if (main_webview.canGoBack()) {
+            main_webview.goBack()
+        } else {
             super.onBackPressed()
+        }
     }
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
         main_webview.loadUrl(url)
+    }
+
+    companion object {
+        const val RC_SIGN_IN = 1
+        const val FILE_CHOOSER_REQUEST = 2
     }
 }

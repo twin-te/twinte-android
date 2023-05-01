@@ -6,14 +6,21 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
+import androidx.work.WorkerParameters
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 /**
@@ -46,14 +53,14 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
                     MIN_BACKOFF_MILLIS,
-                    TimeUnit.MILLISECONDS
+                    TimeUnit.MILLISECONDS,
                 )
                 .addTag(TAG).build()
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
             Log.d(
                 "UpdateScheduleWorker",
-                "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}"
+                "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}",
             )
         }
     }
@@ -62,13 +69,15 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
         ScheduleRepository(applicationContext).update()
         scheduleNextUpdate(applicationContext)
         Log.d("UpdateScheduleWorker", "work success")
-        if (TWINTE_DEBUG)
+        if (TWINTE_DEBUG) {
             debugNotification(applicationContext, "success")
+        }
         Result.success()
     } catch (e: Throwable) {
         Log.d("UpdateScheduleWorker", "work failure $e")
-        if (TWINTE_DEBUG)
+        if (TWINTE_DEBUG) {
             debugNotification(applicationContext, "$e")
+        }
         Result.retry()
     }
 
@@ -82,8 +91,9 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 PendingIntent.getActivity(
                     context,
                     1,
-                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
-                )
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
             .setChannelId(context.getString(R.string.schedule_notify_channel_id))

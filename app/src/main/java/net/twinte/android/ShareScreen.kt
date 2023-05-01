@@ -1,7 +1,8 @@
 package net.twinte.android
 
 import android.content.Intent
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.webkit.WebView
 import androidx.core.content.FileProvider
 import java.io.File

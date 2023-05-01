@@ -1,14 +1,14 @@
 package net.twinte.android
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
 
 class SettingsActivity : AppCompatActivity() {
@@ -46,16 +46,16 @@ class SettingsActivity : AppCompatActivity() {
                             Toast.makeText(
                                 this.context,
                                 "開発者の方々はGithubでお待ちしています！",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG,
                             ).show()
                             Timer().schedule(1000) {
                                 findPreference<Preference>("github")?.isVisible = true
                             }
-                        } else if(versionTapCount >= 4) {
+                        } else if (versionTapCount >= 4) {
                             Toast.makeText(
                                 this.context,
                                 "あと${ 7 - versionTapCount}ステップで開発者になります",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
                         }
                     }

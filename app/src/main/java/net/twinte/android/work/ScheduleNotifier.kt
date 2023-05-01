@@ -12,10 +12,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.*
+import net.twinte.android.MainActivity
+import net.twinte.android.R
+import net.twinte.android.SettingsActivity
+import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Day
 import net.twinte.android.repository.ScheduleRepository
-import java.util.*
+import java.util.Calendar
 
 /**
  * 特殊日程通知を管理する
@@ -24,11 +27,13 @@ class ScheduleNotifier : BroadcastReceiver() {
     companion object {
         private var _preferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
         private fun getPreferenceChangeListener(context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
-            if (_preferenceChangeListener == null) _preferenceChangeListener =
-                SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                    if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
-                    schedule(context)
-                }
+            if (_preferenceChangeListener == null) {
+                _preferenceChangeListener =
+                    SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                        if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
+                        schedule(context)
+                    }
+            }
             return _preferenceChangeListener!!
         }
 
@@ -59,7 +64,9 @@ class ScheduleNotifier : BroadcastReceiver() {
 
         private fun cancelAll(context: Context) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
-            (0..24).forEach { alarmManager.cancel(alarmIntent(context, it)) }
+            for (requestCode in 0..24) {
+                alarmManager.cancel(alarmIntent(context, requestCode))
+            }
             Log.d("ScheduleNotifier", "All schedule canceled")
         }
 
@@ -70,7 +77,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 AlarmManager.RTC_WAKEUP,
                 timeInMillis,
                 1000 * 60 * 60 * 24,
-                alarmIntent(context, requestCode)
+                alarmIntent(context, requestCode),
             )
             Log.d("ScheduleNotifier", "Scheduled at $timeInMillis $requestCode")
         }
@@ -82,7 +89,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                     context,
                     requestCode,
                     intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
             }
     }
@@ -97,10 +104,11 @@ class ScheduleNotifier : BroadcastReceiver() {
             val schedule = ScheduleRepository(context).getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
-            if (substitute != null) createSubstituteDayNotification(context, substitute)
-            else if (TWINTE_DEBUG)
+            if (substitute != null) {
+                createSubstituteDayNotification(context, substitute)
+            } else if (TWINTE_DEBUG) {
                 createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module?.module?.m}")
-
+            }
         } catch (e: Throwable) {
             // TODO エラー処理
             Log.d("ScheduleNotifier", "$e")
@@ -134,15 +142,18 @@ class ScheduleNotifier : BroadcastReceiver() {
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
-                )
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).addAction(
-                R.drawable.ic_icon, "通知設定",
+                R.drawable.ic_icon,
+                "通知設定",
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE
-                )
+                    Intent(context, SettingsActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).setContentTitle(title)
             .setContentText(text)
             .setChannelId(context.getString(R.string.schedule_notify_channel_id))

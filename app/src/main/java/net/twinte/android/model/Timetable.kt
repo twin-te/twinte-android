@@ -4,18 +4,18 @@ data class Timetable(
     val date: String,
     val module: CurrentModule?,
     val events: Array<Event>,
-    val courses: Array<Course>
+    val courses: Array<Course>,
 ) {
     data class CurrentModule(
         val year: Int,
-        val module: Module
+        val module: Module,
     )
 
     data class Event(
         val date: String,
         val eventType: EventType,
         val description: String,
-        val changeTo: Day?
+        val changeTo: Day?,
     )
 
     data class Course(
@@ -25,13 +25,13 @@ data class Timetable(
         val name: String?,
         val instructor: String?,
         val year: Int?,
-        val course: BaseCourse?
+        val course: BaseCourse?,
     ) {
         data class Schedule(
             val module: Module,
             val day: Day,
             val period: Int,
-            val room: String
+            val room: String,
         )
 
         data class BaseCourse(
@@ -39,7 +39,7 @@ data class Timetable(
             val methods: Array<Format>,
             val name: String,
             val instructor: String,
-            val year: Int
+            val year: Int,
         )
     }
 }

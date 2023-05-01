@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 
 /**
  * ウィジットの更新タイミングの制御を担う
@@ -41,18 +41,19 @@ object WidgetUpdater {
             val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             intent.putExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
+                AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                appWidgetManager.getAppWidgetIds(
                     ComponentName(
                         context,
-                        clazz
-                    )
-                )
+                        clazz,
+                    ),
+                ),
             )
             PendingIntent.getBroadcast(
                 context,
                 "${time.hour}${time.minute}".toInt(),
                 intent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
         }
 
@@ -63,18 +64,19 @@ object WidgetUpdater {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val at = time.toCalendar().apply {
             add(Calendar.MINUTE, offsetMinute)
-            if (before(Calendar.getInstance()))
+            if (before(Calendar.getInstance())) {
                 add(Calendar.DATE, 1)
+            }
         }
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             at.timeInMillis,
             1000 * 60 * 60 * 24,
-            updateWidgetIntent(context, clazz, time)
+            updateWidgetIntent(context, clazz, time),
         )
         Log.d(
             "WidgetUpdater",
-            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat.getDateTimeInstance().format(at.time)}"
+            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat.getDateTimeInstance().format(at.time)}",
         )
     }
 
@@ -84,7 +86,7 @@ object WidgetUpdater {
     private fun cancelDailyAt(context: Context, clazz: Class<*>, time: SimpleTime) {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         alarmManager.cancel(
-            updateWidgetIntent(context, clazz, time)
+            updateWidgetIntent(context, clazz, time),
         )
         Log.d("WidgetUpdater", "canceled ${clazz.simpleName} at $time")
     }
@@ -118,19 +120,22 @@ object WidgetUpdater {
         arrayOf(
             V3SmallWidgetProvider::class.java,
             V3MediumWidgetProvider::class.java,
-            V3LargeWidgetProvider::class.java
+            V3LargeWidgetProvider::class.java,
         ).forEach { clazz ->
-            context.sendBroadcast(Intent(context, clazz).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
-                        ComponentName(
-                            context,
-                            clazz
-                        )
+            context.sendBroadcast(
+                Intent(context, clazz).apply {
+                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                    putExtra(
+                        AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                        appWidgetManager.getAppWidgetIds(
+                            ComponentName(
+                                context,
+                                clazz,
+                            ),
+                        ),
                     )
-                )
-            })
+                },
+            )
         }
     }
 
@@ -138,7 +143,7 @@ object WidgetUpdater {
      * 「現在の授業」として表示すべき授業の日付と時限を返す
      */
     fun getShouldShowCurrentDate(
-        current: Calendar = Calendar.getInstance()
+        current: Calendar = Calendar.getInstance(),
     ): Pair<Calendar, Int> {
         return when {
             // 19時以降は明日の0限を表示
@@ -190,17 +195,20 @@ object WidgetUpdater {
     fun scheduleAllIfExists(context: Context) {
         val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
-                .isNotEmpty()
-        )
+            .isNotEmpty()
+        ) {
             schedule(context, V3SmallWidgetProvider::class.java)
+        }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
-                .isNotEmpty()
-        )
+            .isNotEmpty()
+        ) {
             schedule(context, V3MediumWidgetProvider::class.java)
+        }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
-                .isNotEmpty()
-        )
+            .isNotEmpty()
+        ) {
             schedule(context, V3LargeWidgetProvider::class.java)
+        }
     }
 
     /**
@@ -229,7 +237,6 @@ object WidgetUpdater {
         set(Calendar.MILLISECOND, 0)
     }
 
-
     /**
      * スマホが再起動した時にウィジットの更新をスケジュールし直す
      */
@@ -240,4 +247,3 @@ object WidgetUpdater {
         }
     }
 }
-
