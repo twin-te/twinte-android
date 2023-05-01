@@ -1,6 +1,7 @@
 complexity:
   LongMethod:
     active: true
+    threshold: 90
   LongParameterList:
     # 関数に渡す引数の個数が多くなってしまっても仕方がない
     active: false
