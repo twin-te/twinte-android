@@ -16,8 +16,10 @@ exceptions:
   active: true
 
   SwallowedException:
+    # TODO: active にする
     active: false
   TooGenericExceptionCaught:
+    # TODO: active にする
     active: false
 
 performance:
