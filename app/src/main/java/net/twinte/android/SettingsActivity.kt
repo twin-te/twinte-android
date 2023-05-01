@@ -46,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
                             Toast.makeText(
                                 this.context,
                                 "開発者の方々はGithubでお待ちしています！",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG,
                             ).show()
                             Timer().schedule(1000) {
                                 findPreference<Preference>("github")?.isVisible = true
@@ -55,7 +55,7 @@ class SettingsActivity : AppCompatActivity() {
                             Toast.makeText(
                                 this.context,
                                 "あと${ 7 - versionTapCount}ステップで開発者になります",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
                         }
                     }

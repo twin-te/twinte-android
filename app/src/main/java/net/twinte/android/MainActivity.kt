@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         val signInClient = GoogleSignIn.getClient(
                             this@MainActivity,
                             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                .requestIdToken(clientId).build()
+                                .requestIdToken(clientId).build(),
                         )
                         startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
                         true
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         startActivity(
                             Intent(Intent.ACTION_VIEW).apply {
                                 data = request.url
-                            }
+                            },
                         )
                         true
                     }
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     // ダークモードのスタイリングはページが行う
                     WebSettingsCompat.setForceDarkStrategy(
                         settings,
-                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY
+                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY,
                     )
                 }
                 Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     main_webview.shareScreen(body)
                 }
             },
-            "android"
+            "android",
         )
     }
 

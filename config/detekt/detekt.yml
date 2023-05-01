@@ -94,7 +94,7 @@ formatting:
   SpacingBetweenDeclarationsWithAnnotations:
     active: true
   TrailingCommaOnCallSite:
-    active: false
+    active: true
   TrailingCommaOnDeclarationSite:
     active: true
   Wrapping:

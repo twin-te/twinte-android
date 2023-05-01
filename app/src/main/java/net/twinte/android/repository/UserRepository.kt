@@ -16,9 +16,9 @@ object UserRepository {
                     twinteUrlBuilder().appendPath(AUTH_PATH)
                         .appendPath("/google/idToken")
                         .appendQueryParameter("token", idToken)
-                        .buildUrl()
+                        .buildUrl(),
                 )
-                .build()
+                .build(),
         ).execute()
         res.isSuccessful
     }

@@ -53,14 +53,14 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
                     context.packageName,
-                    R.layout.widget_v3_small
+                    R.layout.widget_v3_small,
                 )
                 views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
                 schedule.eventLabel().let { (label, attention) ->
                     views.setTextViewText(R.id.event_textView, label)
                     views.setTextColor(
                         R.id.event_textView,
-                        context.getColor(if (attention) R.color.widget_text_danger else R.color.widget_text_main)
+                        context.getColor(if (attention) R.color.widget_text_danger else R.color.widget_text_main),
                     )
                 }
                 val nextCourse = schedule.nextCourseViewModel(period)
@@ -78,8 +78,8 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                                 putExtra("REGISTERED_COURSE_ID", it)
                             }
                         },
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                    ),
                 )
 
                 if (TWINTE_DEBUG) {
@@ -87,8 +87,8 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                         R.id.debug_textView,
                         "last update: " + SimpleDateFormat(
                             "MM/dd HH:mm:ss",
-                            Locale.JAPAN
-                        ).format(Calendar.getInstance().time)
+                            Locale.JAPAN,
+                        ).format(Calendar.getInstance().time),
                     )
                 }
 
@@ -102,7 +102,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(
                     appWidgetId,
-                    errorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString())
+                    errorView(context, appWidgetId, "エラーが発生しました", e.stackTraceToString()),
                 )
             }
         }

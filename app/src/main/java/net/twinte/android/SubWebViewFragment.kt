@@ -37,15 +37,17 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (dialog as? BottomSheetDialog)?.behavior?.let { behavior ->
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            behavior.addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING && sub_webview.scrollY > 0) {
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING && sub_webview.scrollY > 0) {
+                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        }
                     }
-                }
-            })
+                },
+            )
         }
         sub_webview.apply {
             settings.javaScriptEnabled = true
@@ -73,7 +75,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                     view.layoutParams =
                         FrameLayout.LayoutParams(
                             FrameLayout.LayoutParams.MATCH_PARENT,
-                            if (view.height < 200.toPx()) 300.toPx() else FrameLayout.LayoutParams.MATCH_PARENT
+                            if (view.height < 200.toPx()) 300.toPx() else FrameLayout.LayoutParams.MATCH_PARENT,
                         )
                     sub_webview_progressBar?.visibility = View.GONE
                     // Twinsからインポート
@@ -83,7 +85,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                         var script = document.createElement('script');
                         script.src = 'https://scripts.twinte.net/sp.js';
                         document.head.appendChild(script);
-                            """.trimIndent()
+                            """.trimIndent(),
                         ) {}
                     }
                 }

@@ -25,7 +25,7 @@ class ScheduleRepository(context: Context) {
     suspend fun update(
         calendar: Array<Date> = arrayOf(
             Calendar.getInstance().time,
-            Calendar.getInstance().apply { add(Calendar.DATE, 1) }.time
+            Calendar.getInstance().apply { add(Calendar.DATE, 1) }.time,
         ),
     ) = withContext(Dispatchers.IO) {
         with(pref.edit()) {
@@ -34,7 +34,7 @@ class ScheduleRepository(context: Context) {
                 val res = Network.httpClient.newCall(
                     Request.Builder()
                         .url(twinteUrlBuilder().appendPath(API_PATH).appendPath("/timetable").appendPath(d).buildUrl())
-                        .build()
+                        .build(),
                 ).execute()
                 if (!res.isSuccessful) {
                     if (res.code == 401) {

@@ -53,14 +53,14 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
                     MIN_BACKOFF_MILLIS,
-                    TimeUnit.MILLISECONDS
+                    TimeUnit.MILLISECONDS,
                 )
                 .addTag(TAG).build()
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
             Log.d(
                 "UpdateScheduleWorker",
-                "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}"
+                "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}",
             )
         }
     }
@@ -92,8 +92,8 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                     context,
                     1,
                     Intent(context, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
             .setChannelId(context.getString(R.string.schedule_notify_channel_id))

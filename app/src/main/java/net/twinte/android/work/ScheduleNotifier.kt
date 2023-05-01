@@ -77,7 +77,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 AlarmManager.RTC_WAKEUP,
                 timeInMillis,
                 1000 * 60 * 60 * 24,
-                alarmIntent(context, requestCode)
+                alarmIntent(context, requestCode),
             )
             Log.d("ScheduleNotifier", "Scheduled at $timeInMillis $requestCode")
         }
@@ -89,7 +89,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                     context,
                     requestCode,
                     intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
             }
     }
@@ -143,8 +143,8 @@ class ScheduleNotifier : BroadcastReceiver() {
                     context,
                     0,
                     Intent(context, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).addAction(
                 R.drawable.ic_icon,
                 "通知設定",
@@ -152,8 +152,8 @@ class ScheduleNotifier : BroadcastReceiver() {
                     context,
                     0,
                     Intent(context, SettingsActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).setContentTitle(title)
             .setContentText(text)
             .setChannelId(context.getString(R.string.schedule_notify_channel_id))

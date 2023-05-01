@@ -45,15 +45,15 @@ object WidgetUpdater {
                 appWidgetManager.getAppWidgetIds(
                     ComponentName(
                         context,
-                        clazz
-                    )
-                )
+                        clazz,
+                    ),
+                ),
             )
             PendingIntent.getBroadcast(
                 context,
                 "${time.hour}${time.minute}".toInt(),
                 intent,
-                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
         }
 
@@ -72,11 +72,11 @@ object WidgetUpdater {
             AlarmManager.RTC_WAKEUP,
             at.timeInMillis,
             1000 * 60 * 60 * 24,
-            updateWidgetIntent(context, clazz, time)
+            updateWidgetIntent(context, clazz, time),
         )
         Log.d(
             "WidgetUpdater",
-            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat.getDateTimeInstance().format(at.time)}"
+            "scheduled ${clazz.simpleName} at $time ${SimpleDateFormat.getDateTimeInstance().format(at.time)}",
         )
     }
 
@@ -86,7 +86,7 @@ object WidgetUpdater {
     private fun cancelDailyAt(context: Context, clazz: Class<*>, time: SimpleTime) {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         alarmManager.cancel(
-            updateWidgetIntent(context, clazz, time)
+            updateWidgetIntent(context, clazz, time),
         )
         Log.d("WidgetUpdater", "canceled ${clazz.simpleName} at $time")
     }
@@ -120,7 +120,7 @@ object WidgetUpdater {
         arrayOf(
             V3SmallWidgetProvider::class.java,
             V3MediumWidgetProvider::class.java,
-            V3LargeWidgetProvider::class.java
+            V3LargeWidgetProvider::class.java,
         ).forEach { clazz ->
             context.sendBroadcast(
                 Intent(context, clazz).apply {
@@ -130,11 +130,11 @@ object WidgetUpdater {
                         appWidgetManager.getAppWidgetIds(
                             ComponentName(
                                 context,
-                                clazz
-                            )
-                        )
+                                clazz,
+                            ),
+                        ),
                     )
-                }
+                },
             )
         }
     }
