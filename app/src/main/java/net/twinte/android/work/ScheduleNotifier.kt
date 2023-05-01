@@ -59,7 +59,9 @@ class ScheduleNotifier : BroadcastReceiver() {
 
         private fun cancelAll(context: Context) {
             val alarmManager = context.getSystemService(AlarmManager::class.java)
-            (0..24).forEach { alarmManager.cancel(alarmIntent(context, it)) }
+            for (requestCode in 0..24) {
+                alarmManager.cancel(alarmIntent(context, requestCode))
+            }
             Log.d("ScheduleNotifier", "All schedule canceled")
         }
 

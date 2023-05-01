@@ -23,7 +23,7 @@ performance:
   active: true
 
   ForEachOnRange:
-    active: false
+    active: true
 
 potential-bugs:
   active: true
