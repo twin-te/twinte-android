@@ -73,7 +73,7 @@ formatting:
   ImportOrdering:
     active: true
   Indentation:
-    active: false
+    active: true
   MaximumLineLength:
     active: false
     maxLineLength: 200
