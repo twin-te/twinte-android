@@ -235,7 +235,6 @@ object WidgetUpdater {
         set(Calendar.MILLISECOND, 0)
     }
 
-
     /**
      * スマホが再起動した時にウィジットの更新をスケジュールし直す
      */
@@ -246,4 +245,3 @@ object WidgetUpdater {
         }
     }
 }
-

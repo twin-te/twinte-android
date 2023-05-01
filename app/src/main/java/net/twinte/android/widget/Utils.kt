@@ -110,7 +110,6 @@ fun Timetable.nextCourseViewModel(period: Int): WidgetCourseViewModel? {
     return nextCourse
 }
 
-
 /**
  * 授業表示のコントロールを持つViewに内容を適用する
  */

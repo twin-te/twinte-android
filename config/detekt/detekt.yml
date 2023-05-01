@@ -82,7 +82,7 @@ formatting:
   NoBlankLineBeforeRbrace:
     active: true
   NoConsecutiveBlankLines:
-    active: false
+    active: true
   NoWildcardImports:
     active: false
   ParameterListWrapping:
