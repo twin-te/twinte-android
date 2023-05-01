@@ -68,7 +68,7 @@ formatting:
   autoCorrect: true
 
   ArgumentListWrapping:
-    active: false
+    active: true
     maxLineLength: 500
   ImportOrdering:
     active: false

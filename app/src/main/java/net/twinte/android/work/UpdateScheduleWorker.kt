@@ -89,7 +89,8 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                 PendingIntent.getActivity(
                     context,
                     1,
-                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)

@@ -80,7 +80,8 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
                     R.id.course_listView,
                     Intent(context, V3MediumWidgetRemoteViewService::class.java).apply {
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                    })
+                    }
+                )
 
                 views.setPendingIntentTemplate(
                     R.id.course_listView,

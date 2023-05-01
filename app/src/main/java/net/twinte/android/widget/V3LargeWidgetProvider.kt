@@ -81,7 +81,8 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
                     R.id.course_listView,
                     Intent(context, V3LargeWidgetRemoteViewService::class.java).apply {
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                    })
+                    }
+                )
 
                 views.setPendingIntentTemplate(
                     R.id.course_listView,

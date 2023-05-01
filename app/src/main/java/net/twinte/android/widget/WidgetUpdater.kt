@@ -41,7 +41,8 @@ object WidgetUpdater {
             val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             intent.putExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
+                AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                appWidgetManager.getAppWidgetIds(
                     ComponentName(
                         context,
                         clazz
@@ -123,7 +124,8 @@ object WidgetUpdater {
             context.sendBroadcast(Intent(context, clazz).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(
+                    AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                    appWidgetManager.getAppWidgetIds(
                         ComponentName(
                             context,
                             clazz

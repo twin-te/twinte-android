@@ -85,7 +85,8 @@ fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
     val targetSchedule = schedule.find { it.module == module && it.period == period }
 
     return WidgetCourseViewModel(
-        targetName, targetSchedule!!.room,
+        targetName,
+        targetSchedule!!.room,
         WidgetUpdater.getPeriodStartTime(period).toString(),
         target.id
     )

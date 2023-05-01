@@ -139,14 +139,17 @@ class ScheduleNotifier : BroadcastReceiver() {
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             ).addAction(
-                R.drawable.ic_icon, "通知設定",
+                R.drawable.ic_icon,
+                "通知設定",
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE
+                    Intent(context, SettingsActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             ).setContentTitle(title)
             .setContentText(text)
