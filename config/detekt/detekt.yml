@@ -1,0 +1,95 @@
+complexity:
+  LongMethod:
+    active: true
+  LongParameterList:
+    # 関数に渡す引数の個数が多くなってしまっても仕方がない
+    active: false
+  TooManyFunctions:
+    # 関数の個数が多くなってしまっても仕方がない
+    active: false
+
+coroutines:
+  active: true
+
+exceptions:
+  active: true
+
+  SwallowedException:
+    active: false
+  TooGenericExceptionCaught:
+    active: false
+
+performance:
+  active: true
+
+  ForEachOnRange:
+    active: false
+
+potential-bugs:
+  active: true
+
+style:
+  active: true
+  MagicNumber:
+    # Jetpack Compose 関連のコードでマジックナンバーを用いる機会が通常のものとして増えたため無視する
+    active: false
+  MaxLineLength:
+    # formatting の MaximumLineLength と衝突するためこちらを無効にする
+    active: false
+  ReturnCount:
+    active: false
+  WildcardImport:
+    active: false
+
+naming:
+  active: true
+
+  MatchingDeclarationName:
+    active: false
+
+  VariableNaming:
+    active: false
+
+empty-blocks:
+  active: false
+
+#####
+# `./gradlew detektProjectBaseline` でベースラインファイルを生成するときは
+# この行より下の部分をコメントアウトしてください
+#####
+
+formatting:
+  active: true
+  autoCorrect: true
+
+  ArgumentListWrapping:
+    active: false
+    maxLineLength: 500
+  ImportOrdering:
+    active: false
+  Indentation:
+    active: false
+  MaximumLineLength:
+    active: false
+    maxLineLength: 200
+  MultiLineIfElse:
+    active: false
+  NoBlankLineBeforeRbrace:
+    active: false
+  NoConsecutiveBlankLines:
+    active: false
+  NoWildcardImports:
+    active: false
+  ParameterListWrapping:
+    active: false
+    maxLineLength: 500
+  SpacingAroundKeyword:
+    active: false
+  SpacingBetweenDeclarationsWithAnnotations:
+    active: false
+  TrailingCommaOnCallSite:
+    active: false
+  TrailingCommaOnDeclarationSite:
+    active: false
+  Wrapping:
+    active: false
