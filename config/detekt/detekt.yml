@@ -91,7 +91,7 @@ formatting:
   SpacingAroundKeyword:
     active: true
   SpacingBetweenDeclarationsWithAnnotations:
-    active: false
+    active: true
   TrailingCommaOnCallSite:
     active: false
   TrailingCommaOnDeclarationSite:
