@@ -54,7 +54,9 @@ naming:
     active: true
 
 empty-blocks:
-  active: false
+  active: true
+  EmptyFunctionBlock:
+    ignoreOverridden: true
 
 #####
 # `./gradlew detektProjectBaseline` でベースラインファイルを生成するときは
