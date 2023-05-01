@@ -84,9 +84,9 @@ formatting:
   NoConsecutiveBlankLines:
     active: true
   NoWildcardImports:
-    active: false
+    active: true
   ParameterListWrapping:
-    active: false
+    active: true
     maxLineLength: 500
   SpacingAroundKeyword:
     active: false
