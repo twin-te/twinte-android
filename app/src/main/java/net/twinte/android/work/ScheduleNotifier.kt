@@ -12,10 +12,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.*
+import net.twinte.android.MainActivity
+import net.twinte.android.R
+import net.twinte.android.SettingsActivity
+import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Day
 import net.twinte.android.repository.ScheduleRepository
-import java.util.*
+import java.util.Calendar
 
 /**
  * 特殊日程通知を管理する

@@ -8,10 +8,14 @@ import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.*
+import net.twinte.android.MainActivity
+import net.twinte.android.Network
+import net.twinte.android.R
+import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Smallウィジットの管理を担う

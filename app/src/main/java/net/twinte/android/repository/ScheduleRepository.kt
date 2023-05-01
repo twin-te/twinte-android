@@ -7,13 +7,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.twinte.android.API_PATH
 import net.twinte.android.Network
-import net.twinte.android.twinteUrlBuilder
 import net.twinte.android.buildUrl
 import net.twinte.android.model.Timetable
+import net.twinte.android.twinteUrlBuilder
 import okhttp3.Request
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ScheduleRepository(context: Context) {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)

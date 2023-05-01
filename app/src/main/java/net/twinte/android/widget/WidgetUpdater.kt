@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 
 /**
  * ウィジットの更新タイミングの制御を担う

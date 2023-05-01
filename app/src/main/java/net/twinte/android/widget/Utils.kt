@@ -12,7 +12,8 @@ import net.twinte.android.model.Day
 import net.twinte.android.model.EventType
 import net.twinte.android.model.Timetable
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * ウィジットで表示される授業のVM

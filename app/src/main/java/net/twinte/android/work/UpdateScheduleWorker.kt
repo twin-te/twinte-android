@@ -6,14 +6,21 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
+import androidx.work.WorkerParameters
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 /**

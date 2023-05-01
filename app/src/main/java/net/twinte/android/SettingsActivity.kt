@@ -1,14 +1,14 @@
 package net.twinte.android
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
 
 class SettingsActivity : AppCompatActivity() {

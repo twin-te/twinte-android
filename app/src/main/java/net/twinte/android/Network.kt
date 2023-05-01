@@ -2,7 +2,11 @@ package net.twinte.android
 
 import android.net.Uri
 import android.webkit.CookieManager
-import okhttp3.*
+import okhttp3.ConnectionPool
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 const val DOMAIN = "app.twinte.net"

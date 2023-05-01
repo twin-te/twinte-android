@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.twinte.android.AUTH_PATH
 import net.twinte.android.Network
-import net.twinte.android.twinteUrlBuilder
 import net.twinte.android.buildUrl
+import net.twinte.android.twinteUrlBuilder
 import okhttp3.Request
 
 object UserRepository {
