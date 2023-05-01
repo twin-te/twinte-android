@@ -75,7 +75,7 @@ formatting:
   Indentation:
     active: true
   MaximumLineLength:
-    active: false
+    active: true
     maxLineLength: 200
   MultiLineIfElse:
     active: false
