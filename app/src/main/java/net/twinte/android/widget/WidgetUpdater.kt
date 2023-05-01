@@ -143,7 +143,7 @@ object WidgetUpdater {
      * 「現在の授業」として表示すべき授業の日付と時限を返す
      */
     fun getShouldShowCurrentDate(
-        current: Calendar = Calendar.getInstance()
+        current: Calendar = Calendar.getInstance(),
     ): Pair<Calendar, Int> {
         return when {
             // 19時以降は明日の0限を表示

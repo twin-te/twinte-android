@@ -31,5 +31,5 @@ enum class Module(val m: String) {
     Annual("通年"),
 
     @SerializedName("Unknown")
-    Unknown("不明")
+    Unknown("不明"),
 }

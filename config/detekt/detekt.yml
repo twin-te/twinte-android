@@ -96,6 +96,6 @@ formatting:
   TrailingCommaOnCallSite:
     active: false
   TrailingCommaOnDeclarationSite:
-    active: false
+    active: true
   Wrapping:
     active: true

@@ -26,7 +26,7 @@ class ScheduleRepository(context: Context) {
         calendar: Array<Date> = arrayOf(
             Calendar.getInstance().time,
             Calendar.getInstance().apply { add(Calendar.DATE, 1) }.time
-        )
+        ),
     ) = withContext(Dispatchers.IO) {
         with(pref.edit()) {
             clear()

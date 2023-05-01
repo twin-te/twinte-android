@@ -13,5 +13,5 @@ enum class Format(val f: String) {
     FaceToFace("対面"),
 
     @SerializedName("Others")
-    Others("その他")
+    Others("その他"),
 }

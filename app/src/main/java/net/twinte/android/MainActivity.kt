@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: FileChooserParams
+                fileChooserParams: FileChooserParams,
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
                 startActivityForResult(fileChooserParams.createIntent(), FILE_CHOOSER_REQUEST)

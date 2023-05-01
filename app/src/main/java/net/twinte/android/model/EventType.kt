@@ -16,5 +16,5 @@ enum class EventType(val e: String) {
     SubstituteDay("振替授業日"),
 
     @SerializedName("Other")
-    Other("その他")
+    Other("その他"),
 }

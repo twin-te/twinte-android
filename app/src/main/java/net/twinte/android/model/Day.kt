@@ -22,5 +22,5 @@ enum class Day(val d: String) {
     Fri("金"),
 
     @SerializedName("Sat")
-    Sat("土")
+    Sat("土"),
 }
