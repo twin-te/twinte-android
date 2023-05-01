@@ -89,7 +89,6 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
-
         } catch (e: Network.NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
@@ -102,6 +101,5 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                 )
             }
         }
-
     }
 }

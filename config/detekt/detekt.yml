@@ -80,7 +80,7 @@ formatting:
   MultiLineIfElse:
     active: true
   NoBlankLineBeforeRbrace:
-    active: false
+    active: true
   NoConsecutiveBlankLines:
     active: false
   NoWildcardImports:

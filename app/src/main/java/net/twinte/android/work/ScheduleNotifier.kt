@@ -109,7 +109,6 @@ class ScheduleNotifier : BroadcastReceiver() {
             } else if (TWINTE_DEBUG) {
                 createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module?.module?.m}")
             }
-
         } catch (e: Throwable) {
             // TODO エラー処理
             Log.d("ScheduleNotifier", "$e")

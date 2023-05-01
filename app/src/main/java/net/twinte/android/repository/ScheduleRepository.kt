@@ -56,5 +56,4 @@ class ScheduleRepository(context: Context) {
 
         gson.fromJson(pref.getString(d, null), Timetable::class.java)
     }
-
 }

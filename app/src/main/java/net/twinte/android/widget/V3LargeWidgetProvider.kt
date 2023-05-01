@@ -156,6 +156,5 @@ class V3LargeWidgetRemoteViewService : RemoteViewsService() {
 
         override fun getItemId(position: Int) = position.toLong()
         override fun hasStableIds() = false
-
     }
 }

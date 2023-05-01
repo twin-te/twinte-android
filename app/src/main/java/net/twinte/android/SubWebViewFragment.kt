@@ -46,7 +46,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                     }
                 }
             })
-
         }
         sub_webview.apply {
             settings.javaScriptEnabled = true

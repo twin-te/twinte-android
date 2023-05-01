@@ -157,6 +157,5 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
 
         override fun getItemId(position: Int) = position.toLong()
         override fun hasStableIds() = false
-
     }
 }
