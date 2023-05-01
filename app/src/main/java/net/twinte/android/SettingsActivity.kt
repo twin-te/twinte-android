@@ -51,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
                             Timer().schedule(1000) {
                                 findPreference<Preference>("github")?.isVisible = true
                             }
-                        } else if(versionTapCount >= 4) {
+                        } else if (versionTapCount >= 4) {
                             Toast.makeText(
                                 this.context,
                                 "あと${ 7 - versionTapCount}ステップで開発者になります",

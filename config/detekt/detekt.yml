@@ -89,7 +89,7 @@ formatting:
     active: true
     maxLineLength: 500
   SpacingAroundKeyword:
-    active: false
+    active: true
   SpacingBetweenDeclarationsWithAnnotations:
     active: false
   TrailingCommaOnCallSite:

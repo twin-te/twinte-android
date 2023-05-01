@@ -21,7 +21,7 @@ import java.util.Locale
 fun Timetable.dateLabel(calendar: Calendar): String {
     val formatter = SimpleDateFormat("MM/dd (E)", Locale.JAPAN)
     val date = formatter.format(calendar.time)
-    return if(module?.module?.m == null) {
+    return if (module?.module?.m == null) {
         date
     } else {
         "${module.module.m} $date"
