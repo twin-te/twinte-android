@@ -164,10 +164,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
             // ファイル選択時
             FILE_CHOOSER_REQUEST -> {
-                if (resultCode == RESULT_OK)
+                if (resultCode == RESULT_OK) {
                     filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
-                else
+                } else {
                     filePathCallback?.onReceiveValue(null)
+                }
             }
         }
     }
@@ -201,9 +202,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     override fun onBackPressed() {
-        if (main_webview.canGoBack()) main_webview.goBack()
-        else
+        if (main_webview.canGoBack()) {
+            main_webview.goBack()
+        } else {
             super.onBackPressed()
+        }
     }
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される

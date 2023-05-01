@@ -64,8 +64,9 @@ object WidgetUpdater {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val at = time.toCalendar().apply {
             add(Calendar.MINUTE, offsetMinute)
-            if (before(Calendar.getInstance()))
+            if (before(Calendar.getInstance())) {
                 add(Calendar.DATE, 1)
+            }
         }
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -193,16 +194,19 @@ object WidgetUpdater {
         val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
             .isNotEmpty()
-        )
+        ) {
             schedule(context, V3SmallWidgetProvider::class.java)
+        }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
             .isNotEmpty()
-        )
+        ) {
             schedule(context, V3MediumWidgetProvider::class.java)
+        }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
             .isNotEmpty()
-        )
+        ) {
             schedule(context, V3LargeWidgetProvider::class.java)
+        }
     }
 
     /**

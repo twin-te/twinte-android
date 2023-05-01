@@ -69,13 +69,15 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
         ScheduleRepository(applicationContext).update()
         scheduleNextUpdate(applicationContext)
         Log.d("UpdateScheduleWorker", "work success")
-        if (TWINTE_DEBUG)
+        if (TWINTE_DEBUG) {
             debugNotification(applicationContext, "success")
+        }
         Result.success()
     } catch (e: Throwable) {
         Log.d("UpdateScheduleWorker", "work failure $e")
-        if (TWINTE_DEBUG)
+        if (TWINTE_DEBUG) {
             debugNotification(applicationContext, "$e")
+        }
         Result.retry()
     }
 

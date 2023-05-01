@@ -62,7 +62,9 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                         callback?.subWebViewCallback(request.url.toString())
                         dismiss()
                         true
-                    } else false
+                    } else {
+                        false
+                    }
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     sub_webview_progressBar?.visibility = View.VISIBLE
@@ -127,8 +129,9 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDismiss(dialog: DialogInterface) {
-        if (sub_webview.url?.startsWith("https://twins.tsukuba.ac.jp") == true)
+        if (sub_webview.url?.startsWith("https://twins.tsukuba.ac.jp") == true) {
             callback?.subWebViewCallback(twinteUrlBuilder().buildUrl())
+        }
         super.onDismiss(dialog)
     }
 

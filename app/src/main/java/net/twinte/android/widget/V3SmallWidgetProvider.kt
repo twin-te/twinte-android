@@ -77,7 +77,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                     }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
 
-                if (TWINTE_DEBUG)
+                if (TWINTE_DEBUG) {
                     views.setTextViewText(
                         R.id.debug_textView,
                         "last update: " + SimpleDateFormat(
@@ -85,6 +85,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
                             Locale.JAPAN
                         ).format(Calendar.getInstance().time)
                     )
+                }
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }

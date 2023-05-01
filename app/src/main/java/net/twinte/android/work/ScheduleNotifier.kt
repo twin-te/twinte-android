@@ -27,11 +27,13 @@ class ScheduleNotifier : BroadcastReceiver() {
     companion object {
         private var _preferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
         private fun getPreferenceChangeListener(context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
-            if (_preferenceChangeListener == null) _preferenceChangeListener =
-                SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                    if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
-                    schedule(context)
-                }
+            if (_preferenceChangeListener == null) {
+                _preferenceChangeListener =
+                    SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                        if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
+                        schedule(context)
+                    }
+            }
             return _preferenceChangeListener!!
         }
 
@@ -102,9 +104,11 @@ class ScheduleNotifier : BroadcastReceiver() {
             val schedule = ScheduleRepository(context).getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
-            if (substitute != null) createSubstituteDayNotification(context, substitute)
-            else if (TWINTE_DEBUG)
+            if (substitute != null) {
+                createSubstituteDayNotification(context, substitute)
+            } else if (TWINTE_DEBUG) {
                 createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module?.module?.m}")
+            }
 
         } catch (e: Throwable) {
             // TODO エラー処理

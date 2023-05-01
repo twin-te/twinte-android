@@ -37,8 +37,11 @@ class ScheduleRepository(context: Context) {
                         .build()
                 ).execute()
                 if (!res.isSuccessful) {
-                    if (res.code == 401) throw Network.NotLoggedInException()
-                    else throw IOException("API call failed with code ${res.code}\n ${res.body?.string()}")
+                    if (res.code == 401) {
+                        throw Network.NotLoggedInException()
+                    } else {
+                        throw IOException("API call failed with code ${res.code}\n ${res.body?.string()}")
+                    }
                 }
                 putString(d, res.body?.string())
                 Log.d("ScheduleRepository", "schedule updated $d $res")

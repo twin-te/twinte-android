@@ -21,9 +21,11 @@ import java.util.Locale
 fun Timetable.dateLabel(calendar: Calendar): String {
     val formatter = SimpleDateFormat("MM/dd (E)", Locale.JAPAN)
     val date = formatter.format(calendar.time)
-    return if(module?.module?.m == null)
+    return if(module?.module?.m == null) {
         date
-    else "${module.module.m} $date"
+    } else {
+        "${module.module.m} $date"
+    }
 }
 
 /**
@@ -70,13 +72,16 @@ fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
         schedule.any { it.module == module && it.period == period && it.day == day }
     }
 
-    if (targets.isEmpty()) return null
-    else if (targets.size > 1) return WidgetCourseViewModel(
-        "${targets.size}件の授業重複あり",
-        "-",
-        WidgetUpdater.getPeriodStartTime(period).toString(),
-        null
-    )
+    if (targets.isEmpty()) {
+        return null
+    } else if (targets.size > 1) {
+        return WidgetCourseViewModel(
+            "${targets.size}件の授業重複あり",
+            "-",
+            WidgetUpdater.getPeriodStartTime(period).toString(),
+            null
+        )
+    }
 
     val target = targets.first()
     val targetName = target.name ?: target.course!!.name
@@ -132,10 +137,11 @@ fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, 
         R.layout.widget_v3_error
     ).apply {
         setTextViewText(R.id.error_title_textView, title)
-        if (detail != null)
+        if (detail != null) {
             setTextViewText(R.id.error_detail_textView, detail)
-        else
+        } else {
             setViewVisibility(R.id.error_detail_textView, View.GONE)
+        }
 
         setOnClickPendingIntent(
             R.id.error_reload_button,

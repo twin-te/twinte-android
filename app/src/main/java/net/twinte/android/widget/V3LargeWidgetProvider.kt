@@ -68,7 +68,7 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
                 }
                 views.setTextViewText(R.id.course_count_textView, schedule.courseCountLabel())
 
-                if (TWINTE_DEBUG)
+                if (TWINTE_DEBUG) {
                     views.setTextViewText(
                         R.id.debug_textView,
                         "last update: " + SimpleDateFormat(
@@ -76,6 +76,7 @@ class V3LargeWidgetProvider : AppWidgetProvider() {
                             Locale.JAPAN
                         ).format(Calendar.getInstance().time)
                     )
+                }
 
                 views.setRemoteAdapter(
                     R.id.course_listView,

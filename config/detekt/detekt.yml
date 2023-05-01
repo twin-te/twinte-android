@@ -78,7 +78,7 @@ formatting:
     active: true
     maxLineLength: 200
   MultiLineIfElse:
-    active: false
+    active: true
   NoBlankLineBeforeRbrace:
     active: false
   NoConsecutiveBlankLines:
