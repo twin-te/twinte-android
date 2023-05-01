@@ -48,7 +48,7 @@ naming:
   active: true
 
   MatchingDeclarationName:
-    active: false
+    active: true
 
   VariableNaming:
     active: false

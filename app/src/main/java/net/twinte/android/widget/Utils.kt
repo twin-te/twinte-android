@@ -16,11 +16,6 @@ import java.util.Calendar
 import java.util.Locale
 
 /**
- * ウィジットで表示される授業のVM
- */
-data class WidgetCourseViewModel(val name: String, val room: String, val time: String, val id: String?)
-
-/**
  * Module名 + 日付
  */
 fun Timetable.dateLabel(calendar: Calendar): String {
