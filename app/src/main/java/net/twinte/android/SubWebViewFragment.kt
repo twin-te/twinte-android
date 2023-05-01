@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -110,19 +109,18 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnKeyListener { _, code, event ->
-            if (event.action != KeyEvent.ACTION_UP) return@setOnKeyListener true
-
-            if (code == KeyEvent.KEYCODE_BACK && sub_webview.canGoBack())
-                sub_webview.goBack()
-            else dialog.dismiss()
-
-            return@setOnKeyListener true
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        object : BottomSheetDialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                if (sub_webview.canGoBack()) {
+                    // ダイアログで表示されているページから一つ前のページに戻れる場合、そこに戻る
+                    sub_webview.goBack()
+                } else {
+                    // ダイアログで表示されているページの前にはページが無い場合、ダイアログを閉じる
+                    dismiss()
+                }
+            }
         }
-        return dialog
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_sub_webview, container, false)
