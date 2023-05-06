@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
 import net.twinte.android.repository.ScheduleRepository
-import net.twinte.android.repository.UserRepository
+import net.twinte.android.repository.TwinteBackendUserRepository
 import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                 GlobalScope.launch {
                     account?.idToken?.let {
-                        UserRepository.validateGoogleIdToken(it)
+                        TwinteBackendUserRepository().validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
                         main_webview.loadUrl(twinteUrlBuilder().buildUrl())
