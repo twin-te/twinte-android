@@ -7,9 +7,10 @@ import net.twinte.android.Network
 import net.twinte.android.buildUrl
 import net.twinte.android.twinteUrlBuilder
 import okhttp3.Request
+import javax.inject.Inject
 
-class TwinteBackendUserRepository {
-    suspend fun validateGoogleIdToken(idToken: String): Boolean = withContext(Dispatchers.IO) {
+class TwinteBackendUserRepository @Inject constructor() : UserRepository {
+    override suspend fun validateGoogleIdToken(idToken: String): Boolean = withContext(Dispatchers.IO) {
         val res = Network.httpClient.newCall(
             Request.Builder()
                 .url(

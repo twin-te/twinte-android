@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.twinte.android.repository.ScheduleRepository
 import net.twinte.android.repository.SharedPreferencesScheduleRepository
+import net.twinte.android.repository.TwinteBackendUserRepository
+import net.twinte.android.repository.UserRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -14,4 +16,9 @@ interface MainApplicationModule {
     fun bindScheduleRepository(
         scheduleRepository: SharedPreferencesScheduleRepository,
     ): ScheduleRepository
+
+    @Binds
+    fun bindUserRepository(
+        userRepository: TwinteBackendUserRepository,
+    ): UserRepository
 }
