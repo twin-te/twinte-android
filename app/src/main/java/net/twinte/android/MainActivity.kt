@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -15,36 +16,58 @@ import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.twinte.android.Network.WebViewCookieJar.cookieManager
-import net.twinte.android.repository.ScheduleRepository
-import net.twinte.android.repository.UserRepository
+import net.twinte.android.network.serversettings.ServerSettings
+import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.repository.schedulenotification.ScheduleNotificationRepository
+import net.twinte.android.repository.user.UserRepository
 import net.twinte.android.widget.WidgetUpdater
-import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
+import javax.inject.Inject
 
 const val TWINTE_DEBUG = false
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
+
+    @Inject
+    lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var scheduleNotificationRepository: ScheduleNotificationRepository
+
+    @Inject
+    lateinit var cookieManager: CookieManager
+
+    @Inject
+    lateinit var serverSettings: ServerSettings
+
+    @Inject
+    lateinit var workManager: WorkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
 
-        UpdateScheduleWorker.scheduleNextUpdate(this)
-        ScheduleNotifier.schedule(this)
+        UpdateScheduleWorker.scheduleNextUpdate(workManager)
+        scheduleNotificationRepository.schedule()
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
-            } catch (e: Network.NotLoggedInException) {
+                scheduleRepository.update()
+            } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             } catch (e: Exception) {
                 // それ以外の予期せぬエラー
@@ -60,8 +83,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         main_webview.setup()
 
         val url = intent.getStringExtra("REGISTERED_COURSE_ID")
-            ?.let { twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
-            ?: twinteUrlBuilder().buildUrl()
+            ?.let { twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl() }
+            ?: twinteUrlBuilder(serverSettings).buildUrl()
 
         main_webview.loadUrl(url)
     }
@@ -96,7 +119,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         true
                     }
                     // その他の外部サイト
-                    request.url.host != DOMAIN -> {
+                    request.url.host != serverSettings.twinteBackendApiEndpointHost -> {
                         SubWebViewFragment.open(request.url.toString(), supportFragmentManager)
                         true
                     }
@@ -160,10 +183,10 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                 GlobalScope.launch {
                     account?.idToken?.let {
-                        UserRepository.validateGoogleIdToken(it)
+                        userRepository.validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
-                        main_webview.loadUrl(twinteUrlBuilder().buildUrl())
+                        main_webview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
                     }
                 }
             }
@@ -183,8 +206,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         cookieManager.flush()
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
-            } catch (e: Network.NotLoggedInException) {
+                scheduleRepository.update()
+            } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             }
             WidgetUpdater.updateAllWidget(this@MainActivity)
@@ -195,7 +218,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onNewIntent(intent)
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
-                main_webview.loadUrl(twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
+                main_webview.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
             }
     }
 

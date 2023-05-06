@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -15,23 +16,35 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * 一日一回、APIサーバーからウィジットに必要なデータを取得するJobの管理を行う
  */
-class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(appContext, workerParams) {
+@HiltWorker
+class UpdateScheduleWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+) : CoroutineWorker(appContext, workerParams) {
+
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
+
+    @Inject
+    lateinit var workManager: WorkManager
 
     companion object {
         private const val TAG = "UPDATE_SCHEDULE"
-        fun scheduleNextUpdate(context: Context) {
+        fun scheduleNextUpdate(workManager: WorkManager) {
             val currentDate = Calendar.getInstance()
 
             // Set Execution around 18:00 ~ 18:30
@@ -56,8 +69,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
                     TimeUnit.MILLISECONDS,
                 )
                 .addTag(TAG).build()
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
+            workManager.enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
             Log.d(
                 "UpdateScheduleWorker",
                 "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}",
@@ -66,37 +78,37 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
     }
 
     override suspend fun doWork() = try {
-        ScheduleRepository(applicationContext).update()
-        scheduleNextUpdate(applicationContext)
+        scheduleRepository.update()
+        scheduleNextUpdate(workManager)
         Log.d("UpdateScheduleWorker", "work success")
         if (TWINTE_DEBUG) {
-            debugNotification(applicationContext, "success")
+            debugNotification("success")
         }
         Result.success()
     } catch (e: Throwable) {
         Log.d("UpdateScheduleWorker", "work failure $e")
         if (TWINTE_DEBUG) {
-            debugNotification(applicationContext, "$e")
+            debugNotification("$e")
         }
         Result.retry()
     }
 
-    private fun debugNotification(context: Context, msg: String) {
-        val notificationManager = NotificationManagerCompat.from(context)
+    private fun debugNotification(msg: String) {
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-        val notification = NotificationCompat.Builder(context, context.getString(R.string.schedule_notify_channel_id))
+        val notification = NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.schedule_notify_channel_id))
             .setSmallIcon(R.drawable.ic_icon)
             .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context,
+                    applicationContext,
                     1,
-                    Intent(context, MainActivity::class.java),
+                    Intent(applicationContext, MainActivity::class.java),
                     PendingIntent.FLAG_IMMUTABLE,
                 ),
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
-            .setChannelId(context.getString(R.string.schedule_notify_channel_id))
+            .setChannelId(applicationContext.getString(R.string.schedule_notify_channel_id))
             .build()
         notificationManager.notify(2, notification)
     }

@@ -1,44 +1,37 @@
-package net.twinte.android.repository
+package net.twinte.android.repository.schedule
 
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.twinte.android.API_PATH
-import net.twinte.android.Network
-import net.twinte.android.buildUrl
+import net.twinte.android.NotLoggedInException
 import net.twinte.android.model.Timetable
-import net.twinte.android.twinteUrlBuilder
-import okhttp3.Request
+import net.twinte.android.network.TwinteBackendHttpClient
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class ScheduleRepository(context: Context) {
+class SharedPreferencesScheduleRepository @Inject constructor(
+    @ApplicationContext context: Context,
+    private val twinteBackendHttpClient: TwinteBackendHttpClient,
+) : ScheduleRepository {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
     private val gson = Gson()
 
-    suspend fun update(
-        calendar: Array<Date> = arrayOf(
-            Calendar.getInstance().time,
-            Calendar.getInstance().apply { add(Calendar.DATE, 1) }.time,
-        ),
-    ) = withContext(Dispatchers.IO) {
+    override suspend fun update(calendar: Array<Date>): Unit = withContext(Dispatchers.IO) {
         with(pref.edit()) {
             clear()
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
-                val res = Network.httpClient.newCall(
-                    Request.Builder()
-                        .url(twinteUrlBuilder().appendPath(API_PATH).appendPath("/timetable").appendPath(d).buildUrl())
-                        .build(),
-                ).execute()
+                val res = twinteBackendHttpClient.get("/api/v3/timetable/$d")
+
                 if (!res.isSuccessful) {
                     if (res.code == 401) {
-                        throw Network.NotLoggedInException()
+                        throw NotLoggedInException()
                     } else {
                         throw IOException("API call failed with code ${res.code}\n ${res.body?.string()}")
                     }
@@ -50,7 +43,7 @@ class ScheduleRepository(context: Context) {
         }
     }
 
-    suspend fun getSchedule(date: Date): Timetable = withContext(Dispatchers.IO) {
+    override suspend fun getSchedule(date: Date): Timetable = withContext(Dispatchers.IO) {
         val d = simpleDateFormat.format(date)
         if (!pref.contains(d)) update(arrayOf(date))
 

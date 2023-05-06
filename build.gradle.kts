@@ -21,6 +21,7 @@ buildscript {
 }
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.22.0")
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 // see https://detekt.dev/docs/introduction/reporting/#merging-reports
 val reportMerge by tasks.registering(ReportMergeTask::class) {

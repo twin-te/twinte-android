@@ -7,20 +7,25 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.MainActivity
-import net.twinte.android.Network
+import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  * Smallウィジットの管理を担う
  */
-class V3SmallWidgetProvider : AppWidgetProvider() {
+@AndroidEntryPoint
+class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
 
     /**
      * 設置されたSmallウィジットの数が 0 -> 1 になると呼び出される
@@ -48,7 +53,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = ScheduleRepository(context).getSchedule(current.time)
+            val schedule = scheduleRepository.getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
@@ -94,7 +99,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
-        } catch (e: Network.NotLoggedInException) {
+        } catch (e: NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -19,11 +20,20 @@ import androidx.webkit.WebViewClientCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_sub_webview.*
-import net.twinte.android.Network.WebViewCookieJar.cookieManager
+import net.twinte.android.network.serversettings.ServerSettings
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SubWebViewFragment : BottomSheetDialogFragment() {
     var callback: Callback? = null
+
+    @Inject
+    lateinit var cookieManager: CookieManager
+
+    @Inject
+    lateinit var serverSettings: ServerSettings
 
     companion object {
         fun open(url: String, manager: FragmentManager) = SubWebViewFragment().apply {
@@ -56,9 +66,9 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
                     // Twin:teのアプリケーションページに飛ぶときはダイアログを閉じてメインで表示
                     if (
-                        request.url.host == DOMAIN &&
-                        request.url.path?.startsWith(API_PATH) != true &&
-                        request.url.path?.startsWith(AUTH_PATH) != true
+                        request.url.host == serverSettings.twinteBackendApiEndpointHost &&
+                        request.url.path?.startsWith("/api/v3") != true &&
+                        request.url.path?.startsWith("/auth/v3") != true
                     ) {
                         callback?.subWebViewCallback(request.url.toString())
                         dismiss()
@@ -131,7 +141,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         if (sub_webview.url?.startsWith("https://twins.tsukuba.ac.jp") == true) {
-            callback?.subWebViewCallback(twinteUrlBuilder().buildUrl())
+            callback?.subWebViewCallback(twinteUrlBuilder(serverSettings).buildUrl())
         }
         super.onDismiss(dialog)
     }

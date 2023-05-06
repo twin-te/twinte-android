@@ -8,21 +8,26 @@ import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.MainActivity
-import net.twinte.android.Network
+import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Timetable
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  * Mediumウィジットの管理を担う
  */
-class V3MediumWidgetProvider : AppWidgetProvider() {
+@AndroidEntryPoint
+class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
 
     /**
      * 設置されたMediumウィジットの数が 0 -> 1 になると呼び出される
@@ -49,7 +54,7 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
         Log.d("V3MediumWidgetProvider", "OnUpdate received")
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
         try {
-            val schedule = ScheduleRepository(context).getSchedule(current.time)
+            val schedule = scheduleRepository.getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
@@ -99,7 +104,7 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.course_listView)
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
-        } catch (e: Network.NotLoggedInException) {
+        } catch (e: NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }
@@ -117,10 +122,17 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
 /**
  * ウィジット右側のリストを生成するサービス
  */
-class V3MediumWidgetRemoteViewService : RemoteViewsService() {
-    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent)
+class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
 
-    class Factory(val context: Context, val intent: Intent?) : RemoteViewsFactory {
+    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent, scheduleRepository)
+
+    class Factory(
+        val context: Context,
+        val intent: Intent?,
+        val scheduleRepository: ScheduleRepository,
+    ) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
         override fun onCreate() {}
@@ -128,7 +140,7 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
         override fun onDataSetChanged() = runBlocking {
             Log.d("MediumFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
-            schedule = ScheduleRepository(context).getSchedule(current.time)
+            schedule = scheduleRepository.getSchedule(current.time)
         }
 
         override fun onDestroy() {}
