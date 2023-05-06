@@ -25,9 +25,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
 import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.repository.schedulenotification.ScheduleNotificationRepository
 import net.twinte.android.repository.user.UserRepository
 import net.twinte.android.widget.WidgetUpdater
-import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
 import javax.inject.Inject
 
@@ -43,13 +43,16 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     @Inject
     lateinit var userRepository: UserRepository
 
+    @Inject
+    lateinit var scheduleNotificationRepository: ScheduleNotificationRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
 
         UpdateScheduleWorker.scheduleNextUpdate(this)
-        ScheduleNotifier.schedule(this)
+        scheduleNotificationRepository.schedule()
         GlobalScope.launch {
             try {
                 scheduleRepository.update()
