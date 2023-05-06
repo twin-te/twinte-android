@@ -17,7 +17,7 @@ import net.twinte.android.R
 import net.twinte.android.SettingsActivity
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Day
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.SharedPreferencesScheduleRepository
 import java.util.Calendar
 
 /**
@@ -101,7 +101,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 if (get(Calendar.HOUR_OF_DAY) > 18) add(Calendar.DATE, 1)
             }
 
-            val schedule = ScheduleRepository(context).getSchedule(targetDate.time)
+            val schedule = SharedPreferencesScheduleRepository(context).getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) {

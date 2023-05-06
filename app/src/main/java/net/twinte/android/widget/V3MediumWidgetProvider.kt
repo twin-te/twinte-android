@@ -14,7 +14,7 @@ import net.twinte.android.Network
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Timetable
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.SharedPreferencesScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -49,7 +49,7 @@ class V3MediumWidgetProvider : AppWidgetProvider() {
         Log.d("V3MediumWidgetProvider", "OnUpdate received")
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
         try {
-            val schedule = ScheduleRepository(context).getSchedule(current.time)
+            val schedule = SharedPreferencesScheduleRepository(context).getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
@@ -128,7 +128,7 @@ class V3MediumWidgetRemoteViewService : RemoteViewsService() {
         override fun onDataSetChanged() = runBlocking {
             Log.d("MediumFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
-            schedule = ScheduleRepository(context).getSchedule(current.time)
+            schedule = SharedPreferencesScheduleRepository(context).getSchedule(current.time)
         }
 
         override fun onDestroy() {}

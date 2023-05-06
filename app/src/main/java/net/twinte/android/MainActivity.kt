@@ -24,7 +24,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.SharedPreferencesScheduleRepository
 import net.twinte.android.repository.UserRepository
 import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         ScheduleNotifier.schedule(this)
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
+                SharedPreferencesScheduleRepository(this@MainActivity).update()
             } catch (e: Network.NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             } catch (e: Exception) {
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         cookieManager.flush()
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
+                SharedPreferencesScheduleRepository(this@MainActivity).update()
             } catch (e: Network.NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             }

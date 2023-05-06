@@ -17,7 +17,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class ScheduleRepository(context: Context) {
+class SharedPreferencesScheduleRepository(context: Context) {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
     private val gson = Gson()

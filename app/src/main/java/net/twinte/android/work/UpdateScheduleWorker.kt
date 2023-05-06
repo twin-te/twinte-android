@@ -18,7 +18,7 @@ import androidx.work.WorkerParameters
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.SharedPreferencesScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -66,7 +66,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
     }
 
     override suspend fun doWork() = try {
-        ScheduleRepository(applicationContext).update()
+        SharedPreferencesScheduleRepository(applicationContext).update()
         scheduleNextUpdate(applicationContext)
         Log.d("UpdateScheduleWorker", "work success")
         if (TWINTE_DEBUG) {

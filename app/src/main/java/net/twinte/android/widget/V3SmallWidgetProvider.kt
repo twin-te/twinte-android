@@ -12,7 +12,7 @@ import net.twinte.android.MainActivity
 import net.twinte.android.Network
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.SharedPreferencesScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -48,7 +48,7 @@ class V3SmallWidgetProvider : AppWidgetProvider() {
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = ScheduleRepository(context).getSchedule(current.time)
+            val schedule = SharedPreferencesScheduleRepository(context).getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
