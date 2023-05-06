@@ -24,17 +24,21 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
-import net.twinte.android.repository.SharedPreferencesScheduleRepository
+import net.twinte.android.repository.ScheduleRepository
 import net.twinte.android.repository.UserRepository
 import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
+import javax.inject.Inject
 
 const val TWINTE_DEBUG = false
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +49,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         ScheduleNotifier.schedule(this)
         GlobalScope.launch {
             try {
-                SharedPreferencesScheduleRepository(this@MainActivity).update()
+                scheduleRepository.update()
             } catch (e: Network.NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             } catch (e: Exception) {
@@ -185,7 +189,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         cookieManager.flush()
         GlobalScope.launch {
             try {
-                SharedPreferencesScheduleRepository(this@MainActivity).update()
+                scheduleRepository.update()
             } catch (e: Network.NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             }

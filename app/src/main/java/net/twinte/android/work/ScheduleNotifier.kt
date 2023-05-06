@@ -11,19 +11,25 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.SettingsActivity
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.model.Day
-import net.twinte.android.repository.SharedPreferencesScheduleRepository
+import net.twinte.android.repository.ScheduleRepository
 import java.util.Calendar
+import javax.inject.Inject
 
 /**
  * 特殊日程通知を管理する
  */
+@AndroidEntryPoint
 class ScheduleNotifier : BroadcastReceiver() {
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
+
     companion object {
         private var _preferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
         private fun getPreferenceChangeListener(context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
@@ -101,7 +107,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 if (get(Calendar.HOUR_OF_DAY) > 18) add(Calendar.DATE, 1)
             }
 
-            val schedule = SharedPreferencesScheduleRepository(context).getSchedule(targetDate.time)
+            val schedule = scheduleRepository.getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) {

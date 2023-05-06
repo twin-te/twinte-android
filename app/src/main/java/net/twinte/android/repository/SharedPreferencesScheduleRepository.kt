@@ -3,6 +3,7 @@ package net.twinte.android.repository
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.twinte.android.API_PATH
@@ -13,21 +14,18 @@ import net.twinte.android.twinteUrlBuilder
 import okhttp3.Request
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class SharedPreferencesScheduleRepository(context: Context) {
+class SharedPreferencesScheduleRepository @Inject constructor(
+    @ApplicationContext context: Context,
+) : ScheduleRepository {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
     private val gson = Gson()
 
-    suspend fun update(
-        calendar: Array<Date> = arrayOf(
-            Calendar.getInstance().time,
-            Calendar.getInstance().apply { add(Calendar.DATE, 1) }.time,
-        ),
-    ) = withContext(Dispatchers.IO) {
+    override suspend fun update(calendar: Array<Date>): Unit = withContext(Dispatchers.IO) {
         with(pref.edit()) {
             clear()
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
@@ -50,7 +48,7 @@ class SharedPreferencesScheduleRepository(context: Context) {
         }
     }
 
-    suspend fun getSchedule(date: Date): Timetable = withContext(Dispatchers.IO) {
+    override suspend fun getSchedule(date: Date): Timetable = withContext(Dispatchers.IO) {
         val d = simpleDateFormat.format(date)
         if (!pref.contains(d)) update(arrayOf(date))
 

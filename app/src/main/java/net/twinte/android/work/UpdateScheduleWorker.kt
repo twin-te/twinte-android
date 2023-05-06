@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.hilt.work.HiltWorker
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -15,19 +16,28 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest.Companion.MIN_BACKOFF_MILLIS
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.SharedPreferencesScheduleRepository
+import net.twinte.android.repository.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * 一日一回、APIサーバーからウィジットに必要なデータを取得するJobの管理を行う
  */
-class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(appContext, workerParams) {
+@HiltWorker
+class UpdateScheduleWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+) : CoroutineWorker(appContext, workerParams) {
+
+    @Inject
+    lateinit var scheduleRepository: ScheduleRepository
 
     companion object {
         private const val TAG = "UPDATE_SCHEDULE"
@@ -66,7 +76,7 @@ class UpdateScheduleWorker(appContext: Context, workerParams: WorkerParameters) 
     }
 
     override suspend fun doWork() = try {
-        SharedPreferencesScheduleRepository(applicationContext).update()
+        scheduleRepository.update()
         scheduleNextUpdate(applicationContext)
         Log.d("UpdateScheduleWorker", "work success")
         if (TWINTE_DEBUG) {
