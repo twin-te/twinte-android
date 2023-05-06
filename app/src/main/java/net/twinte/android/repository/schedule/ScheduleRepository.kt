@@ -1,4 +1,4 @@
-package net.twinte.android.repository
+package net.twinte.android.repository.schedule
 
 import net.twinte.android.model.Timetable
 import java.util.Calendar

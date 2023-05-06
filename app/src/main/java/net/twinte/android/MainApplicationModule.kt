@@ -4,10 +4,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.twinte.android.repository.ScheduleRepository
-import net.twinte.android.repository.SharedPreferencesScheduleRepository
-import net.twinte.android.repository.TwinteBackendUserRepository
-import net.twinte.android.repository.UserRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.repository.schedule.SharedPreferencesScheduleRepository
+import net.twinte.android.repository.user.TwinteBackendUserRepository
+import net.twinte.android.repository.user.UserRepository
 
 @Module
 @InstallIn(SingletonComponent::class)

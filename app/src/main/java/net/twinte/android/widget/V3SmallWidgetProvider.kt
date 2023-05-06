@@ -13,7 +13,7 @@ import net.twinte.android.MainActivity
 import net.twinte.android.Network
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.ScheduleRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

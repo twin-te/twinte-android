@@ -1,4 +1,4 @@
-package net.twinte.android.repository
+package net.twinte.android.repository.schedule
 
 import android.content.Context
 import android.util.Log

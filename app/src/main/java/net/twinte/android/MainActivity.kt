@@ -24,8 +24,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
-import net.twinte.android.repository.ScheduleRepository
-import net.twinte.android.repository.UserRepository
+import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.repository.user.UserRepository
 import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
