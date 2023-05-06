@@ -1,10 +1,13 @@
 package net.twinte.android
 
+import android.content.Context
 import android.webkit.CookieManager
+import androidx.work.WorkManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.twinte.android.network.TwinteBackendHttpClient
 import net.twinte.android.network.TwinteBackendHttpClientImpl
@@ -56,5 +59,10 @@ interface MainApplicationModule {
         fun provideCookieManager(): CookieManager = CookieManager.getInstance().apply {
             setAcceptCookie(true)
         }
+
+        @Provides
+        fun provideWorkManager(
+            @ApplicationContext context: Context,
+        ): WorkManager = WorkManager.getInstance(context)
     }
 }

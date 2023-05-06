@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,12 +54,15 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     @Inject
     lateinit var serverSettings: ServerSettings
 
+    @Inject
+    lateinit var workManager: WorkManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme_Main)
         setContentView(R.layout.activity_main)
 
-        UpdateScheduleWorker.scheduleNextUpdate(this)
+        UpdateScheduleWorker.scheduleNextUpdate(workManager)
         scheduleNotificationRepository.schedule()
         GlobalScope.launch {
             try {

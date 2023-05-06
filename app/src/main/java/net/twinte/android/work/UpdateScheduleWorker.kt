@@ -39,9 +39,12 @@ class UpdateScheduleWorker @AssistedInject constructor(
     @Inject
     lateinit var scheduleRepository: ScheduleRepository
 
+    @Inject
+    lateinit var workManager: WorkManager
+
     companion object {
         private const val TAG = "UPDATE_SCHEDULE"
-        fun scheduleNextUpdate(context: Context) {
+        fun scheduleNextUpdate(workManager: WorkManager) {
             val currentDate = Calendar.getInstance()
 
             // Set Execution around 18:00 ~ 18:30
@@ -66,8 +69,7 @@ class UpdateScheduleWorker @AssistedInject constructor(
                     TimeUnit.MILLISECONDS,
                 )
                 .addTag(TAG).build()
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
+            workManager.enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, updateScheduleWorkRequest)
             Log.d(
                 "UpdateScheduleWorker",
                 "work enqueued at ${SimpleDateFormat.getDateTimeInstance().format(dueDate.time)}",
@@ -77,36 +79,36 @@ class UpdateScheduleWorker @AssistedInject constructor(
 
     override suspend fun doWork() = try {
         scheduleRepository.update()
-        scheduleNextUpdate(applicationContext)
+        scheduleNextUpdate(workManager)
         Log.d("UpdateScheduleWorker", "work success")
         if (TWINTE_DEBUG) {
-            debugNotification(applicationContext, "success")
+            debugNotification("success")
         }
         Result.success()
     } catch (e: Throwable) {
         Log.d("UpdateScheduleWorker", "work failure $e")
         if (TWINTE_DEBUG) {
-            debugNotification(applicationContext, "$e")
+            debugNotification("$e")
         }
         Result.retry()
     }
 
-    private fun debugNotification(context: Context, msg: String) {
-        val notificationManager = NotificationManagerCompat.from(context)
+    private fun debugNotification(msg: String) {
+        val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-        val notification = NotificationCompat.Builder(context, context.getString(R.string.schedule_notify_channel_id))
+        val notification = NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.schedule_notify_channel_id))
             .setSmallIcon(R.drawable.ic_icon)
             .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
-                    context,
+                    applicationContext,
                     1,
-                    Intent(context, MainActivity::class.java),
+                    Intent(applicationContext, MainActivity::class.java),
                     PendingIntent.FLAG_IMMUTABLE,
                 ),
             ).setContentTitle("[Debug]APIアクセス終了")
             .setContentText(msg)
-            .setChannelId(context.getString(R.string.schedule_notify_channel_id))
+            .setChannelId(applicationContext.getString(R.string.schedule_notify_channel_id))
             .build()
         notificationManager.notify(2, notification)
     }
