@@ -19,9 +19,11 @@ import androidx.webkit.WebViewClientCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_sub_webview.*
 import net.twinte.android.Network.WebViewCookieJar.cookieManager
 
+@AndroidEntryPoint
 class SubWebViewFragment : BottomSheetDialogFragment() {
     var callback: Callback? = null
 

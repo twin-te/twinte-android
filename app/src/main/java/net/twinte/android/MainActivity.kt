@@ -17,6 +17,7 @@ import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,6 +32,7 @@ import net.twinte.android.work.UpdateScheduleWorker
 
 const val TWINTE_DEBUG = false
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     var filePathCallback: ValueCallback<Array<Uri>>? = null
 
