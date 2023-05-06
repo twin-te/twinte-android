@@ -10,7 +10,7 @@ import android.widget.RemoteViews
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import net.twinte.android.MainActivity
-import net.twinte.android.Network
+import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
 import net.twinte.android.repository.schedule.ScheduleRepository
@@ -99,7 +99,7 @@ class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }
-        } catch (e: Network.NotLoggedInException) {
+        } catch (e: NotLoggedInException) {
             appWidgetIds.forEach { appWidgetId ->
                 appWidgetManager.updateAppWidget(appWidgetId, errorView(context, appWidgetId, "ログインしてください"))
             }

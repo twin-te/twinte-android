@@ -2,25 +2,20 @@ package net.twinte.android.repository.user
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.twinte.android.AUTH_PATH
-import net.twinte.android.Network
-import net.twinte.android.buildUrl
-import net.twinte.android.twinteUrlBuilder
-import okhttp3.Request
+import net.twinte.android.network.TwinteBackendHttpClient
+import net.twinte.android.network.params
 import javax.inject.Inject
 
-class TwinteBackendUserRepository @Inject constructor() : UserRepository {
+class TwinteBackendUserRepository @Inject constructor(
+    private val twinteBackendHttpClient: TwinteBackendHttpClient,
+) : UserRepository {
     override suspend fun validateGoogleIdToken(idToken: String): Boolean = withContext(Dispatchers.IO) {
-        val res = Network.httpClient.newCall(
-            Request.Builder()
-                .url(
-                    twinteUrlBuilder().appendPath(AUTH_PATH)
-                        .appendPath("/google/idToken")
-                        .appendQueryParameter("token", idToken)
-                        .buildUrl(),
-                )
-                .build(),
-        ).execute()
+        val res = twinteBackendHttpClient.get(
+            "/auth/v3/google/idToken",
+            params {
+                put("token", idToken)
+            },
+        )
         res.isSuccessful
     }
 }
