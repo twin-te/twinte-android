@@ -1,4 +1,4 @@
-package net.twinte.android.repository.schedule
+package net.twinte.android.datastore.schedule
 
 import android.content.Context
 import android.util.Log
@@ -15,10 +15,10 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-class SharedPreferencesScheduleRepository @Inject constructor(
+class SharedPreferencesScheduleDataStore @Inject constructor(
     @ApplicationContext context: Context,
     private val twinteBackendHttpClient: TwinteBackendHttpClient,
-) : ScheduleRepository {
+) : ScheduleDataStore {
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
     private val gson = Gson()
@@ -37,7 +37,7 @@ class SharedPreferencesScheduleRepository @Inject constructor(
                     }
                 }
                 putString(d, res.body?.string())
-                Log.d("ScheduleRepository", "schedule updated $d $res")
+                Log.d(TAG, "schedule updated $d $res")
             }
             commit()
         }
@@ -48,5 +48,9 @@ class SharedPreferencesScheduleRepository @Inject constructor(
         if (!pref.contains(d)) update(arrayOf(date))
 
         gson.fromJson(pref.getString(d, null), Timetable::class.java)
+    }
+
+    companion object {
+        private val TAG = SharedPreferencesScheduleDataStore::class.java.simpleName
     }
 }

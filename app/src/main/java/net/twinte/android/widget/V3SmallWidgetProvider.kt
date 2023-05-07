@@ -13,7 +13,7 @@ import net.twinte.android.MainActivity
 import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.datastore.schedule.ScheduleDataStore
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     /**
      * 設置されたSmallウィジットの数が 0 -> 1 になると呼び出される
@@ -53,7 +53,7 @@ class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = scheduleRepository.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(

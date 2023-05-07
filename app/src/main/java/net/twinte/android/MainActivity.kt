@@ -25,10 +25,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.twinte.android.datastore.schedule.ScheduleDataStore
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
+import net.twinte.android.datastore.user.UserDataStore
 import net.twinte.android.network.serversettings.ServerSettings
-import net.twinte.android.repository.schedule.ScheduleRepository
-import net.twinte.android.repository.schedulenotification.ScheduleNotificationRepository
-import net.twinte.android.repository.user.UserRepository
 import net.twinte.android.widget.WidgetUpdater
 import net.twinte.android.work.UpdateScheduleWorker
 import javax.inject.Inject
@@ -40,13 +40,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     @Inject
-    lateinit var userRepository: UserRepository
+    lateinit var userDataStore: UserDataStore
 
     @Inject
-    lateinit var scheduleNotificationRepository: ScheduleNotificationRepository
+    lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
 
     @Inject
     lateinit var cookieManager: CookieManager
@@ -63,10 +63,10 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         setContentView(R.layout.activity_main)
 
         UpdateScheduleWorker.scheduleNextUpdate(workManager)
-        scheduleNotificationRepository.schedule()
+        scheduleNotificationDataStore.schedule()
         GlobalScope.launch {
             try {
-                scheduleRepository.update()
+                scheduleDataStore.update()
             } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             } catch (e: Exception) {
@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                 GlobalScope.launch {
                     account?.idToken?.let {
-                        userRepository.validateGoogleIdToken(it)
+                        userDataStore.validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
                         main_webview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         cookieManager.flush()
         GlobalScope.launch {
             try {
-                scheduleRepository.update()
+                scheduleDataStore.update()
             } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             }

@@ -1,10 +1,10 @@
-package net.twinte.android.repository.schedule
+package net.twinte.android.datastore.schedule
 
 import net.twinte.android.model.Timetable
 import java.util.Calendar
 import java.util.Date
 
-interface ScheduleRepository {
+interface ScheduleDataStore {
     suspend fun update(
         calendar: Array<Date> = arrayOf(
             Calendar.getInstance().time,

@@ -21,7 +21,7 @@ import dagger.assisted.AssistedInject
 import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
-import net.twinte.android.repository.schedule.ScheduleRepository
+import net.twinte.android.datastore.schedule.ScheduleDataStore
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -37,7 +37,7 @@ class UpdateScheduleWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     @Inject
     lateinit var workManager: WorkManager
@@ -78,7 +78,7 @@ class UpdateScheduleWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork() = try {
-        scheduleRepository.update()
+        scheduleDataStore.update()
         scheduleNextUpdate(workManager)
         Log.d("UpdateScheduleWorker", "work success")
         if (TWINTE_DEBUG) {

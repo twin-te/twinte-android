@@ -14,8 +14,8 @@ import net.twinte.android.MainActivity
 import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
+import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.model.Timetable
-import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     /**
      * 設置されたLargeウィジットの数が 0 -> 1 になると呼び出される
@@ -52,10 +52,10 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
         appWidgetIds: IntArray,
     ) = runBlocking {
         Log.d("V3LargeWidgetProvider", "OnUpdate received")
-        val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
+        val (current) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = scheduleRepository.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
@@ -126,14 +126,14 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
 @AndroidEntryPoint
 class V3LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
-    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent, scheduleRepository)
+    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent, scheduleDataStore)
 
     class Factory(
         val context: Context,
         val intent: Intent?,
-        private val scheduleRepository: ScheduleRepository,
+        private val scheduleDataStore: ScheduleDataStore,
     ) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
@@ -142,7 +142,7 @@ class V3LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService(
         override fun onDataSetChanged() = runBlocking {
             Log.d("LargeFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
-            schedule = scheduleRepository.getSchedule(current.time)
+            schedule = scheduleDataStore.getSchedule(current.time)
         }
 
         override fun onDestroy() {}

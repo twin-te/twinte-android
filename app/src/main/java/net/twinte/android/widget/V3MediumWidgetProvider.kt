@@ -14,8 +14,8 @@ import net.twinte.android.MainActivity
 import net.twinte.android.NotLoggedInException
 import net.twinte.android.R
 import net.twinte.android.TWINTE_DEBUG
+import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.model.Timetable
-import net.twinte.android.repository.schedule.ScheduleRepository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     /**
      * 設置されたMediumウィジットの数が 0 -> 1 になると呼び出される
@@ -52,9 +52,9 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
         appWidgetIds: IntArray,
     ) = runBlocking {
         Log.d("V3MediumWidgetProvider", "OnUpdate received")
-        val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
+        val (current) = WidgetUpdater.getShouldShowCurrentDate()
         try {
-            val schedule = scheduleRepository.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time)
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
@@ -124,14 +124,14 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
  */
 class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
-    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent, scheduleRepository)
+    override fun onGetViewFactory(intent: Intent?) = Factory(applicationContext, intent, scheduleDataStore)
 
     class Factory(
         val context: Context,
         val intent: Intent?,
-        val scheduleRepository: ScheduleRepository,
+        val scheduleDataStore: ScheduleDataStore,
     ) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
@@ -140,7 +140,7 @@ class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService
         override fun onDataSetChanged() = runBlocking {
             Log.d("MediumFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
-            schedule = scheduleRepository.getSchedule(current.time)
+            schedule = scheduleDataStore.getSchedule(current.time)
         }
 
         override fun onDestroy() {}
