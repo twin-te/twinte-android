@@ -128,7 +128,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                     binding.subWebview.goBack()
                 } else {
                     // ダイアログで表示されているページの前にはページが無い場合、ダイアログを閉じる
-                    dismiss()
+                    super.onBackPressed()
                 }
             }
         }
