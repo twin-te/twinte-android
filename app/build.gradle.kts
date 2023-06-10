@@ -1,12 +1,10 @@
-val kotlinVersion: String by project
-
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-android-extensions")
-    id("com.google.android.gms.oss-licenses-plugin")
+    id(libs.plugins.android.application.get().pluginId)
+    id(libs.plugins.kotlin.android.core.get().pluginId)
+    id(libs.plugins.kotlin.android.extensions.get().pluginId)
+    id(libs.plugins.gms.oss.licenses.plugin.get().pluginId)
     kotlin("kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.dagger.hilt.android.core)
 }
 
 android {
@@ -40,37 +38,37 @@ android {
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("androidx.webkit:webkit:1.4.0")
-    implementation("com.google.android.gms:play-services-auth:19.2.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("com.google.code.gson:gson:2.8.6")
-    testImplementation("junit:junit:4.12")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.android.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.webkit)
+    implementation(libs.gms.play.services.auth)
+    implementation(libs.squareup.okhttp3)
+    implementation(libs.gms.play.services.oss.licenses)
+    implementation(libs.gson)
+    testImplementation(libs.junit.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation("androidx.hilt:hilt-work:1.0.0")
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.work)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Mocking interfaces for testing
-    testImplementation("io.mockk:mockk:1.13.3")
+    testImplementation(libs.mockk)
 
     // Running test with suspend functions
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 kapt {
