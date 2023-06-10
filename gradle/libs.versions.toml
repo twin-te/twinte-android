@@ -43,5 +43,4 @@ dagger-hilt-android-core = { id = "com.google.dagger.hilt.android", version.ref 
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android-core = { id = "kotlin-android", version.ref = "kotlin" }
-kotlin-android-extensions = { id = "kotlin-android-extensions", version.ref = "kotlin" }
 gms-oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "gms-oss-licenses" }

@@ -1,7 +1,6 @@
 plugins {
     id(libs.plugins.android.application.get().pluginId)
     id(libs.plugins.kotlin.android.core.get().pluginId)
-    id(libs.plugins.kotlin.android.extensions.get().pluginId)
     id(libs.plugins.gms.oss.licenses.plugin.get().pluginId)
     kotlin("kapt")
     alias(libs.plugins.dagger.hilt.android.core)
@@ -18,6 +17,10 @@ android {
         versionName = "2.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
