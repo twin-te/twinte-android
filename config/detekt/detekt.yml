@@ -46,6 +46,10 @@ style:
     active: true
     excludeImports:
       - 'kotlinx.android.synthetic.*'
+  ForbiddenComment:
+    values:
+      - 'FIXME:'
+      - 'STOPSHIP:'
 
 naming:
   active: true

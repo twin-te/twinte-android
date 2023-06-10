@@ -1,4 +1,4 @@
-package net.twinte.android.repository.schedulenotification
+package net.twinte.android.datastore.schedulenotification
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -12,9 +12,9 @@ import net.twinte.android.work.ScheduleNotifier
 import java.util.Calendar
 import javax.inject.Inject
 
-class SharedPreferencesScheduleNotificationRepository @Inject constructor(
+class SharedPreferencesScheduleNotificationDataStore @Inject constructor(
     @ApplicationContext private val context: Context,
-) : ScheduleNotificationRepository {
+) : ScheduleNotificationDataStore {
     private val preferenceChangeListener by lazy {
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener

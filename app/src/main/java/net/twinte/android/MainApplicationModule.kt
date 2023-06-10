@@ -9,38 +9,36 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.twinte.android.datastore.schedule.ScheduleDataStore
+import net.twinte.android.datastore.schedule.SharedPreferencesScheduleDataStore
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
+import net.twinte.android.datastore.schedulenotification.SharedPreferencesScheduleNotificationDataStore
+import net.twinte.android.datastore.user.TwinteBackendUserDataStore
+import net.twinte.android.datastore.user.UserDataStore
 import net.twinte.android.network.TwinteBackendHttpClient
 import net.twinte.android.network.TwinteBackendHttpClientImpl
 import net.twinte.android.network.serversettings.ProductionServerSettings
 import net.twinte.android.network.serversettings.ServerSettings
-import net.twinte.android.repository.schedule.ScheduleRepository
-import net.twinte.android.repository.schedule.SharedPreferencesScheduleRepository
-import net.twinte.android.repository.schedulenotification.ScheduleNotificationRepository
-import net.twinte.android.repository.schedulenotification.SharedPreferencesScheduleNotificationRepository
-import net.twinte.android.repository.user.TwinteBackendUserRepository
-import net.twinte.android.repository.user.UserRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface MainApplicationModule {
     @Binds
-    fun bindScheduleRepository(
-        scheduleRepository: SharedPreferencesScheduleRepository,
-    ): ScheduleRepository
+    fun bindScheduleDataStore(
+        scheduleDataStore: SharedPreferencesScheduleDataStore,
+    ): ScheduleDataStore
 
     @Binds
-    fun bindUserRepository(
-        userRepository: TwinteBackendUserRepository,
-    ): UserRepository
+    fun bindUserDataStore(
+        userDataStore: TwinteBackendUserDataStore,
+    ): UserDataStore
 
     @Binds
-    fun bindScheduleNotificationRepository(
-        scheduleNotificationRepository: SharedPreferencesScheduleNotificationRepository,
-    ): ScheduleNotificationRepository
+    fun bindScheduleNotificationDataStore(
+        scheduleNotificationDataStore: SharedPreferencesScheduleNotificationDataStore,
+    ): ScheduleNotificationDataStore
 
     companion object {
-
-        @Suppress("ForbiddenComment")
         // TODO: リリース版でのみ ProductionServerSettings を inject するように変更する（マルチモジュール化が必要）
         @Provides
         fun provideServerSettings(): ServerSettings = ProductionServerSettings()

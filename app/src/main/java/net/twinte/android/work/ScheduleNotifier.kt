@@ -14,9 +14,9 @@ import net.twinte.android.MainActivity
 import net.twinte.android.R
 import net.twinte.android.SettingsActivity
 import net.twinte.android.TWINTE_DEBUG
+import net.twinte.android.datastore.schedule.ScheduleDataStore
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.model.Day
-import net.twinte.android.repository.schedule.ScheduleRepository
-import net.twinte.android.repository.schedulenotification.ScheduleNotificationRepository
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScheduleNotifier : BroadcastReceiver() {
     @Inject
-    lateinit var scheduleRepository: ScheduleRepository
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     override fun onReceive(context: Context, intent: Intent?) = runBlocking {
         Log.d("ScheduleNotifier", "Received Broadcast")
@@ -35,7 +35,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 if (get(Calendar.HOUR_OF_DAY) > 18) add(Calendar.DATE, 1)
             }
 
-            val schedule = scheduleRepository.getSchedule(targetDate.time)
+            val schedule = scheduleDataStore.getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) {
@@ -98,11 +98,11 @@ class ScheduleNotifier : BroadcastReceiver() {
     @AndroidEntryPoint
     class OnBootCompleteOrPackageReplaced @Inject constructor() : BroadcastReceiver() {
         @Inject
-        lateinit var scheduleNotificationRepository: ScheduleNotificationRepository
+        lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
 
         override fun onReceive(context: Context, intent: Intent?) {
             Log.d("ScheduleNotifier", "onReceived ${intent?.action}")
-            scheduleNotificationRepository.schedule()
+            scheduleNotificationDataStore.schedule()
         }
     }
 }
