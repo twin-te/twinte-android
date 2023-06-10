@@ -195,17 +195,17 @@ object WidgetUpdater {
     fun scheduleAllIfExists(context: Context) {
         val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
-            .isNotEmpty()
+                .isNotEmpty()
         ) {
             schedule(context, V3SmallWidgetProvider::class.java)
         }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
-            .isNotEmpty()
+                .isNotEmpty()
         ) {
             schedule(context, V3MediumWidgetProvider::class.java)
         }
         if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
-            .isNotEmpty()
+                .isNotEmpty()
         ) {
             schedule(context, V3LargeWidgetProvider::class.java)
         }

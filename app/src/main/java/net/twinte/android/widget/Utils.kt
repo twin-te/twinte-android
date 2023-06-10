@@ -51,7 +51,9 @@ fun Timetable.courseCountLabel(): String {
     val count = (1..6).filter { period ->
         courses.any { course ->
             val schedule = course.schedules ?: course.course!!.schedules
-            schedule.any { it.module == module && it.period == period && it.day == Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1] }
+            schedule.any {
+                it.module == module && it.period == period && it.day == Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1]
+            }
         }
     }.size
 
