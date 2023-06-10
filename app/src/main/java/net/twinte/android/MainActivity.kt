@@ -20,11 +20,11 @@ import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.twinte.android.databinding.ActivityMainBinding
 import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.datastore.user.UserDataStore
@@ -57,10 +57,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     @Inject
     lateinit var workManager: WorkManager
 
+    lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setTheme(R.style.AppTheme_Main)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         UpdateScheduleWorker.scheduleNextUpdate(workManager)
         scheduleNotificationDataStore.schedule()
@@ -80,13 +83,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             WebView.setWebContentsDebuggingEnabled(true)
         }
 
-        main_webview.setup()
+        binding.mainWebview.setup()
 
         val url = intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let { twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl() }
             ?: twinteUrlBuilder(serverSettings).buildUrl()
 
-        main_webview.loadUrl(url)
+        binding.mainWebview.loadUrl(url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -168,7 +171,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
                 @JavascriptInterface
                 fun share(body: String) {
-                    main_webview.shareScreen(body)
+                    binding.mainWebview.shareScreen(body)
                 }
             },
             "android",
@@ -186,7 +189,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         userDataStore.validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
-                        main_webview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
+                        binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
                     }
                 }
             }
@@ -218,7 +221,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onNewIntent(intent)
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
-                main_webview.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
+                binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
             }
     }
 
@@ -230,8 +233,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     override fun onBackPressed() {
-        if (main_webview.canGoBack()) {
-            main_webview.goBack()
+        if (binding.mainWebview.canGoBack()) {
+            binding.mainWebview.goBack()
         } else {
             super.onBackPressed()
         }
@@ -239,7 +242,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
-        main_webview.loadUrl(url)
+        binding.mainWebview.loadUrl(url)
     }
 
     companion object {

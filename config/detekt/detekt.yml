@@ -44,8 +44,6 @@ style:
     active: false
   WildcardImport:
     active: true
-    excludeImports:
-      - 'kotlinx.android.synthetic.*'
   ForbiddenComment:
     values:
       - 'FIXME:'
