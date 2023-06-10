@@ -122,6 +122,7 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
 /**
  * ウィジット右側のリストを生成するサービス
  */
+@AndroidEntryPoint
 class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
