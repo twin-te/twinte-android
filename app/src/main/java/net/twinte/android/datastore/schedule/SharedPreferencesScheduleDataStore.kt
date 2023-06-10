@@ -1,7 +1,6 @@
 package net.twinte.android.datastore.schedule
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +36,8 @@ class SharedPreferencesScheduleDataStore @Inject constructor(
                     }
                 }
                 putString(d, res.body?.string())
-                Log.d(TAG, "schedule updated $d $res")
+                // TODO: replace `android.util.Log` with Timber
+                // Log.d(TAG, "schedule updated $d $res")
             }
             commit()
         }
@@ -48,9 +48,5 @@ class SharedPreferencesScheduleDataStore @Inject constructor(
         if (!pref.contains(d)) update(arrayOf(date))
 
         gson.fromJson(pref.getString(d, null), Timetable::class.java)
-    }
-
-    companion object {
-        private val TAG = SharedPreferencesScheduleDataStore::class.java.simpleName
     }
 }

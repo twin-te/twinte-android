@@ -65,6 +65,12 @@ dependencies {
     implementation("androidx.hilt:hilt-work:1.0.0")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+
+    // Mocking interfaces for testing
+    testImplementation("io.mockk:mockk:1.13.3")
+
+    // Running test with suspend functions
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
 }
 
 kapt {
