@@ -39,8 +39,6 @@ interface MainApplicationModule {
     ): ScheduleNotificationDataStore
 
     companion object {
-
-        @Suppress("ForbiddenComment")
         // TODO: リリース版でのみ ProductionServerSettings を inject するように変更する（マルチモジュール化が必要）
         @Provides
         fun provideServerSettings(): ServerSettings = ProductionServerSettings()
