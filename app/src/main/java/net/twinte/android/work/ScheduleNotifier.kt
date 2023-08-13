@@ -1,86 +1,35 @@
 package net.twinte.android.work
 
-import android.app.AlarmManager
+import android.Manifest
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.preference.PreferenceManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
-import net.twinte.android.*
+import net.twinte.android.MainActivity
+import net.twinte.android.R
+import net.twinte.android.SettingsActivity
+import net.twinte.android.TWINTE_DEBUG
+import net.twinte.android.datastore.schedule.ScheduleDataStore
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.model.Day
-import net.twinte.android.repository.ScheduleRepository
-import java.util.*
+import java.util.Calendar
+import javax.inject.Inject
 
 /**
  * 特殊日程通知を管理する
  */
+@AndroidEntryPoint
 class ScheduleNotifier : BroadcastReceiver() {
-    companion object {
-        private var _preferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
-        private fun getPreferenceChangeListener(context: Context): SharedPreferences.OnSharedPreferenceChangeListener {
-            if (_preferenceChangeListener == null) _preferenceChangeListener =
-                SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                    if (key != "enable_schedule_notification" && key != "notification_timing") return@OnSharedPreferenceChangeListener
-                    schedule(context)
-                }
-            return _preferenceChangeListener!!
-        }
-
-        fun schedule(context: Context) {
-            cancelAll(context)
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            sharedPreferences
-                .registerOnSharedPreferenceChangeListener(getPreferenceChangeListener(context))
-            if (!sharedPreferences.getBoolean("enable_schedule_notification", true)) return
-
-            val timing = sharedPreferences.getStringSet("notification_timing", setOf("21", "6"))?.map { it.toInt() }?.sorted()
-                ?: emptyList()
-
-            timing.forEach { hour ->
-                val currentDate = Calendar.getInstance()
-                val notifyDate = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, hour)
-                    set(Calendar.MINUTE, 0)
-
-                    if (before(currentDate)) {
-                        add(Calendar.HOUR_OF_DAY, 24)
-                    }
-                }
-
-                scheduleAt(context, notifyDate.timeInMillis, hour)
-            }
-        }
-
-        private fun cancelAll(context: Context) {
-            val alarmManager = context.getSystemService(AlarmManager::class.java)
-            (0..24).forEach { alarmManager.cancel(alarmIntent(context, it)) }
-            Log.d("ScheduleNotifier", "All schedule canceled")
-        }
-
-        private fun scheduleAt(context: Context, timeInMillis: Long, requestCode: Int) {
-            val alarmManager = context.getSystemService(AlarmManager::class.java)
-            // 指定された時刻付近で１日おきに設定
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                timeInMillis,
-                1000 * 60 * 60 * 24,
-                alarmIntent(context, requestCode)
-            )
-            Log.d("ScheduleNotifier", "Scheduled at $timeInMillis $requestCode")
-        }
-
-        private fun alarmIntent(context: Context, requestCode: Int) =
-            Intent(context, ScheduleNotifier::class.java).let { intent ->
-                intent.action = "net.twinte.android.action.ScheduleNotifier"
-                PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-            }
-    }
+    @Inject
+    lateinit var scheduleDataStore: ScheduleDataStore
 
     override fun onReceive(context: Context, intent: Intent?) = runBlocking {
         Log.d("ScheduleNotifier", "Received Broadcast")
@@ -89,13 +38,14 @@ class ScheduleNotifier : BroadcastReceiver() {
                 if (get(Calendar.HOUR_OF_DAY) > 18) add(Calendar.DATE, 1)
             }
 
-            val schedule = ScheduleRepository(context).getSchedule(targetDate.time)
+            val schedule = scheduleDataStore.getSchedule(targetDate.time)
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
-            if (substitute != null) createSubstituteDayNotification(context, substitute)
-            else if (TWINTE_DEBUG)
+            if (substitute != null) {
+                createSubstituteDayNotification(context, substitute)
+            } else if (TWINTE_DEBUG) {
                 createNotification(context, "[Debug]明日は通常日課です", "${schedule.date} ${schedule.module?.module?.m}")
-
+            }
         } catch (e: Throwable) {
             // TODO エラー処理
             Log.d("ScheduleNotifier", "$e")
@@ -129,26 +79,50 @@ class ScheduleNotifier : BroadcastReceiver() {
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, MainActivity::class.java), 0
-                )
+                    Intent(context, MainActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).addAction(
-                R.drawable.ic_icon, "通知設定",
+                R.drawable.ic_icon,
+                "通知設定",
                 PendingIntent.getActivity(
                     context,
                     0,
-                    Intent(context, SettingsActivity::class.java), 0
-                )
+                    Intent(context, SettingsActivity::class.java),
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             ).setContentTitle(title)
             .setContentText(text)
             .setChannelId(context.getString(R.string.schedule_notify_channel_id))
             .build()
+
+        // 以下の if 式は自動生成されている
+        // TODO: API Level 33 以降向けに通知許可を得るための処理を追加する
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         notificationManager.notify(1, notification)
     }
 
-    class OnBootCompleteOrPackageReplaced : BroadcastReceiver() {
+    @AndroidEntryPoint
+    class OnBootCompleteOrPackageReplaced @Inject constructor() : BroadcastReceiver() {
+        @Inject
+        lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
+
         override fun onReceive(context: Context, intent: Intent?) {
             Log.d("ScheduleNotifier", "onReceived ${intent?.action}")
-            schedule(context)
+            scheduleNotificationDataStore.schedule()
         }
     }
 }

@@ -5,45 +5,72 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
-import android.webkit.*
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import kotlinx.android.synthetic.main.activity_main.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.twinte.android.Network.WebViewCookieJar.cookieManager
-import net.twinte.android.repository.ScheduleRepository
-import net.twinte.android.repository.UserRepository
+import net.twinte.android.databinding.ActivityMainBinding
+import net.twinte.android.datastore.schedule.ScheduleDataStore
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
+import net.twinte.android.datastore.user.UserDataStore
+import net.twinte.android.network.serversettings.ServerSettings
 import net.twinte.android.widget.WidgetUpdater
-import net.twinte.android.work.ScheduleNotifier
 import net.twinte.android.work.UpdateScheduleWorker
+import javax.inject.Inject
 
 const val TWINTE_DEBUG = false
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
-    val RC_SIGN_IN = 1
-    val FILE_CHOOSER_REQUEST = 2
-
     var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    @Inject
+    lateinit var scheduleDataStore: ScheduleDataStore
+
+    @Inject
+    lateinit var userDataStore: UserDataStore
+
+    @Inject
+    lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
+
+    @Inject
+    lateinit var cookieManager: CookieManager
+
+    @Inject
+    lateinit var serverSettings: ServerSettings
+
+    @Inject
+    lateinit var workManager: WorkManager
+
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setTheme(R.style.AppTheme_Main)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        UpdateScheduleWorker.scheduleNextUpdate(this)
-        ScheduleNotifier.schedule(this)
+        UpdateScheduleWorker.scheduleNextUpdate(workManager)
+        scheduleNotificationDataStore.schedule()
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
-            } catch (e: Network.NotLoggedInException) {
+                scheduleDataStore.update()
+            } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             } catch (e: Exception) {
                 // それ以外の予期せぬエラー
@@ -56,13 +83,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             WebView.setWebContentsDebuggingEnabled(true)
         }
 
-        main_webview.setup()
+        binding.mainWebview.setup()
 
         val url = intent.getStringExtra("REGISTERED_COURSE_ID")
-            ?.let { twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl() }
-            ?: twinteUrlBuilder().buildUrl()
+            ?.let { twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl() }
+            ?: twinteUrlBuilder(serverSettings).buildUrl()
 
-        main_webview.loadUrl(url)
+        binding.mainWebview.loadUrl(url)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -80,20 +107,22 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         val signInClient = GoogleSignIn.getClient(
                             this@MainActivity,
                             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                .requestIdToken(clientId).build()
+                                .requestIdToken(clientId).build(),
                         )
                         startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
                         true
                     }
                     // GoogleMap対応
                     request.url.toString().startsWith("https://www.google.com/maps") -> {
-                        startActivity(Intent(Intent.ACTION_VIEW).apply {
-                            data = request.url
-                        })
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = request.url
+                            },
+                        )
                         true
                     }
                     // その他の外部サイト
-                    request.url.host != DOMAIN -> {
+                    request.url.host != serverSettings.twinteBackendApiEndpointHost -> {
                         SubWebViewFragment.open(request.url.toString(), supportFragmentManager)
                         true
                     }
@@ -105,7 +134,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>,
-                fileChooserParams: FileChooserParams
+                fileChooserParams: FileChooserParams,
             ): Boolean {
                 this@MainActivity.filePathCallback = filePathCallback
                 startActivityForResult(fileChooserParams.createIntent(), FILE_CHOOSER_REQUEST)
@@ -125,7 +154,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     // ダークモードのスタイリングはページが行う
                     WebSettingsCompat.setForceDarkStrategy(
                         settings,
-                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY
+                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY,
                     )
                 }
                 Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
@@ -133,17 +162,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 }
             }
         }
-        addJavascriptInterface(object {
-            @JavascriptInterface
-            fun openSettings() {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            }
+        addJavascriptInterface(
+            object {
+                @JavascriptInterface
+                fun openSettings() {
+                    startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                }
 
-            @JavascriptInterface
-            fun share(body: String) {
-                main_webview.shareScreen(body)
-            }
-        }, "android")
+                @JavascriptInterface
+                fun share(body: String) {
+                    binding.mainWebview.shareScreen(body)
+                }
+            },
+            "android",
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -154,19 +186,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                 GlobalScope.launch {
                     account?.idToken?.let {
-                        UserRepository.validateGoogleIdToken(it)
+                        userDataStore.validateGoogleIdToken(it)
                     }
                     withContext(Dispatchers.Main) {
-                        main_webview.loadUrl(twinteUrlBuilder().buildUrl())
+                        binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
                     }
                 }
             }
             // ファイル選択時
             FILE_CHOOSER_REQUEST -> {
-                if (resultCode == RESULT_OK)
+                if (resultCode == RESULT_OK) {
                     filePathCallback?.onReceiveValue(if (data?.data != null) arrayOf(data.data!!) else null)
-                else
+                } else {
                     filePathCallback?.onReceiveValue(null)
+                }
             }
         }
     }
@@ -176,8 +209,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         cookieManager.flush()
         GlobalScope.launch {
             try {
-                ScheduleRepository(this@MainActivity).update()
-            } catch (e: Network.NotLoggedInException) {
+                scheduleDataStore.update()
+            } catch (e: NotLoggedInException) {
                 // 未ログイン時は失敗するが何もしない
             }
             WidgetUpdater.updateAllWidget(this@MainActivity)
@@ -188,7 +221,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onNewIntent(intent)
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
-                main_webview.loadUrl(twinteUrlBuilder().appendPath("course").appendPath(it).buildUrl())
+                binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
             }
     }
 
@@ -200,13 +233,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     override fun onBackPressed() {
-        if (main_webview.canGoBack()) main_webview.goBack()
-        else
+        if (binding.mainWebview.canGoBack()) {
+            binding.mainWebview.goBack()
+        } else {
             super.onBackPressed()
+        }
     }
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
-        main_webview.loadUrl(url)
+        binding.mainWebview.loadUrl(url)
+    }
+
+    companion object {
+        const val RC_SIGN_IN = 1
+        const val FILE_CHOOSER_REQUEST = 2
     }
 }

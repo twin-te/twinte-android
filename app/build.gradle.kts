@@ -1,24 +1,26 @@
-val kotlinVersion: String by project
-
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-android-extensions")
-    id("com.google.android.gms.oss-licenses-plugin")
+    id(libs.plugins.android.application.get().pluginId)
+    id(libs.plugins.kotlin.android.core.get().pluginId)
+    id(libs.plugins.gms.oss.licenses.plugin.get().pluginId)
+    kotlin("kapt")
+    alias(libs.plugins.dagger.hilt.android.core)
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion = "30.0.2"
+    compileSdkVersion(33)
 
     defaultConfig {
         applicationId = "net.twinte.android"
         minSdkVersion(23)
-        targetSdkVersion (30)
+        targetSdkVersion (31)
         versionCode = 19
         versionName = "2.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
@@ -28,32 +30,50 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
+    namespace = "net.twinte.android"
 }
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.work:work-runtime-ktx:2.6.0")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("androidx.webkit:webkit:1.4.0")
-    implementation("com.google.android.gms:play-services-auth:19.2.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("com.google.code.gson:gson:2.8.6")
-    testImplementation("junit:junit:4.12")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.android.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.webkit)
+    implementation(libs.gms.play.services.auth)
+    implementation(libs.squareup.okhttp3)
+    implementation(libs.gms.play.services.oss.licenses)
+    implementation(libs.gson)
+    testImplementation(libs.junit.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+
+    // Hilt
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.work)
+
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Mocking interfaces for testing
+    testImplementation(libs.mockk)
+
+    // Running test with suspend functions
+    testImplementation(libs.kotlinx.coroutines.test)
+}
+
+kapt {
+    correctErrorTypes = true
 }

@@ -12,12 +12,8 @@ import net.twinte.android.model.Day
 import net.twinte.android.model.EventType
 import net.twinte.android.model.Timetable
 import java.text.SimpleDateFormat
-import java.util.*
-
-/**
- * ウィジットで表示される授業のVM
- */
-data class WidgetCourseViewModel(val name: String, val room: String, val time: String, val id: String?)
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Module名 + 日付
@@ -25,9 +21,11 @@ data class WidgetCourseViewModel(val name: String, val room: String, val time: S
 fun Timetable.dateLabel(calendar: Calendar): String {
     val formatter = SimpleDateFormat("MM/dd (E)", Locale.JAPAN)
     val date = formatter.format(calendar.time)
-    return if(module?.module?.m == null)
+    return if (module?.module?.m == null) {
         date
-    else "${module.module.m} $date"
+    } else {
+        "${module.module.m} $date"
+    }
 }
 
 /**
@@ -53,7 +51,9 @@ fun Timetable.courseCountLabel(): String {
     val count = (1..6).filter { period ->
         courses.any { course ->
             val schedule = course.schedules ?: course.course!!.schedules
-            schedule.any { it.module == module && it.period == period && it.day == Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1] }
+            schedule.any {
+                it.module == module && it.period == period && it.day == Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1]
+            }
         }
     }.size
 
@@ -74,13 +74,16 @@ fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
         schedule.any { it.module == module && it.period == period && it.day == day }
     }
 
-    if (targets.isEmpty()) return null
-    else if (targets.size > 1) return WidgetCourseViewModel(
-        "${targets.size}件の授業重複あり",
-        "-",
-        WidgetUpdater.getPeriodStartTime(period).toString(),
-        null
-    )
+    if (targets.isEmpty()) {
+        return null
+    } else if (targets.size > 1) {
+        return WidgetCourseViewModel(
+            "${targets.size}件の授業重複あり",
+            "-",
+            WidgetUpdater.getPeriodStartTime(period).toString(),
+            null,
+        )
+    }
 
     val target = targets.first()
     val targetName = target.name ?: target.course!!.name
@@ -89,9 +92,10 @@ fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
     val targetSchedule = schedule.find { it.module == module && it.period == period }
 
     return WidgetCourseViewModel(
-        targetName, targetSchedule!!.room,
+        targetName,
+        targetSchedule!!.room,
         WidgetUpdater.getPeriodStartTime(period).toString(),
-        target.id
+        target.id,
     )
 }
 
@@ -107,7 +111,6 @@ fun Timetable.nextCourseViewModel(period: Int): WidgetCourseViewModel? {
     }
     return nextCourse
 }
-
 
 /**
  * 授業表示のコントロールを持つViewに内容を適用する
@@ -132,13 +135,14 @@ fun RemoteViews.applyCourseItem(context: Context, model: WidgetCourseViewModel?)
 fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, detail: String? = null) =
     RemoteViews(
         context.packageName,
-        R.layout.widget_v3_error
+        R.layout.widget_v3_error,
     ).apply {
         setTextViewText(R.id.error_title_textView, title)
-        if (detail != null)
+        if (detail != null) {
             setTextViewText(R.id.error_detail_textView, detail)
-        else
+        } else {
             setViewVisibility(R.id.error_detail_textView, View.GONE)
+        }
 
         setOnClickPendingIntent(
             R.id.error_reload_button,
@@ -149,7 +153,7 @@ fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, 
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
                 },
-                0
-            )
+                PendingIntent.FLAG_IMMUTABLE,
+            ),
         )
     }
