@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "net.twinte.android"
-        minSdkVersion(23)
+        minSdk = 24
         targetSdkVersion (31)
         versionCode = 19
         versionName = "2.0.3"

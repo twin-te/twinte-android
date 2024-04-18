@@ -9,6 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
+import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStoreImpl
 import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.datastore.schedule.SharedPreferencesScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
@@ -37,6 +39,11 @@ interface MainApplicationModule {
     fun bindScheduleNotificationDataStore(
         scheduleNotificationDataStore: SharedPreferencesScheduleNotificationDataStore,
     ): ScheduleNotificationDataStore
+
+    @Binds
+    fun bindResetCookiesForSameSiteDataStore(
+        resetCookiesForSameSiteDataStoreImpl: ResetCookiesForSameSiteDataStoreImpl,
+    ): ResetCookiesForSameSiteDataStore
 
     companion object {
         // TODO: リリース版でのみ ProductionServerSettings を inject するように変更する（マルチモジュール化が必要）

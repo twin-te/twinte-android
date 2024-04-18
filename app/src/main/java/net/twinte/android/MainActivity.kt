@@ -25,6 +25,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.twinte.android.databinding.ActivityMainBinding
+import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
 import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.datastore.user.UserDataStore
@@ -47,6 +48,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     @Inject
     lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
+
+    @Inject
+    lateinit var resetCookiesForSameSiteDataStore: ResetCookiesForSameSiteDataStore
 
     @Inject
     lateinit var cookieManager: CookieManager
@@ -81,6 +85,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
         if (TWINTE_DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
+        }
+
+        // ref: https://github.com/twin-te/twinte-android/issues/44
+        // TODO: リリースしてから一年経過したら削除する（twinte_session は元々得られてから 1 年後に expire する設定になっている）
+        if (resetCookiesForSameSiteDataStore.shouldResetCookiesForSameSite) {
+            cookieManager.removeAllCookies {}
+            resetCookiesForSameSiteDataStore.shouldResetCookiesForSameSite = false
         }
 
         binding.mainWebview.setup()
