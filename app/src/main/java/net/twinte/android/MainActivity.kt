@@ -210,6 +210,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         )
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -265,6 +266,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
         if (fragment is SubWebViewFragment) {
@@ -272,6 +274,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (binding.mainWebview.canGoBack()) {
             binding.mainWebview.goBack()
