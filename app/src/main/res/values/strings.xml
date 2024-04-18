@@ -43,4 +43,6 @@
     <string name="widget_medium_label">中ウィジット</string>
     <string name="widget_large_label">大ウィジット</string>
     <string name="google_server_client_id" tools:ignore="TypographyDashes">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
+    <string name="snackbar_notification_not_granted_text">通知を許可して振替日程の通知を受け取る</string>
+    <string name="snackbar_notification_not_granted_settings">設定</string>
 </resources>

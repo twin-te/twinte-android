@@ -1,9 +1,13 @@
 package net.twinte.android
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
@@ -11,7 +15,9 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
@@ -19,6 +25,7 @@ import androidx.webkit.WebViewFeature
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -105,6 +112,31 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             ?: twinteUrlBuilder(serverSettings).buildUrl()
 
         binding.mainWebview.loadUrl(url)
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                    if (!isGranted) {
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.snackbar_notification_not_granted_text),
+                            Snackbar.LENGTH_LONG,
+                        ).setAction(getString(R.string.snackbar_notification_not_granted_settings)) {
+                            startActivity(
+                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .putExtra(Settings.EXTRA_APP_PACKAGE, packageName),
+                            )
+                        }.show()
+                    }
+                }.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            return
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
