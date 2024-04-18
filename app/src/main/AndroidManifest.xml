@@ -82,12 +82,14 @@
         <service
             android:name=".widget.V3MediumWidgetRemoteViewService"
             android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:foregroundServiceType="dataSync" />
         <!--    大ウィジットのデータ供給用Service    -->
         <service
             android:name=".widget.V3LargeWidgetRemoteViewService"
             android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:foregroundServiceType="dataSync" />
 
         <!--    ウィジット関連終わり    -->
 
