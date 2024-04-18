@@ -122,6 +122,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : BottomSheetDialog(requireContext(), theme) {
+            @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
                 if (binding.subWebview.canGoBack()) {
                     // ダイアログで表示されているページから一つ前のページに戻れる場合、そこに戻る
