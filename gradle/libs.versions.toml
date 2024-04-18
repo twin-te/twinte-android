@@ -22,7 +22,7 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version = "1.2.0" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version = "1.7.0" }
 gms-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.5.0" }
-squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version = "4.11.0" }
+squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version = "5.0.0-alpha.13" }
 gms-play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version = "17.0.1" }
 gson = { group = "com.google.code.gson", name = "gson", version = "2.10.1" }
 
