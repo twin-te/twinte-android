@@ -11,6 +11,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebSettingsCompat
@@ -72,13 +73,17 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         UpdateScheduleWorker.scheduleNextUpdate(workManager)
         scheduleNotificationDataStore.schedule()
         GlobalScope.launch {
-            try {
-                scheduleDataStore.update()
-            } catch (e: NotLoggedInException) {
-                // 未ログイン時は失敗するが何もしない
-            } catch (e: Exception) {
-                // それ以外の予期せぬエラー
-            }
+            kotlin.runCatching { scheduleDataStore.update() }
+                .fold(onSuccess = {}, onFailure = {
+                    when (it) {
+                        is NotLoggedInException -> {
+                            // 未ログイン時は失敗するが何もしない
+                        }
+                        else -> {
+                            // それ以外の予期せぬエラー
+                        }
+                    }
+                })
             WidgetUpdater.updateAllWidget(this@MainActivity)
             WidgetUpdater.scheduleAllIfExists(this@MainActivity)
         }
@@ -197,7 +202,10 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
                 GlobalScope.launch {
                     account?.idToken?.let {
-                        userDataStore.validateGoogleIdToken(it)
+                        kotlin.runCatching { userDataStore.validateGoogleIdToken(it) }
+                            .onFailure {
+                                Toast.makeText(applicationContext, R.string.common_google_play_services_unknown_issue, Toast.LENGTH_SHORT).show()
+                            }
                     }
                     withContext(Dispatchers.Main) {
                         binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
@@ -219,11 +227,16 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onPause()
         cookieManager.flush()
         GlobalScope.launch {
-            try {
+            kotlin.runCatching {
                 scheduleDataStore.update()
-            } catch (e: NotLoggedInException) {
-                // 未ログイン時は失敗するが何もしない
-            }
+            }.fold(onSuccess = {}, onFailure = { e ->
+                when (e) {
+                    is NotLoggedInException -> {
+                        // 未ログイン時は失敗するが何もしない
+                    }
+                    else -> { }
+                }
+            })
             WidgetUpdater.updateAllWidget(this@MainActivity)
         }
     }

@@ -138,10 +138,11 @@ class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService
 
         override fun onCreate() {}
 
-        override fun onDataSetChanged() = runBlocking {
+        override fun onDataSetChanged(): Unit = runBlocking {
             Log.d("MediumFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
-            schedule = scheduleDataStore.getSchedule(current.time)
+            kotlin.runCatching { scheduleDataStore.getSchedule(current.time) }
+                .onSuccess { schedule = it }
         }
 
         override fun onDestroy() {}

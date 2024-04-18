@@ -26,18 +26,22 @@ class SharedPreferencesScheduleDataStore @Inject constructor(
         with(pref.edit()) {
             clear()
             calendar.map { simpleDateFormat.format(it) }.forEach { d ->
-                val res = twinteBackendHttpClient.get("/api/v3/timetable/$d")
-
-                if (!res.isSuccessful) {
-                    if (res.code == 401) {
-                        throw NotLoggedInException()
-                    } else {
-                        throw IOException("API call failed with code ${res.code}\n ${res.body?.string()}")
-                    }
-                }
-                putString(d, res.body?.string())
-                // TODO: replace `android.util.Log` with Timber
-                // Log.d(TAG, "schedule updated $d $res")
+                kotlin.runCatching { twinteBackendHttpClient.get("/api/v3/timetable/$d") }
+                    .fold(onSuccess = {
+                        if (!it.isSuccessful) {
+                            if (it.code == 401) {
+                                throw NotLoggedInException()
+                            } else {
+                                throw IOException("API call failed with code ${it.code}\n ${it.body.string()}")
+                            }
+                        }
+                        putString(d, it.body.string())
+                    }, onFailure = {
+                        if (it !is IOException) {
+                            throw it
+                        }
+                        return@withContext
+                    })
             }
             commit()
         }
