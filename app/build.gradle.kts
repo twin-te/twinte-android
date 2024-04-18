@@ -7,12 +7,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "net.twinte.android"
         minSdk = 24
-        targetSdkVersion (31)
+        targetSdk = 34
         versionCode = 19
         versionName = "2.0.3"
 
