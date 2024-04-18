@@ -2,7 +2,6 @@ package net.twinte.android
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.CookieManager
@@ -159,24 +158,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         }
 
         if (
-            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) &&
-            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)
+            WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)
         ) {
-            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                // ダークモードサポートだったら
-                Configuration.UI_MODE_NIGHT_YES -> {
-                    // ダークモード有効
-                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_ON)
-                    // ダークモードのスタイリングはページが行う
-                    WebSettingsCompat.setForceDarkStrategy(
-                        settings,
-                        WebSettingsCompat.DARK_STRATEGY_WEB_THEME_DARKENING_ONLY,
-                    )
-                }
-                Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                    WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_OFF)
-                }
-            }
+            WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true)
         }
         addJavascriptInterface(
             object {
