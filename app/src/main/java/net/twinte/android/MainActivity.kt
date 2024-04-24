@@ -216,7 +216,14 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         when (requestCode) {
             // Googleログイン時
             RC_SIGN_IN -> {
-                val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+                val account = GoogleSignIn
+                    .getSignedInAccountFromIntent(data)
+                    .runCatching { result }
+                    .fold(onSuccess = { it }, onFailure = {
+                        // blur がかかったままなためリロードする
+                        binding.mainWebview.reload()
+                        return
+                    })
                 GlobalScope.launch {
                     account?.idToken?.let {
                         kotlin.runCatching { userDataStore.validateGoogleIdToken(it) }
