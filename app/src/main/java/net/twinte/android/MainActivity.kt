@@ -19,9 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewClientCompat
-import androidx.webkit.WebViewFeature
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -189,11 +187,6 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
         }
 
-        if (
-            WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)
-        ) {
-            WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true)
-        }
         addJavascriptInterface(
             object {
                 @JavascriptInterface
