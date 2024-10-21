@@ -38,7 +38,7 @@ class ScheduleNotifier : BroadcastReceiver() {
                 if (get(Calendar.HOUR_OF_DAY) > 18) add(Calendar.DATE, 1)
             }
 
-            val schedule = scheduleDataStore.getSchedule(targetDate.time)
+            val schedule = scheduleDataStore.getSchedule(targetDate.time) ?: return@runBlocking
 
             val substitute = schedule.events.find { it.changeTo != null }?.changeTo
             if (substitute != null) {

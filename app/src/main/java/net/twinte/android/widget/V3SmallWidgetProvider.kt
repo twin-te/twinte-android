@@ -53,7 +53,7 @@ class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = scheduleDataStore.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time) ?: return@runBlocking
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(

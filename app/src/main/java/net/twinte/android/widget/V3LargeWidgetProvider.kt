@@ -55,7 +55,7 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
         val (current) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
-            val schedule = scheduleDataStore.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time) ?: return@runBlocking
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(

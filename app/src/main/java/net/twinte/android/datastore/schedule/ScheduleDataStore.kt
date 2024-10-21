@@ -12,5 +12,5 @@ interface ScheduleDataStore {
         ),
     )
 
-    suspend fun getSchedule(date: Date): Timetable
+    suspend fun getSchedule(date: Date): Timetable?
 }

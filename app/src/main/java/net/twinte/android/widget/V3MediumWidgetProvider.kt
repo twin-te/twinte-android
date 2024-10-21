@@ -54,7 +54,7 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
         Log.d("V3MediumWidgetProvider", "OnUpdate received")
         val (current) = WidgetUpdater.getShouldShowCurrentDate()
         try {
-            val schedule = scheduleDataStore.getSchedule(current.time)
+            val schedule = scheduleDataStore.getSchedule(current.time) ?: return@runBlocking
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(

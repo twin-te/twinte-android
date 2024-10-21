@@ -47,7 +47,7 @@ class SharedPreferencesScheduleDataStore @Inject constructor(
         }
     }
 
-    override suspend fun getSchedule(date: Date): Timetable = withContext(Dispatchers.IO) {
+    override suspend fun getSchedule(date: Date): Timetable? = withContext(Dispatchers.IO) {
         val d = simpleDateFormat.format(date)
         if (!pref.contains(d)) update(arrayOf(date))
 
