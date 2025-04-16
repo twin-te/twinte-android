@@ -146,13 +146,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         _binding = null
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        if (binding.subWebview.url?.startsWith("https://twins.tsukuba.ac.jp") == true) {
-            callback?.subWebViewCallback(twinteUrlBuilder(serverSettings).buildUrl())
-        }
-        super.onDismiss(dialog)
-    }
-
     interface Callback {
         fun subWebViewCallback(url: String)
     }
