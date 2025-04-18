@@ -2,7 +2,6 @@ package net.twinte.android
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -144,13 +143,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         binding.root.removeView(binding.subWebview)
         binding.subWebview.destroy()
         _binding = null
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        if (binding.subWebview.url?.startsWith("https://twins.tsukuba.ac.jp") == true) {
-            callback?.subWebViewCallback(twinteUrlBuilder(serverSettings).buildUrl())
-        }
-        super.onDismiss(dialog)
     }
 
     interface Callback {
