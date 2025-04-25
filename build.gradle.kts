@@ -67,9 +67,9 @@ allprojects {
     }
 }
 
-task<Delete>("clean") {
-    delete(rootProject.buildDir)
-}
+tasks.register<Delete>("clean", fun Delete.() {
+    delete(rootProject.layout.buildDirectory)
+})
 
 tasks.withType<Detekt>().configureEach {
     jvmTarget = "17"

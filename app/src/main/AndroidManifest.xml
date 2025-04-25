@@ -17,7 +17,6 @@
         <!--    メイン画面    -->
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.Main"
             android:exported="true">
             <intent-filter>

@@ -7,9 +7,10 @@ import android.webkit.WebView
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import androidx.core.graphics.createBitmap
 
 fun WebView.shareScreen(body: String) = context.run {
-    val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val bmp = createBitmap(width, height)
     draw(Canvas(bmp))
 
     File(cacheDir, "images").mkdir()
