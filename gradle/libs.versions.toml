@@ -2,7 +2,7 @@
 kotlin = "1.9.23"
 detekt = "1.23.5"
 hilt = "2.51"
-agp = "8.3.2"
+agp = "8.9.1"
 gms-oss-licenses = "0.10.6"
 
 [libraries]
