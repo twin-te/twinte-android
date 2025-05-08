@@ -28,7 +28,7 @@
         <!--    設定画面    -->
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.Setting" />
 
         <!--    ウィジット関連    -->
         <!--    小ウィジット    -->

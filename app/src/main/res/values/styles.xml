@@ -12,6 +12,10 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorPrimaryDark">@color/background</item>
     </style>
+    <style name="AppTheme.Setting">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorPrimaryDark">@color/background</item>
+    </style>
     <style name="AppTheme.Splash" parent="Theme.AppCompat.DayNight">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
