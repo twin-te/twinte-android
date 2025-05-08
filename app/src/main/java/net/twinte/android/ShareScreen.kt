@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.webkit.WebView
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 import java.io.File
 import java.io.FileOutputStream
-import androidx.core.graphics.createBitmap
 
 fun WebView.shareScreen(body: String) = context.run {
     val bmp = createBitmap(width, height)
