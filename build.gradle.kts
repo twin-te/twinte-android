@@ -39,7 +39,7 @@ subprojects {
         // 並列してファイルを見る
         parallel = true
         // Detekt 設定ファイルの指定
-        config = files("${project.rootDir}/config/detekt/detekt.yml")
+        config.setFrom(files("${project.rootDir}/config/detekt/detekt.yml"))
         // Detekt ベースラインファイルの指定
         baseline = file("${project.rootDir}/config/detekt/baseline.yml")
         // ルールに沿わないソースがあったら detekt タスクを失敗させる
@@ -67,9 +67,9 @@ allprojects {
     }
 }
 
-task<Delete>("clean") {
-    delete(rootProject.buildDir)
-}
+tasks.register<Delete>("clean", fun Delete.() {
+    delete(rootProject.layout.buildDirectory)
+})
 
 tasks.withType<Detekt>().configureEach {
     jvmTarget = "17"

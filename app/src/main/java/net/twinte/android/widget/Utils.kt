@@ -45,14 +45,15 @@ fun Timetable.eventLabel(): Pair<String, Boolean> {
  */
 fun Timetable.courseCountLabel(): String {
     val module = module?.module ?: return "0コマの授業"
-    val parsedDate =
-        SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN).let { f -> Calendar.getInstance().apply { time = f.parse(date) } }
+    val f = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+    val parsedDate = f.parse(date) ?: return ""
+    val calendar = Calendar.getInstance().apply { time = parsedDate }
 
     val count = (1..6).filter { period ->
         courses.any { course ->
             val schedule = course.schedules ?: course.course!!.schedules
             schedule.any {
-                it.module == module && it.period == period && it.day == Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1]
+                it.module == module && it.period == period && it.day == Day.entries.toTypedArray()[calendar.get(Calendar.DAY_OF_WEEK) - 1]
             }
         }
     }.size
@@ -65,9 +66,12 @@ fun Timetable.courseCountLabel(): String {
  */
 fun Timetable.courseViewModel(period: Int): WidgetCourseViewModel? {
     val module = module?.module ?: return null
-    val parsedDate =
-        SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN).let { f -> Calendar.getInstance().apply { time = f.parse(date) } }
-    val day = events.find { it.changeTo != null }?.changeTo ?: Day.values()[parsedDate.get(Calendar.DAY_OF_WEEK) - 1]
+    val f = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
+    val parsedDate = f.parse(date) ?: return null
+    val calendar = Calendar.getInstance().apply { time = parsedDate }
+    val day = events.find {
+        it.changeTo != null
+    }?.changeTo ?: Day.entries.toTypedArray()[calendar.get(Calendar.DAY_OF_WEEK) - 1]
 
     val targets = courses.filter { course ->
         val schedule = course.schedules ?: course.course!!.schedules
