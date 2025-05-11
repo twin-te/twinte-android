@@ -2,7 +2,7 @@ plugins {
     id(libs.plugins.android.application.get().pluginId)
     id(libs.plugins.kotlin.android.core.get().pluginId)
     id(libs.plugins.gms.oss.licenses.plugin.get().pluginId)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android.core)
 }
 
@@ -62,7 +62,7 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android.core)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.work)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -72,8 +72,4 @@ dependencies {
 
     // Running test with suspend functions
     testImplementation(libs.kotlinx.coroutines.test)
-}
-
-kapt {
-    correctErrorTypes = true
 }

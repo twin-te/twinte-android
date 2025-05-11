@@ -20,6 +20,7 @@ buildscript {
 }
 plugins {
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ksp) apply false
     alias(libs.plugins.dagger.hilt.android.core) apply false
 }
 // see https://detekt.dev/docs/introduction/reporting/#merging-reports
