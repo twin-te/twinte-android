@@ -4,6 +4,7 @@ detekt = "1.23.5"
 hilt = "2.56.2"
 agp = "8.10.0"
 gms-oss-licenses = "0.10.6"
+ksp = "2.1.20-2.0.1"
 
 [libraries]
 android-tools-build-gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -40,6 +41,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dagger-hilt-android-core = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android-core = { id = "kotlin-android", version.ref = "kotlin" }
