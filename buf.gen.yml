@@ -3,6 +3,9 @@ plugins:
   - remote: buf.build/protocolbuffers/java
     out: app/src/main/java
     opt: lite
-  - remote: buf.build/connectrpc/kotlin
+  - remote: buf.build/grpc/java
+    out: app/src/main/java
+    opt: lite
+  - remote: buf.build/grpc/kotlin
     out: app/src/main/java
     opt: lite

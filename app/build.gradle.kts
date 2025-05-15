@@ -60,6 +60,13 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
+    // grpc
+    implementation(libs.grpc.grpc.android)
+    implementation(libs.grpc.grpc.okhttp)
+    implementation(libs.grpc.grpc.kotlin.stub)   // Kotlin Stub
+    implementation(libs.grpc.grpc.protobuf.lite)
+    implementation(libs.google.protobuf.javalite)
+
     // Hilt
     implementation(libs.hilt.android.core)
     ksp(libs.hilt.android.compiler)
