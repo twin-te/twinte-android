@@ -63,7 +63,7 @@ dependencies {
     // grpc
     implementation(libs.grpc.grpc.android)
     implementation(libs.grpc.grpc.okhttp)
-    implementation(libs.grpc.grpc.kotlin.stub)   // Kotlin Stub
+    implementation(libs.grpc.grpc.kotlin.stub)
     implementation(libs.grpc.grpc.protobuf.lite)
     implementation(libs.google.protobuf.javalite)
 
