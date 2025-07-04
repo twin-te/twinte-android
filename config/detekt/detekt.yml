@@ -1,6 +1,6 @@
 complexity:
   excludes: &generatedFiles
-    - '**/net/twinte/api/**/*.kt'
+    - '**/net/twinte/api/**'
   LongMethod:
     active: true
     threshold: 90
