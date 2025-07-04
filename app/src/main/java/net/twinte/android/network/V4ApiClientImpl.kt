@@ -15,9 +15,9 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-class V4ApiClientImpl (
-    private val cookieManager: CookieManager
-): V4ApiClient {
+class V4ApiClientImpl(
+    private val cookieManager: CookieManager,
+) : V4ApiClient {
     private val okHttp = OkHttpClient.Builder()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(3, TimeUnit.SECONDS)
@@ -30,7 +30,7 @@ class V4ApiClientImpl (
             host = "https://app.twinte.net/api/v4",
             serializationStrategy = GoogleJavaLiteProtobufStrategy(),
             networkProtocol = NetworkProtocol.CONNECT,
-        )
+        ),
     )
 
     override val timetable = TimetableServiceClient(protocolClient)
@@ -38,8 +38,8 @@ class V4ApiClientImpl (
     override val unified = UnifiedServiceClient(protocolClient)
 
     private class WebViewCookieJar(
-        private val cm: CookieManager
-    ): CookieJar {
+        private val cm: CookieManager,
+    ) : CookieJar {
         override fun loadForRequest(url: HttpUrl): List<Cookie> =
             cm.getCookie(url.toString())
                 ?.split(";")
