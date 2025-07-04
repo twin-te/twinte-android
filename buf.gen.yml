@@ -1,11 +1,8 @@
 version: v2
 plugins:
-  - remote: buf.build/protocolbuffers/java
+  - remote: buf.build/protocolbuffers/java:v30.2
     out: app/src/main/java
     opt: lite
-  - remote: buf.build/grpc/java
-    out: app/src/main/java
-    opt: lite
-  - remote: buf.build/grpc/kotlin
+  - remote: buf.build/connectrpc/kotlin
     out: app/src/main/java
     opt: lite

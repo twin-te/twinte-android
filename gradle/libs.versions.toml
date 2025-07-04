@@ -1,41 +1,40 @@
 [versions]
-grpc-android = "1.63.0"
-grpc-kotlin-stub = "1.4.1"
-grpc-okhttp = "1.63.0"
-grpc-protobuf-lite = "1.69.1"
+connect-kotlin-okhttp = "0.7.3"
 kotlin = "2.1.20"
 detekt = "1.23.5"
 hilt = "2.56.2"
-agp = "8.10.0"
+agp = "8.10.1"
 gms-oss-licenses = "0.10.6"
 ksp = "2.1.20-2.0.1"
-protobuf-javalite = "4.29.2"
+lifecycle-runtime-ktx = "2.9.1"
+protobuf-javalite = "4.30.2"
+recyclerview = "1.4.0"
 
 [libraries]
 android-tools-build-gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
-google-protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-javalite" }
-grpc-grpc-android = { module = "io.grpc:grpc-android", version.ref = "grpc-android" }
-grpc-grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin-stub" }
-grpc-grpc-okhttp = { module = "io.grpc:grpc-okhttp", version.ref = "grpc-okhttp" }
-grpc-grpc-protobuf-lite = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpc-protobuf-lite" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+connect-kotlin-google-javalite-ext = { module = "com.connectrpc:connect-kotlin-google-javalite-ext", version.ref = "connect-kotlin-okhttp" }
+connect-kotlin-okhttp = { module = "com.connectrpc:connect-kotlin-okhttp", version.ref = "connect-kotlin-okhttp" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 gms-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "gms-oss-licenses" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.10.1" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.10.2" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.16.0" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
-androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.10.1" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.1" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.10.2" }
 android-material = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.2.1" }
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version = "2.9.0" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version = "2.9.0" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version = "2.9.1" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version = "2.9.1" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version = "1.2.1" }
-androidx-webkit = { group = "androidx.webkit", name = "webkit", version = "1.13.0" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version = "1.14.0" }
 gms-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.3.0" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-javalite" }
 squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version = "5.0.0-alpha.13" }
 gms-play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version = "17.1.0" }
-gson = { group = "com.google.code.gson", name = "gson", version = "2.10.1" }
+gson = { group = "com.google.code.gson", name = "gson", version = "2.11.0" }
 
 junit-core = { group = "junit", name = "junit", version = "4.13.2" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version = "1.2.1" }
@@ -44,9 +43,9 @@ androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espres
 hilt-android-core = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version = "1.2.0" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version = "2.9.0" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version = "2.9.1" }
 mockk = { group = "io.mockk", name = "mockk", version = "1.13.3" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version = "1.10.1" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version = "1.10.2" }
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
