@@ -6,7 +6,7 @@ import net.twinte.api.schoolcalendar.v1.Type.Event as ProtoEvent
 internal fun ProtoEvent.asModel(): ModuleEvent =
     ModuleEvent(
         date = date.value,
-        eventType = TODO(),
+        eventType = type.asModel(),
         description = description,
         changeTo = TODO(),
     )
