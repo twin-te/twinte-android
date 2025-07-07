@@ -3,6 +3,7 @@ package net.twinte.android
 import android.content.Context
 import android.webkit.CookieManager
 import androidx.work.WorkManager
+import com.connectrpc.ProtocolClientConfig
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -13,12 +14,15 @@ import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameS
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStoreImpl
 import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.datastore.schedule.SharedPreferencesScheduleDataStore
+import net.twinte.android.datastore.schedule.V4SharedPreferencesScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.datastore.schedulenotification.SharedPreferencesScheduleNotificationDataStore
 import net.twinte.android.datastore.user.TwinteBackendUserDataStore
 import net.twinte.android.datastore.user.UserDataStore
 import net.twinte.android.network.TwinteBackendHttpClient
 import net.twinte.android.network.TwinteBackendHttpClientImpl
+import net.twinte.android.network.V4ApiClient
+import net.twinte.android.network.V4ApiClientImpl
 import net.twinte.android.network.serversettings.ProductionServerSettings
 import net.twinte.android.network.serversettings.ServerSettings
 
@@ -27,7 +31,7 @@ import net.twinte.android.network.serversettings.ServerSettings
 interface MainApplicationModule {
     @Binds
     fun bindScheduleDataStore(
-        scheduleDataStore: SharedPreferencesScheduleDataStore,
+        scheduleDataStore: V4SharedPreferencesScheduleDataStore,
     ): ScheduleDataStore
 
     @Binds
@@ -57,6 +61,15 @@ interface MainApplicationModule {
         ): TwinteBackendHttpClient = TwinteBackendHttpClientImpl(
             serverSettings.twinteBackendApiEndpointScheme,
             serverSettings.twinteBackendApiEndpointHost,
+            cookieManager,
+        )
+
+        @Provides
+        fun provideV4ApiClient(
+            serverSettings: ServerSettings,
+            cookieManager: CookieManager,
+        ): V4ApiClient = V4ApiClientImpl(
+            serverSettings,
             cookieManager,
         )
 

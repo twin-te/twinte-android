@@ -6,6 +6,7 @@ import com.connectrpc.extensions.GoogleJavaLiteProtobufStrategy
 import com.connectrpc.impl.ProtocolClient
 import com.connectrpc.okhttp.ConnectOkHttpClient
 import com.connectrpc.protocols.NetworkProtocol
+import net.twinte.android.network.serversettings.ServerSettings
 import net.twinte.api.schoolcalendar.v1.SchoolCalendarServiceClient
 import net.twinte.api.timetable.v1.TimetableServiceClient
 import net.twinte.api.unified.v1.UnifiedServiceClient
@@ -16,6 +17,7 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 class V4ApiClientImpl(
+    private val serverSettings: ServerSettings,
     private val cookieManager: CookieManager,
 ) : V4ApiClient {
     private val okHttp = OkHttpClient.Builder()
@@ -27,7 +29,7 @@ class V4ApiClientImpl(
     private val protocolClient = ProtocolClient(
         httpClient = ConnectOkHttpClient(okHttp),
         config = ProtocolClientConfig(
-            host = "https://app.twinte.net/api/v4",
+            host = "${serverSettings.twinteBackendApiEndpointScheme}://${serverSettings.twinteBackendApiEndpointHost}/api/v4",
             serializationStrategy = GoogleJavaLiteProtobufStrategy(),
             networkProtocol = NetworkProtocol.CONNECT,
         ),
