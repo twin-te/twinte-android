@@ -3,7 +3,6 @@ package net.twinte.android
 import android.content.Context
 import android.webkit.CookieManager
 import androidx.work.WorkManager
-import com.connectrpc.ProtocolClientConfig
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -13,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStoreImpl
 import net.twinte.android.datastore.schedule.ScheduleDataStore
-import net.twinte.android.datastore.schedule.SharedPreferencesScheduleDataStore
 import net.twinte.android.datastore.schedule.V4SharedPreferencesScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.datastore.schedulenotification.SharedPreferencesScheduleNotificationDataStore
