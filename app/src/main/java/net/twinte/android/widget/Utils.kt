@@ -139,7 +139,7 @@ fun RemoteViews.applyCourseItem(context: Context, model: WidgetCourseViewModel?)
 fun AppWidgetProvider.errorView(context: Context, widgetId: Int, title: String, detail: String? = null) =
     RemoteViews(
         context.packageName,
-        R.layout.widget_v3_error,
+        R.layout.widget_error,
     ).apply {
         setTextViewText(R.id.error_title_textView, title)
         if (detail != null) {

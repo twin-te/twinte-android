@@ -23,7 +23,7 @@ import javax.inject.Inject
  * Smallウィジットの管理を担う
  */
 @AndroidEntryPoint
-class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
+class SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
 
@@ -49,7 +49,7 @@ class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) = runBlocking {
-        Log.d("V3SmallWidgetProvider", "OnUpdate received")
+        Log.d("SmallWidgetProvider", "OnUpdate received")
         val (current, period) = WidgetUpdater.getShouldShowCurrentDate()
 
         try {
@@ -58,7 +58,7 @@ class V3SmallWidgetProvider @Inject constructor() : AppWidgetProvider() {
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
                     context.packageName,
-                    R.layout.widget_v3_small,
+                    R.layout.widget_small,
                 )
                 views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
                 schedule.eventLabel().let { (label, attention) ->

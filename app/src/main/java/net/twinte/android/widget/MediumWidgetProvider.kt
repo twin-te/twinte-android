@@ -22,22 +22,22 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Largeウィジットの管理を担う
+ * Mediumウィジットの管理を担う
  */
 @AndroidEntryPoint
-class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
+class MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
 
     /**
-     * 設置されたLargeウィジットの数が 0 -> 1 になると呼び出される
+     * 設置されたMediumウィジットの数が 0 -> 1 になると呼び出される
      */
     override fun onEnabled(context: Context) {
         WidgetUpdater.schedule(context, this::class.java)
     }
 
     /**
-     * Largeウィジットが全て無くなると呼び出される
+     * Mediumウィジットが全て無くなると呼び出される
      */
     override fun onDisabled(context: Context) {
         WidgetUpdater.cancel(context, this::class.java)
@@ -51,16 +51,15 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) = runBlocking {
-        Log.d("V3LargeWidgetProvider", "OnUpdate received")
+        Log.d("MediumWidgetProvider", "OnUpdate received")
         val (current) = WidgetUpdater.getShouldShowCurrentDate()
-
         try {
             val schedule = scheduleDataStore.getSchedule(current.time) ?: return@runBlocking
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
                     context.packageName,
-                    R.layout.widget_v3_large,
+                    R.layout.widget_medium,
                 )
 
                 views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
@@ -85,7 +84,7 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
 
                 views.setRemoteAdapter(
                     R.id.course_listView,
-                    Intent(context, V3LargeWidgetRemoteViewService::class.java).apply {
+                    Intent(context, MediumWidgetRemoteViewService::class.java).apply {
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     },
                 )
@@ -124,7 +123,7 @@ class V3LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
  * ウィジット右側のリストを生成するサービス
  */
 @AndroidEntryPoint
-class V3LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
+class MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
 
@@ -133,14 +132,14 @@ class V3LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService(
     class Factory(
         val context: Context,
         val intent: Intent?,
-        private val scheduleDataStore: ScheduleDataStore,
+        val scheduleDataStore: ScheduleDataStore,
     ) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
         override fun onCreate() {}
 
         override fun onDataSetChanged(): Unit = runBlocking {
-            Log.d("LargeFactory", "onDataSetChanged")
+            Log.d("MediumFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
             kotlin.runCatching { scheduleDataStore.getSchedule(current.time) }
                 .onSuccess { schedule = it }
@@ -148,20 +147,22 @@ class V3LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService(
 
         override fun onDestroy() {}
 
-        override fun getCount() = 6
+        override fun getCount() = 2
 
         override fun getViewAt(position: Int): RemoteViews {
+            val (_, period) = WidgetUpdater.getShouldShowCurrentDate()
             val views = RemoteViews(
                 context.packageName,
-                R.layout.widget_v3_period_item,
+                R.layout.widget_course_item_with_header,
             )
 
-            views.setTextViewText(R.id.period_number_textView, "${position + 1}")
-            val course = schedule?.courseViewModel(position + 1)
+            val course = if (position == 0) schedule?.courseViewModel(period) else schedule?.nextCourseViewModel(period)
+            val headerLabel = if (position == 0) "現在の授業" else "次の授業"
+            views.setTextViewText(R.id.course_header_textView, headerLabel)
             views.applyCourseItem(context, course)
 
             views.setOnClickFillInIntent(
-                R.id.period_item_wrapper,
+                R.id.course_item_with_header_wrapper,
                 Intent().apply {
                     course?.id?.let {
                         putExtra("REGISTERED_COURSE_ID", it)

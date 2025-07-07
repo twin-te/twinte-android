@@ -33,7 +33,7 @@
         <!--    ウィジット関連    -->
         <!--    小ウィジット    -->
         <receiver
-            android:name=".widget.V3SmallWidgetProvider"
+            android:name=".widget.SmallWidgetProvider"
             android:label="@string/widget_small_label"
             android:exported="true">
             <intent-filter>
@@ -41,11 +41,11 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_v3_small" />
+                android:resource="@xml/widget_small" />
         </receiver>
         <!--    中ウィジット    -->
         <receiver
-            android:name=".widget.V3MediumWidgetProvider"
+            android:name=".widget.MediumWidgetProvider"
             android:label="@string/widget_medium_label"
             android:exported="true">
             <intent-filter>
@@ -53,11 +53,11 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_v3_medium" />
+                android:resource="@xml/widget_medium" />
         </receiver>
         <!--    大ウィジット    -->
         <receiver
-            android:name=".widget.V3LargeWidgetProvider"
+            android:name=".widget.LargeWidgetProvider"
             android:label="@string/widget_large_label"
             android:exported="true">
             <intent-filter>
@@ -65,7 +65,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_v3_large" />
+                android:resource="@xml/widget_large" />
         </receiver>
 
         <!--    スマホ再起動時 / アプリアップデートの再スケジュール用    -->
@@ -79,13 +79,13 @@
 
         <!--    中ウィジットのデータ供給用Service    -->
         <service
-            android:name=".widget.V3MediumWidgetRemoteViewService"
+            android:name=".widget.MediumWidgetRemoteViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:foregroundServiceType="dataSync" />
         <!--    大ウィジットのデータ供給用Service    -->
         <service
-            android:name=".widget.V3LargeWidgetRemoteViewService"
+            android:name=".widget.LargeWidgetRemoteViewService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:foregroundServiceType="dataSync" />
