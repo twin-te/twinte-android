@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStoreImpl
 import net.twinte.android.datastore.schedule.ScheduleDataStore
-import net.twinte.android.datastore.schedule.V4SharedPreferencesScheduleDataStore
+import net.twinte.android.datastore.schedule.SharedPreferencesScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import net.twinte.android.datastore.schedulenotification.SharedPreferencesScheduleNotificationDataStore
 import net.twinte.android.datastore.user.TwinteBackendUserDataStore
@@ -29,7 +29,7 @@ import net.twinte.android.network.serversettings.ServerSettings
 interface MainApplicationModule {
     @Binds
     fun bindScheduleDataStore(
-        scheduleDataStore: V4SharedPreferencesScheduleDataStore,
+        scheduleDataStore: SharedPreferencesScheduleDataStore,
     ): ScheduleDataStore
 
     @Binds
@@ -52,6 +52,7 @@ interface MainApplicationModule {
         @Provides
         fun provideServerSettings(): ServerSettings = ProductionServerSettings()
 
+        // TODO: すべての datastore を置き換え次第削除する
         @Provides
         fun provideTwinteBackendHttpClient(
             serverSettings: ServerSettings,
