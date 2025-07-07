@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 import net.twinte.android.NotLoggedInException
 import net.twinte.android.mapping.proto.toTimetable
 import net.twinte.android.model.Timetable
-import net.twinte.android.network.TwinteBackendHttpClient
 import net.twinte.android.network.V4ApiClient
 import net.twinte.api.shared.Type.RFC3339FullDate
 import net.twinte.api.unified.v1.Service.GetByDateRequest
