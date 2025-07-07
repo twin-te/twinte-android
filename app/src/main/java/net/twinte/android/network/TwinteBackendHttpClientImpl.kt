@@ -48,6 +48,7 @@ class TwinteBackendHttpClientImpl(
         ).execute()
 
     class WebViewCookieJar(
+
         private val cookieManager: CookieManager,
     ) : CookieJar {
         override fun loadForRequest(url: HttpUrl): List<Cookie> {

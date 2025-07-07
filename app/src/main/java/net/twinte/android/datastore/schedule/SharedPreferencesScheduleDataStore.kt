@@ -67,6 +67,7 @@ class SharedPreferencesScheduleDataStore @Inject constructor(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 class V4SharedPreferencesScheduleDataStore @Inject constructor(
     @ApplicationContext context: Context,
     private val api: V4ApiClient,
@@ -74,11 +75,9 @@ class V4SharedPreferencesScheduleDataStore @Inject constructor(
     private val pref = context.getSharedPreferences("schedule_cache", Context.MODE_PRIVATE)
     private val keyFmt = SimpleDateFormat("yyyy-MM-dd", Locale.JAPAN)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private val apiFmt = DateTimeFormatter.ISO_LOCAL_DATE // for RPC
     private val gson = Gson()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun update(calendar: Array<Date>): Unit = withContext(Dispatchers.IO) {
         val editor = pref.edit().also { it.clear() }
 
@@ -107,7 +106,6 @@ class V4SharedPreferencesScheduleDataStore @Inject constructor(
         editor.commit()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getSchedule(date: Date): Timetable? = withContext(Dispatchers.IO) {
         val key = keyFmt.format(date)
         if (!pref.contains(key)) update(arrayOf(date))
