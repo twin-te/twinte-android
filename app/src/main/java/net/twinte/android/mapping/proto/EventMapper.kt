@@ -13,7 +13,7 @@ internal fun ProtoEvent.asModel(): ModuleEvent =
         changeTo = changeTo.asModel(),
     )
 
-internal fun Weekday.asModel(): Day? = when(this) {
+internal fun Weekday.asModel(): Day? = when (this) {
     Weekday.WEEKDAY_SUNDAY -> Day.Sun
     Weekday.WEEKDAY_MONDAY -> Day.Mon
     Weekday.WEEKDAY_TUESDAY -> Day.Tue

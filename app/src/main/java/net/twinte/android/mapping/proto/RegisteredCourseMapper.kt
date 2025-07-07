@@ -1,10 +1,9 @@
 package net.twinte.android.mapping.proto
 
-import net.twinte.android.model.Timetable.Course as ModelCourse
-import net.twinte.api.timetable.v1.Type.RegisteredCourse as ProtoCourse
-
 import net.twinte.android.model.Format
 import net.twinte.api.timetable.v1.Type.CourseMethod
+import net.twinte.android.model.Timetable.Course as ModelCourse
+import net.twinte.api.timetable.v1.Type.RegisteredCourse as ProtoCourse
 
 internal fun ProtoCourse.asModel(): ModelCourse =
     ModelCourse(
@@ -25,7 +24,7 @@ internal fun ProtoCourse.asModel(): ModelCourse =
         },
     )
 
-internal fun CourseMethod.asModel(): Format = when(this){
+internal fun CourseMethod.asModel(): Format = when (this) {
     CourseMethod.COURSE_METHOD_UNSPECIFIED -> Format.Others
     CourseMethod.COURSE_METHOD_ONLINE_ASYNCHRONOUS -> Format.OnlineAsynchronous
     CourseMethod.COURSE_METHOD_ONLINE_SYNCHRONOUS -> Format.OnlineSynchronous

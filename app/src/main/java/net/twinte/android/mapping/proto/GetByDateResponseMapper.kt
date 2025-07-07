@@ -6,7 +6,6 @@ import net.twinte.android.model.Timetable
 import net.twinte.api.schoolcalendar.v1.Type.Module
 import net.twinte.api.unified.v1.Service.GetByDateResponse
 import java.time.LocalDate
-
 import net.twinte.android.model.Module as ModelModule
 import net.twinte.api.schoolcalendar.v1.Type.Module as ProtoModule
 

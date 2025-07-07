@@ -1,8 +1,8 @@
 package net.twinte.android.mapping.proto
 
 import net.twinte.android.model.Day as ModelDay
-import net.twinte.api.timetable.v1.Type.Day as ProtoDay
 import net.twinte.android.model.Timetable.Course.Schedule as ModelSchedule
+import net.twinte.api.timetable.v1.Type.Day as ProtoDay
 import net.twinte.api.timetable.v1.Type.Schedule as ProtoSchedule
 
 internal fun ProtoSchedule.asModel(): ModelSchedule =
@@ -13,7 +13,7 @@ internal fun ProtoSchedule.asModel(): ModelSchedule =
         room = locations,
     )
 
-internal fun ProtoDay.asModel(): ModelDay? = when(this) {
+internal fun ProtoDay.asModel(): ModelDay? = when (this) {
     ProtoDay.DAY_SUN -> ModelDay.Sun
     ProtoDay.DAY_MON -> ModelDay.Mon
     ProtoDay.DAY_TUE -> ModelDay.Tue
