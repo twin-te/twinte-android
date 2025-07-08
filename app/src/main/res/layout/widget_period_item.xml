@@ -16,5 +16,5 @@
         android:fontFamily="sans-serif-medium"
         android:text="1" />
 
-    <include layout="@layout/widget_v3_course_item" />
+    <include layout="@layout/widget_course_item" />
 </LinearLayout>

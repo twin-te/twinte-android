@@ -1,4 +1,6 @@
 complexity:
+  excludes: &generatedFiles
+    - '**/net/twinte/api/**'
   LongMethod:
     active: true
     threshold: 90
@@ -10,9 +12,11 @@ complexity:
     active: false
 
 coroutines:
+  excludes: *generatedFiles
   active: true
 
 exceptions:
+  excludes: *generatedFiles
   active: true
 
   SwallowedException:
@@ -23,15 +27,18 @@ exceptions:
     active: false
 
 performance:
+  excludes: *generatedFiles
   active: true
 
   ForEachOnRange:
     active: true
 
 potential-bugs:
+  excludes: *generatedFiles
   active: true
 
 style:
+  excludes: *generatedFiles
   active: true
   MagicNumber:
     # Jetpack Compose 関連のコードでマジックナンバーを用いる機会が通常のものとして増えたため無視する
@@ -52,6 +59,7 @@ style:
         value: 'STOPSHIP:'
 
 naming:
+  excludes: *generatedFiles
   active: true
 
   MatchingDeclarationName:
@@ -71,6 +79,7 @@ empty-blocks:
 #####
 
 formatting:
+  excludes: *generatedFiles
   active: true
   autoCorrect: true
 

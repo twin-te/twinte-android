@@ -60,6 +60,14 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 
+    // gRPC, Connect
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.connect.kotlin.okhttp)
+    // JavaLite specific dependencies
+    implementation(libs.connect.kotlin.google.javalite.ext)
+    implementation(libs.protobuf.javalite)
+
     // Hilt
     implementation(libs.hilt.android.core)
     ksp(libs.hilt.android.compiler)

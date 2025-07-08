@@ -1,0 +1,8 @@
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/java:v30.2
+    out: app/src/main/java
+    opt: lite
+  - remote: buf.build/connectrpc/kotlin
+    out: app/src/main/java
+    opt: lite

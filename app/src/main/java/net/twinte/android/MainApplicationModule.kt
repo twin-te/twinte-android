@@ -19,6 +19,8 @@ import net.twinte.android.datastore.user.TwinteBackendUserDataStore
 import net.twinte.android.datastore.user.UserDataStore
 import net.twinte.android.network.TwinteBackendHttpClient
 import net.twinte.android.network.TwinteBackendHttpClientImpl
+import net.twinte.android.network.V4ApiClient
+import net.twinte.android.network.V4ApiClientImpl
 import net.twinte.android.network.serversettings.ProductionServerSettings
 import net.twinte.android.network.serversettings.ServerSettings
 
@@ -50,6 +52,7 @@ interface MainApplicationModule {
         @Provides
         fun provideServerSettings(): ServerSettings = ProductionServerSettings()
 
+        // TODO: すべての datastore を置き換え次第削除する
         @Provides
         fun provideTwinteBackendHttpClient(
             serverSettings: ServerSettings,
@@ -57,6 +60,15 @@ interface MainApplicationModule {
         ): TwinteBackendHttpClient = TwinteBackendHttpClientImpl(
             serverSettings.twinteBackendApiEndpointScheme,
             serverSettings.twinteBackendApiEndpointHost,
+            cookieManager,
+        )
+
+        @Provides
+        fun provideV4ApiClient(
+            serverSettings: ServerSettings,
+            cookieManager: CookieManager,
+        ): V4ApiClient = V4ApiClientImpl(
+            serverSettings,
             cookieManager,
         )
 

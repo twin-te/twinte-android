@@ -28,6 +28,6 @@
     </LinearLayout>
 
     <include
-        layout="@layout/widget_v3_course_item"
+        layout="@layout/widget_course_item"
         android:id="@+id/current_course_item_wrapper" />
 </LinearLayout>

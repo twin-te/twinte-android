@@ -96,7 +96,7 @@
                 android:layout_height="match_parent"
                 android:dividerHeight="16dp"
                 android:divider="@null"
-                tools:listitem="@layout/widget_v3_course_item_with_header" />
+                tools:listitem="@layout/widget_course_item_with_header" />
 
         </LinearLayout>
     </FrameLayout>

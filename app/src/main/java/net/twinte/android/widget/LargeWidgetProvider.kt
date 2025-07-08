@@ -22,22 +22,22 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Mediumウィジットの管理を担う
+ * Largeウィジットの管理を担う
  */
 @AndroidEntryPoint
-class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
+class LargeWidgetProvider @Inject constructor() : AppWidgetProvider() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
 
     /**
-     * 設置されたMediumウィジットの数が 0 -> 1 になると呼び出される
+     * 設置されたLargeウィジットの数が 0 -> 1 になると呼び出される
      */
     override fun onEnabled(context: Context) {
         WidgetUpdater.schedule(context, this::class.java)
     }
 
     /**
-     * Mediumウィジットが全て無くなると呼び出される
+     * Largeウィジットが全て無くなると呼び出される
      */
     override fun onDisabled(context: Context) {
         WidgetUpdater.cancel(context, this::class.java)
@@ -51,15 +51,16 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) = runBlocking {
-        Log.d("V3MediumWidgetProvider", "OnUpdate received")
+        Log.d("LargeWidgetProvider", "OnUpdate received")
         val (current) = WidgetUpdater.getShouldShowCurrentDate()
+
         try {
             val schedule = scheduleDataStore.getSchedule(current.time) ?: return@runBlocking
 
             appWidgetIds.forEach { appWidgetId ->
                 val views = RemoteViews(
                     context.packageName,
-                    R.layout.widget_v3_medium,
+                    R.layout.widget_large,
                 )
 
                 views.setTextViewText(R.id.date_textView, schedule.dateLabel(current))
@@ -84,7 +85,7 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
 
                 views.setRemoteAdapter(
                     R.id.course_listView,
-                    Intent(context, V3MediumWidgetRemoteViewService::class.java).apply {
+                    Intent(context, LargeWidgetRemoteViewService::class.java).apply {
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     },
                 )
@@ -123,7 +124,7 @@ class V3MediumWidgetProvider @Inject constructor() : AppWidgetProvider() {
  * ウィジット右側のリストを生成するサービス
  */
 @AndroidEntryPoint
-class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
+class LargeWidgetRemoteViewService @Inject constructor() : RemoteViewsService() {
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
 
@@ -132,14 +133,14 @@ class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService
     class Factory(
         val context: Context,
         val intent: Intent?,
-        val scheduleDataStore: ScheduleDataStore,
+        private val scheduleDataStore: ScheduleDataStore,
     ) : RemoteViewsFactory {
         var schedule: Timetable? = null
 
         override fun onCreate() {}
 
         override fun onDataSetChanged(): Unit = runBlocking {
-            Log.d("MediumFactory", "onDataSetChanged")
+            Log.d("LargeFactory", "onDataSetChanged")
             val (current, _) = WidgetUpdater.getShouldShowCurrentDate()
             kotlin.runCatching { scheduleDataStore.getSchedule(current.time) }
                 .onSuccess { schedule = it }
@@ -147,22 +148,20 @@ class V3MediumWidgetRemoteViewService @Inject constructor() : RemoteViewsService
 
         override fun onDestroy() {}
 
-        override fun getCount() = 2
+        override fun getCount() = 6
 
         override fun getViewAt(position: Int): RemoteViews {
-            val (_, period) = WidgetUpdater.getShouldShowCurrentDate()
             val views = RemoteViews(
                 context.packageName,
-                R.layout.widget_v3_course_item_with_header,
+                R.layout.widget_period_item,
             )
 
-            val course = if (position == 0) schedule?.courseViewModel(period) else schedule?.nextCourseViewModel(period)
-            val headerLabel = if (position == 0) "現在の授業" else "次の授業"
-            views.setTextViewText(R.id.course_header_textView, headerLabel)
+            views.setTextViewText(R.id.period_number_textView, "${position + 1}")
+            val course = schedule?.courseViewModel(position + 1)
             views.applyCourseItem(context, course)
 
             views.setOnClickFillInIntent(
-                R.id.course_item_with_header_wrapper,
+                R.id.period_item_wrapper,
                 Intent().apply {
                     course?.id?.let {
                         putExtra("REGISTERED_COURSE_ID", it)

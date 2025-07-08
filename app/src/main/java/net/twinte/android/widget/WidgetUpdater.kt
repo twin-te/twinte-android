@@ -118,9 +118,9 @@ object WidgetUpdater {
         val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
 
         arrayOf(
-            V3SmallWidgetProvider::class.java,
-            V3MediumWidgetProvider::class.java,
-            V3LargeWidgetProvider::class.java,
+            SmallWidgetProvider::class.java,
+            MediumWidgetProvider::class.java,
+            LargeWidgetProvider::class.java,
         ).forEach { clazz ->
             context.sendBroadcast(
                 Intent(context, clazz).apply {
@@ -176,38 +176,38 @@ object WidgetUpdater {
         cancel(context, clazz)
         when (clazz) {
             // Smallウィジットは各授業の開始時刻から30分遅れて更新
-            V3SmallWidgetProvider::class.java -> {
+            SmallWidgetProvider::class.java -> {
                 scheduleAtPeriodStart(context, clazz, 30)
                 scheduleDailyAt(context, clazz, SimpleTime(18, 0)) // 空になる
                 scheduleDailyAt(context, clazz, SimpleTime(19, 0)) // 明日の授業が表示
             }
             // Mediumウィジットは各授業の開始時刻に更新する
-            V3MediumWidgetProvider::class.java -> {
+            MediumWidgetProvider::class.java -> {
                 scheduleAtPeriodStart(context, clazz, 0)
                 scheduleDailyAt(context, clazz, SimpleTime(18, 0)) // 空になる
                 scheduleDailyAt(context, clazz, SimpleTime(19, 0)) // 明日の授業が表示
             }
             // Largeウィジットはその日の授業が終了した後19:00の一回のみ表示を更新する
-            V3LargeWidgetProvider::class.java -> scheduleDailyAt(context, clazz, SimpleTime(19, 0))
+            LargeWidgetProvider::class.java -> scheduleDailyAt(context, clazz, SimpleTime(19, 0))
         }
     }
 
     fun scheduleAllIfExists(context: Context) {
         val appWidgetManager = context.getSystemService(AppWidgetManager::class.java)
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3SmallWidgetProvider::class.java))
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, SmallWidgetProvider::class.java))
                 .isNotEmpty()
         ) {
-            schedule(context, V3SmallWidgetProvider::class.java)
+            schedule(context, SmallWidgetProvider::class.java)
         }
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3MediumWidgetProvider::class.java))
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, MediumWidgetProvider::class.java))
                 .isNotEmpty()
         ) {
-            schedule(context, V3MediumWidgetProvider::class.java)
+            schedule(context, MediumWidgetProvider::class.java)
         }
-        if (appWidgetManager.getAppWidgetIds(ComponentName(context, V3LargeWidgetProvider::class.java))
+        if (appWidgetManager.getAppWidgetIds(ComponentName(context, LargeWidgetProvider::class.java))
                 .isNotEmpty()
         ) {
-            schedule(context, V3LargeWidgetProvider::class.java)
+            schedule(context, LargeWidgetProvider::class.java)
         }
     }
 
@@ -216,17 +216,17 @@ object WidgetUpdater {
      */
     fun cancel(context: Context, clazz: Class<*>) {
         when (clazz) {
-            V3SmallWidgetProvider::class.java -> {
+            SmallWidgetProvider::class.java -> {
                 cancelScheduleAtPeriodStart(context, clazz)
                 cancelDailyAt(context, clazz, SimpleTime(18, 0))
                 cancelDailyAt(context, clazz, SimpleTime(19, 0))
             }
-            V3MediumWidgetProvider::class.java -> {
+            MediumWidgetProvider::class.java -> {
                 cancelScheduleAtPeriodStart(context, clazz)
                 cancelDailyAt(context, clazz, SimpleTime(18, 0))
                 cancelDailyAt(context, clazz, SimpleTime(19, 0))
             }
-            V3LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(19, 0))
+            LargeWidgetProvider::class.java -> cancelDailyAt(context, clazz, SimpleTime(19, 0))
         }
     }
 
