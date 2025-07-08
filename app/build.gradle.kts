@@ -63,9 +63,8 @@ dependencies {
     // gRPC, Connect
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    // implementation(libs.okhttp.v4100)
     implementation(libs.connect.kotlin.okhttp)
-    // JavaLite specific dependencies.
+    // JavaLite specific dependencies
     implementation(libs.connect.kotlin.google.javalite.ext)
     implementation(libs.protobuf.javalite)
 
