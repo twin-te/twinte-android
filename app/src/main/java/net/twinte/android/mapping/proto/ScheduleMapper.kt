@@ -18,7 +18,7 @@ internal fun ProtoDay.asModel(): ModelDay? = when (this) {
     ProtoDay.DAY_MON -> ModelDay.Mon
     ProtoDay.DAY_TUE -> ModelDay.Tue
     ProtoDay.DAY_WED -> ModelDay.Wed
-    ProtoDay.DAY_THU -> ModelDay.Tue
+    ProtoDay.DAY_THU -> ModelDay.Thu
     ProtoDay.DAY_FRI -> ModelDay.Fri
     ProtoDay.DAY_SAT -> ModelDay.Sat
     else -> null

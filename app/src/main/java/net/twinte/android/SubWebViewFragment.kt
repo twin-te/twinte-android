@@ -64,8 +64,8 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
                     // Twin:teのアプリケーションページに飛ぶときはダイアログを閉じてメインで表示
                     if (
                         request.url.host == serverSettings.twinteBackendApiEndpointHost &&
-                        request.url.path?.startsWith("/api/v3") != true &&
-                        request.url.path?.startsWith("/auth/v3") != true
+                        request.url.path?.startsWith("/api/v4") != true &&
+                        request.url.path?.startsWith("/auth/v4") != true
                     ) {
                         callback?.subWebViewCallback(request.url.toString())
                         dismiss()

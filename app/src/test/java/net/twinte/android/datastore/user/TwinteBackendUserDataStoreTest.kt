@@ -31,7 +31,7 @@ class TwinteBackendUserDataStoreTest {
         datastore.validateGoogleIdToken(idToken)
 
         // then
-        assert(pathSlot.captured == "/auth/v3/google/idToken")
+        assert(pathSlot.captured == "/auth/v4/google/idToken")
         assert(argumentSlot.captured.getValue("token") == idToken)
     }
 }

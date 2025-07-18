@@ -11,7 +11,7 @@ class TwinteBackendUserDataStore @Inject constructor(
 ) : UserDataStore {
     override suspend fun validateGoogleIdToken(idToken: String): Boolean = withContext(Dispatchers.IO) {
         val res = twinteBackendHttpClient.get(
-            "/auth/v3/google/idToken",
+            "/auth/v4/google/idToken",
             params {
                 put("token", idToken)
             },

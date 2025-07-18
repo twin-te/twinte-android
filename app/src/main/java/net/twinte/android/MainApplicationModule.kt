@@ -52,7 +52,6 @@ interface MainApplicationModule {
         @Provides
         fun provideServerSettings(): ServerSettings = ProductionServerSettings()
 
-        // TODO: すべての datastore を置き換え次第削除する
         @Provides
         fun provideTwinteBackendHttpClient(
             serverSettings: ServerSettings,
