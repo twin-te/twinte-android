@@ -13,8 +13,8 @@ android {
         applicationId = "net.twinte.android"
         minSdk = 24
         targetSdk = 35
-        versionCode = 25
-        versionName = "4.0.0"
+        versionCode = 26
+        versionName = "4.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
