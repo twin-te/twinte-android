@@ -32,7 +32,7 @@ internal fun ProtoModule.asModel(): ModelModule = when (this) {
     ProtoModule.MODULE_FALL_A -> ModelModule.FallA
     ProtoModule.MODULE_FALL_B -> ModelModule.FallB
     ProtoModule.MODULE_WINTER_VACATION -> ModelModule.Unknown // TODO: Fix
-    ProtoModule.MODULE_FALL_C -> ModelModule.SpringC
+    ProtoModule.MODULE_FALL_C -> ModelModule.FallC
     ProtoModule.MODULE_SPRING_VACATION -> ModelModule.SpringVacation
     ProtoModule.UNRECOGNIZED -> ModelModule.Unknown
 }
