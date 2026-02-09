@@ -2,6 +2,7 @@ package net.twinte.android
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -16,6 +17,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -67,6 +69,21 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     lateinit var workManager: WorkManager
 
     lateinit var binding: ActivityMainBinding
+
+    private var isScreenCaptureDialogShown = false
+
+    private val screenCaptureCallback = Activity.ScreenCaptureCallback {
+        // 初回のスクリーンショットだけダイアログを表示
+        if (!isScreenCaptureDialogShown) {
+            isScreenCaptureDialogShown = true
+            AlertDialog.Builder(this@MainActivity)
+                .setMessage(getString(R.string.screenshot_detected))
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,6 +254,20 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     filePathCallback?.onReceiveValue(null)
                 }
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerScreenCaptureCallback(mainExecutor, screenCaptureCallback)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            unregisterScreenCaptureCallback(screenCaptureCallback)
         }
     }
 
