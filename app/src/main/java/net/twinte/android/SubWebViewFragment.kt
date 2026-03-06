@@ -58,6 +58,7 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         }
         binding.subWebview.apply {
             settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
             cookieManager.setAcceptThirdPartyCookies(this, true)
             webViewClient = object : WebViewClientCompat() {
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
