@@ -9,9 +9,15 @@ ksp = "2.1.20-2.0.1"
 lifecycle-runtime-ktx = "2.9.1"
 protobuf-javalite = "4.30.2"
 recyclerview = "1.4.0"
+androidx-activity-compose = "1.10.1"
+androidx-compose-bom = "2026.03.00"
 
 [libraries]
 android-tools-build-gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 connect-kotlin-google-javalite-ext = { module = "com.connectrpc:connect-kotlin-google-javalite-ext", version.ref = "connect-kotlin-okhttp" }
@@ -54,4 +60,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android-core = { id = "kotlin-android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 gms-oss-licenses-plugin = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "gms-oss-licenses" }

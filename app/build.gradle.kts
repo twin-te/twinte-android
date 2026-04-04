@@ -1,6 +1,7 @@
 plugins {
     id(libs.plugins.android.application.get().pluginId)
     id(libs.plugins.kotlin.android.core.get().pluginId)
+    alias(libs.plugins.kotlin.compose)
     id(libs.plugins.gms.oss.licenses.plugin.get().pluginId)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android.core)
@@ -20,6 +21,7 @@ android {
     }
 
     buildFeatures {
+        compose = true
         viewBinding = true
     }
 
@@ -40,8 +42,14 @@ android {
 }
 
 dependencies {
+    val composeBom = platform(libs.androidx.compose.bom)
+
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
+    implementation(composeBom)
     implementation(libs.kotlin.stdlib)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.ui)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -57,6 +65,7 @@ dependencies {
     implementation(libs.gms.play.services.oss.licenses)
     implementation(libs.gson)
     testImplementation(libs.junit.core)
+    androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
 

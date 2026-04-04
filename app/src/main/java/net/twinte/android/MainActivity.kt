@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
@@ -15,9 +16,14 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.Fragment
 import androidx.webkit.WebViewClientCompat
 import androidx.work.WorkManager
@@ -29,7 +35,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.twinte.android.databinding.ActivityMainBinding
 import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
 import net.twinte.android.datastore.schedule.ScheduleDataStore
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
@@ -43,7 +48,8 @@ const val TWINTE_DEBUG = false
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
-    var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var mainWebView: WebView? = null
 
     @Inject
     lateinit var scheduleDataStore: ScheduleDataStore
@@ -66,13 +72,17 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     @Inject
     lateinit var workManager: WorkManager
 
-    lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setTheme(R.style.AppTheme_Main)
-        setContentView(binding.root)
+
+        val url = intent.getStringExtra("REGISTERED_COURSE_ID")
+            ?.let { twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl() }
+            ?: twinteUrlBuilder(serverSettings).buildUrl()
+
+        setContent {
+            MainWebView(initialUrl = url)
+        }
 
         UpdateScheduleWorker.scheduleNextUpdate(workManager)
         scheduleNotificationDataStore.schedule()
@@ -103,14 +113,6 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             resetCookiesForSameSiteDataStore.shouldResetCookiesForSameSite = false
         }
 
-        binding.mainWebview.setup()
-
-        val url = intent.getStringExtra("REGISTERED_COURSE_ID")
-            ?.let { twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl() }
-            ?: twinteUrlBuilder(serverSettings).buildUrl()
-
-        binding.mainWebview.loadUrl(url)
-
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.POST_NOTIFICATIONS,
@@ -120,7 +122,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                     if (!isGranted) {
                         Snackbar.make(
-                            binding.root,
+                            findViewById<View>(android.R.id.content),
                             getString(R.string.snackbar_notification_not_granted_text),
                             Snackbar.LENGTH_LONG,
                         ).setAction(getString(R.string.snackbar_notification_not_granted_settings)) {
@@ -135,6 +137,23 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
             return
         }
+    }
+
+    @Composable
+    private fun MainWebView(initialUrl: String) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                WebView(context).also { webView ->
+                    mainWebView = webView
+                    webView.setup()
+                    webView.loadUrl(initialUrl)
+                }
+            },
+            update = { webView ->
+                mainWebView = webView
+            },
+        )
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -196,7 +215,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
                 @JavascriptInterface
                 fun share(body: String) {
-                    binding.mainWebview.shareScreen(body)
+                    mainWebView?.shareScreen(body)
                 }
             },
             "android",
@@ -214,7 +233,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     .runCatching { result }
                     .fold(onSuccess = { it }, onFailure = {
                         // blur がかかったままなためリロードする
-                        binding.mainWebview.reload()
+                        mainWebView?.reload()
                         return
                     })
                 GlobalScope.launch {
@@ -225,7 +244,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                             }
                     }
                     withContext(Dispatchers.Main) {
-                        binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
+                        mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
                     }
                 }
             }
@@ -262,7 +281,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         super.onNewIntent(intent)
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
-                binding.mainWebview.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
+                mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
             }
     }
 
@@ -276,8 +295,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (binding.mainWebview.canGoBack()) {
-            binding.mainWebview.goBack()
+        if (mainWebView?.canGoBack() == true) {
+            mainWebView?.goBack()
         } else {
             super.onBackPressed()
         }
@@ -285,7 +304,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
-        binding.mainWebview.loadUrl(url)
+        mainWebView?.loadUrl(url)
     }
 
     companion object {
