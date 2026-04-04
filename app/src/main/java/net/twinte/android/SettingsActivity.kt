@@ -1,80 +1,79 @@
 package net.twinte.android
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Timer
-import kotlin.concurrent.schedule
+import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
+    @Inject
+    lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        title = "Androidアプリの設定"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.preference_wrapper, SettingsFragment())
-            .commit()
-    }
+        supportActionBar?.hide()
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            finish()
-            return true
-        }
-        return false
-    }
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val scheduleOptionLabels =
+            resources.getStringArray(R.array.schedule_key)
+                .zip(resources.getStringArray(R.array.schedule_label))
+        val defaultScheduleTiming = resources.getStringArray(R.array.default_schedule).toList()
+        val versionName = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()
 
-    class SettingsFragment : PreferenceFragmentCompat() {
-
-        private var versionTapTime = 0L
-        private var versionTapCount = 0
-        override fun onPreferenceTreeClick(preference: Preference): Boolean {
-            when (preference.key) {
-                "license" -> startActivity(Intent(this.context, OssLicensesMenuActivity::class.java))
-                "version" -> {
-                    if (System.currentTimeMillis() - versionTapTime < 500) {
-                        versionTapCount++
-                        if (versionTapCount >= 7) {
-                            Toast.makeText(
-                                this.context,
-                                "開発者の方々はGithubでお待ちしています！",
-                                Toast.LENGTH_LONG,
-                            ).show()
-                            Timer().schedule(1000) {
-                                findPreference<Preference>("github")?.isVisible = true
-                            }
-                        } else if (versionTapCount >= 4) {
-                            Toast.makeText(
-                                this.context,
-                                "あと${ 7 - versionTapCount}ステップで開発者になります",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
+        setContent {
+            SettingsScreen(
+                title = "Androidアプリの設定",
+                sharedPreferences = sharedPreferences,
+                versionName = versionName,
+                scheduleOptionLabels = scheduleOptionLabels,
+                defaultScheduleTiming = defaultScheduleTiming,
+                onBack = ::finish,
+                onScheduleNotificationChanged = scheduleNotificationDataStore::schedule,
+                onOpenLicense = {
+                    if (BuildConfig.DEBUG) {
+                        Toast.makeText(
+                            this,
+                            "debug ビルドではライセンス一覧が生成されないため、release ビルドで確認してください",
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    } else {
+                        OssLicensesMenuActivity.setActivityTitle("オープンソースライセンス")
+                        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
                     }
-                    versionTapTime = System.currentTimeMillis()
-                }
-            }
-            return super.onPreferenceTreeClick(preference)
+                },
+                onOpenTwitter = {
+                    openUrl("https://twitter.com/te_twin")
+                },
+                onOpenMail = {
+                    startActivity(
+                        Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse("mailto:info@twinte.net")
+                        },
+                    )
+                },
+                onOpenWebsite = {
+                    openUrl("https://www.twinte.net")
+                },
+                onOpenGithub = {
+                    openUrl("https://github.com/twin-te")
+                },
+            )
         }
+    }
 
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.preferences, rootKey)
-            findPreference<Preference>("github")?.isVisible = false
-            findPreference<Preference>("version")?.setSummaryProvider {
-                this.context?.run {
-                    "version: ${packageManager.getPackageInfo(packageName, 0).versionName}"
-                }
-            }
-        }
+    private fun openUrl(url: String) {
+        startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(url)
+            },
+        )
     }
 }
