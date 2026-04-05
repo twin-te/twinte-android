@@ -1,6 +1,7 @@
 package net.twinte.android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.app.Dialog
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -38,6 +39,15 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = when {
+            parentFragment is Callback -> parentFragment as Callback
+            context is Callback -> context
+            else -> null
+        }
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -144,6 +154,11 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
         binding.root.removeView(binding.subWebview)
         binding.subWebview.destroy()
         _binding = null
+    }
+
+    override fun onDetach() {
+        callback = null
+        super.onDetach()
     }
 
     interface Callback {

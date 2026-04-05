@@ -12,6 +12,7 @@ import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,23 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.fragment.app.Fragment
-import androidx.work.WorkManager
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.twinte.android.databinding.ActivityMainBinding
-import net.twinte.android.datastore.resetcookiesforsamesite.ResetCookiesForSameSiteDataStore
-import net.twinte.android.datastore.schedule.ScheduleDataStore
-import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
-import net.twinte.android.datastore.user.UserDataStore
 import net.twinte.android.network.serversettings.ServerSettings
-import net.twinte.android.widget.WidgetUpdater
-import net.twinte.android.work.UpdateScheduleWorker
 import javax.inject.Inject
 
 const val TWINTE_DEBUG = false
@@ -74,25 +65,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         }
 
     @Inject
-    lateinit var scheduleDataStore: ScheduleDataStore
-
-    @Inject
-    lateinit var userDataStore: UserDataStore
-
-    @Inject
-    lateinit var scheduleNotificationDataStore: ScheduleNotificationDataStore
-
-    @Inject
-    lateinit var resetCookiesForSameSiteDataStore: ResetCookiesForSameSiteDataStore
+    lateinit var mainActivityEffects: MainActivityEffects
 
     @Inject
     lateinit var cookieManager: CookieManager
 
     @Inject
     lateinit var serverSettings: ServerSettings
-
-    @Inject
-    lateinit var workManager: WorkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,33 +106,27 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             MainWebView(initialUrl = url)
         }
 
-        UpdateScheduleWorker.scheduleNextUpdate(workManager)
-        scheduleNotificationDataStore.schedule()
-        GlobalScope.launch {
-            kotlin.runCatching { scheduleDataStore.update() }
-                .fold(onSuccess = {}, onFailure = {
-                    when (it) {
-                        is NotLoggedInException -> {
-                            // 未ログイン時は失敗するが何もしない
-                        }
-                        else -> {
-                            // それ以外の予期せぬエラー
-                        }
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (mainWebView?.canGoBack() == true) {
+                        mainWebView?.goBack()
+                    } else {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
                     }
-                })
-            WidgetUpdater.updateAllWidget(this@MainActivity)
-            WidgetUpdater.scheduleAllIfExists(this@MainActivity)
+                }
+            },
+        )
+
+        mainActivityEffects.prepareLaunch()
+        lifecycleScope.launch {
+            mainActivityEffects.refreshAfterLaunch(applicationContext)
         }
 
         if (TWINTE_DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
-        }
-
-        // ref: https://github.com/twin-te/twinte-android/issues/44
-        // TODO: リリースしてから一年経過したら削除する（twinte_session は元々得られてから 1 年後に expire する設定になっている）
-        if (resetCookiesForSameSiteDataStore.shouldResetCookiesForSameSite) {
-            cookieManager.removeAllCookies {}
-            resetCookiesForSameSiteDataStore.shouldResetCookiesForSameSite = false
         }
 
         if (ActivityCompat.checkSelfPermission(
@@ -194,16 +167,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 mainWebView?.reload()
                 return
             })
-        GlobalScope.launch {
-            account?.idToken?.let {
-                kotlin.runCatching { userDataStore.validateGoogleIdToken(it) }
-                    .onFailure {
-                        Toast.makeText(applicationContext, R.string.common_google_play_services_unknown_issue, Toast.LENGTH_SHORT).show()
-                    }
+        lifecycleScope.launch {
+            if (!mainActivityEffects.submitGoogleIdToken(account?.idToken)) {
+                Toast.makeText(applicationContext, R.string.common_google_play_services_unknown_issue, Toast.LENGTH_SHORT).show()
             }
-            withContext(Dispatchers.Main) {
-                mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
-            }
+            mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
         }
     }
 
@@ -224,19 +192,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     override fun onPause() {
         super.onPause()
-        cookieManager.flush()
-        GlobalScope.launch {
-            kotlin.runCatching {
-                scheduleDataStore.update()
-            }.fold(onSuccess = {}, onFailure = { e ->
-                when (e) {
-                    is NotLoggedInException -> {
-                        // 未ログイン時は失敗するが何もしない
-                    }
-                    else -> { }
-                }
-            })
-            WidgetUpdater.updateAllWidget(this@MainActivity)
+        mainActivityEffects.flushCookies()
+        lifecycleScope.launch {
+            mainActivityEffects.refreshOnPause(applicationContext)
         }
     }
 
@@ -246,23 +204,6 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             ?.let {
                 mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
             }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onAttachFragment(fragment: Fragment) {
-        super.onAttachFragment(fragment)
-        if (fragment is SubWebViewFragment) {
-            fragment.callback = this
-        }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (mainWebView?.canGoBack() == true) {
-            mainWebView?.goBack()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
