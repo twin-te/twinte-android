@@ -21,7 +21,6 @@ import androidx.core.app.ActivityCompat
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,6 +34,7 @@ const val TWINTE_DEBUG = false
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var mainWebView: WebView? = null
+    private var isGoogleSignInInProgress = false
     private lateinit var mainWebViewController: MainWebViewController
 
     private val notificationPermissionLauncher =
@@ -54,11 +54,6 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             }
         }
 
-    private val googleSignInLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            handleGoogleSignInResult(result)
-        }
-
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             handleFileChooserResult(result)
@@ -66,6 +61,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
     @Inject
     lateinit var mainActivityEffects: MainActivityEffects
+
+    @Inject
+    lateinit var googleIdTokenAuthenticator: GoogleIdTokenAuthenticator
 
     @Inject
     lateinit var cookieManager: CookieManager
@@ -84,8 +82,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         mainWebViewController = MainWebViewController(
             cookieManager = cookieManager,
             serverSettings = serverSettings,
-            googleServerClientId = getString(R.string.google_server_client_id),
-            onGoogleSignInRequest = googleSignInLauncher::launch,
+            onGoogleSignInRequest = ::startGoogleSignIn,
             onOpenExternalIntentRequest = ::startActivity,
             onOpenSubWebViewRequest = { urlToOpen ->
                 SubWebViewFragment.open(urlToOpen, supportFragmentManager)
@@ -158,20 +155,32 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         }
     }
 
-    private fun handleGoogleSignInResult(result: ActivityResult) {
-        val signInTask = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        val account = signInTask
-            .runCatching { signInTask.result }
-            .fold(onSuccess = { it }, onFailure = {
-                // blur がかかったままなためリロードする
-                mainWebView?.reload()
-                return
-            })
+    private fun startGoogleSignIn() {
+        if (isGoogleSignInInProgress) {
+            return
+        }
+
         lifecycleScope.launch {
-            if (!mainActivityEffects.submitGoogleIdToken(account?.idToken)) {
-                Toast.makeText(applicationContext, R.string.common_google_play_services_unknown_issue, Toast.LENGTH_SHORT).show()
+            isGoogleSignInInProgress = true
+            try {
+                val idToken = googleIdTokenAuthenticator.requestIdToken(
+                    activity = this@MainActivity,
+                    serverClientId = getString(R.string.google_server_client_id),
+                )
+
+                if (idToken == null) {
+                    // Web 側で blur がかかったままになるため元ページを描き直す
+                    mainWebView?.reload()
+                    return@launch
+                }
+
+                if (!mainActivityEffects.submitGoogleIdToken(idToken)) {
+                    Toast.makeText(applicationContext, R.string.common_google_play_services_unknown_issue, Toast.LENGTH_SHORT).show()
+                }
+                mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
+            } finally {
+                isGoogleSignInInProgress = false
             }
-            mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
         }
     }
 

@@ -10,15 +10,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.webkit.WebViewClientCompat
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import net.twinte.android.network.serversettings.ServerSettings
 
 class MainWebViewController(
     private val cookieManager: CookieManager,
     private val serverSettings: ServerSettings,
-    private val googleServerClientId: String,
-    private val onGoogleSignInRequest: (Intent) -> Unit,
+    private val onGoogleSignInRequest: () -> Unit,
     private val onOpenExternalIntentRequest: (Intent) -> Unit,
     private val onOpenSubWebViewRequest: (String) -> Unit,
     private val onShowFileChooserRequest: (ValueCallback<Array<Uri>>, WebChromeClient.FileChooserParams) -> Unit,
@@ -36,14 +33,7 @@ class MainWebViewController(
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
                 when {
                     request.url.host == "accounts.google.com" -> {
-                        onGoogleSignInRequest(
-                            GoogleSignIn.getClient(
-                                webView.context,
-                                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                    .requestIdToken(googleServerClientId)
-                                    .build(),
-                            ).signInIntent,
-                        )
+                        onGoogleSignInRequest()
                         true
                     }
                     request.url.toString().startsWith("https://www.google.com/maps") -> {
