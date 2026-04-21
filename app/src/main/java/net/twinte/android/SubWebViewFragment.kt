@@ -2,7 +2,6 @@ package net.twinte.android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.app.Dialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +13,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.widget.FrameLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentManager
 import androidx.webkit.WebViewClientCompat
@@ -52,6 +52,19 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.subWebview.canGoBack()) {
+                        binding.subWebview.goBack()
+                    } else {
+                        dismiss()
+                    }
+                }
+            },
+        )
 
         (dialog as? BottomSheetDialog)?.behavior?.let { behavior ->
             behavior.addBottomSheetCallback(
@@ -129,20 +142,6 @@ class SubWebViewFragment : BottomSheetDialogFragment() {
             loadUrl(arguments?.getString("url", "") ?: "")
         }
     }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        object : BottomSheetDialog(requireContext(), theme) {
-            @Deprecated("Deprecated in Java")
-            override fun onBackPressed() {
-                if (binding.subWebview.canGoBack()) {
-                    // ダイアログで表示されているページから一つ前のページに戻れる場合、そこに戻る
-                    binding.subWebview.goBack()
-                } else {
-                    // ダイアログで表示されているページの前にはページが無い場合、ダイアログを閉じる
-                    super.onBackPressed()
-                }
-            }
-        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSubWebviewBinding.inflate(inflater, container, false)
