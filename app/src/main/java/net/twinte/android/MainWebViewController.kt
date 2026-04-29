@@ -9,6 +9,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewClientCompat
 import net.twinte.android.network.serversettings.ServerSettings
 
@@ -16,6 +17,7 @@ class MainWebViewController(
     private val cookieManager: CookieManager,
     private val serverSettings: ServerSettings,
     private val onPageLoadingChanged: (Boolean) -> Unit,
+    private val onPageLoadError: (String) -> Unit,
     private val onGoogleSignInRequest: () -> Unit,
     private val onOpenExternalIntentRequest: (Intent) -> Unit,
     private val onOpenSubWebViewRequest: (String) -> Unit,
@@ -23,6 +25,10 @@ class MainWebViewController(
     private val onOpenSettingsRequest: () -> Unit,
     private val onShareRequest: (String) -> Unit,
 ) {
+    fun onMainFrameLoadRequested() {
+        onPageLoadingChanged(true)
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     fun attach(webView: WebView) {
         webView.settings.javaScriptEnabled = true
@@ -58,6 +64,16 @@ class MainWebViewController(
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 onPageLoadingChanged(false)
+            }
+
+            override fun onReceivedError(
+                view: WebView,
+                request: WebResourceRequest,
+                error: WebResourceErrorCompat,
+            ) {
+                if (request.isForMainFrame) {
+                    onPageLoadError("ページの読み込みに失敗しました")
+                }
             }
         }
 
