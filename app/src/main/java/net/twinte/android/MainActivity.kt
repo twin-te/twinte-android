@@ -15,6 +15,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.compose.foundation.background
@@ -28,7 +29,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.lifecycle.lifecycleScope
@@ -51,6 +52,7 @@ import kotlinx.coroutines.launch
 import net.twinte.android.databinding.ActivityMainBinding
 import net.twinte.android.network.serversettings.ServerSettings
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 const val TWINTE_DEBUG = false
 
@@ -89,6 +91,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     @Inject
     lateinit var serverSettings: ServerSettings
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme_Main)
@@ -164,6 +167,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     private fun MainScreen(
         initialUrl: String,
@@ -190,111 +194,110 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             mainViewModel.clearEvent(event.id)
         }
 
-        Scaffold(
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            },
-            backgroundColor = colorResource(R.color.background),
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(colorResource(R.color.background)),
-            ) {
-                AndroidViewBinding(ActivityMainBinding::inflate) {
-                    if (mainWebView !== mainWebview) {
-                        mainWebView = mainWebview
-                        mainWebViewController.attach(mainWebview)
-                    }
-                    if (mainWebview.url == null) {
-                        mainWebview.post {
-                            if (mainWebview.url == null) {
-                                mainWebViewController.onMainFrameLoadRequested()
-                                mainWebview.loadUrl(initialUrl)
-                            }
-                        }
-                    }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.background)),
+        ) {
+            AndroidViewBinding(ActivityMainBinding::inflate) {
+                if (mainWebView !== mainWebview) {
+                    mainWebView = mainWebview
+                    mainWebViewController.attach(mainWebview)
                 }
-
-                if (uiState.isPageLoading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.TopCenter),
-                        color = colorResource(R.color.colorPrimary),
-                    )
-                }
-
-                if (uiState.pageLoadErrorMessage != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.08f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp)
-                                .background(
-                                    color = MaterialTheme.colors.surface,
-                                    shape = RoundedCornerShape(20.dp),
-                                )
-                                .padding(horizontal = 24.dp, vertical = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = uiState.pageLoadErrorMessage,
-                                color = colorResource(R.color.widget_text_main),
-                            )
-                            Button(
-                                onClick = {
-                                    mainViewModel.clearPageLoadError()
-                                    mainWebView?.reload()
-                                },
-                                modifier = Modifier.padding(top = 16.dp),
-                            ) {
-                                Text("再読み込み")
-                            }
-                        }
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            if (uiState.isGoogleSignInInProgress) {
-                                Color.Black.copy(alpha = 0.16f)
-                            } else {
-                                Color.Transparent
-                            },
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (uiState.isGoogleSignInInProgress) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colors.surface,
-                                    shape = RoundedCornerShape(20.dp),
-                                ),
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(horizontal = 28.dp, vertical = 20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                CircularProgressIndicator(color = colorResource(R.color.colorPrimary))
-                                Text(
-                                    text = "Googleアカウントを確認中",
-                                    modifier = Modifier.padding(top = 12.dp),
-                                    color = colorResource(R.color.widget_text_main),
-                                )
-                            }
+                if (mainWebview.url == null) {
+                    mainWebview.post {
+                        if (mainWebview.url == null) {
+                            mainWebViewController.onMainFrameLoadRequested()
+                            mainWebview.loadUrl(initialUrl)
                         }
                     }
                 }
             }
+
+            if (uiState.isPageLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter),
+                    color = colorResource(R.color.colorPrimary),
+                )
+            }
+
+            if (uiState.pageLoadErrorMessage != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.08f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = RoundedCornerShape(20.dp),
+                            )
+                            .padding(horizontal = 24.dp, vertical = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = uiState.pageLoadErrorMessage,
+                            color = colorResource(R.color.widget_text_main),
+                        )
+                        Button(
+                            onClick = {
+                                mainViewModel.clearPageLoadError()
+                                mainWebView?.reload()
+                            },
+                            modifier = Modifier.padding(top = 16.dp),
+                        ) {
+                            Text(stringResource(R.string.main_reload))
+                        }
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        if (uiState.isGoogleSignInInProgress) {
+                            Color.Black.copy(alpha = 0.16f)
+                        } else {
+                            Color.Transparent
+                        },
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (uiState.isGoogleSignInInProgress) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = RoundedCornerShape(20.dp),
+                            ),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 28.dp, vertical = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator(color = colorResource(R.color.colorPrimary))
+                            Text(
+                                text = stringResource(R.string.main_google_sign_in_in_progress),
+                                modifier = Modifier.padding(top = 12.dp),
+                                color = colorResource(R.color.widget_text_main),
+                            )
+                        }
+                    }
+                }
+            }
+
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+            )
         }
     }
 
@@ -313,7 +316,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
 
                 if (idToken == null) {
                     // Web 側で blur がかかったままになるため元ページを描き直す
-                    mainViewModel.showMessage("Googleログインを完了できませんでした")
+                    mainViewModel.showMessage(getString(R.string.main_google_sign_in_failed))
                     mainWebView?.reload()
                     return@launch
                 }
@@ -373,6 +376,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         mainViewModel.emitEvent(MainUiEventPayload.LoadUrl(url))
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun handleMainMessageAction(action: MainUiMessageAction?) {
         when (action) {
             MainUiMessageAction.OpenNotificationSettings -> {
@@ -396,7 +400,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             is MainUiEventPayload.OpenExternalUrl -> {
                 startActivity(
                     Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(event.url)
+                        data = event.url.toUri()
                     },
                 )
             }

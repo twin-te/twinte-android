@@ -67,7 +67,7 @@ class MainWebViewController(
                 error: WebResourceErrorCompat,
             ) {
                 if (request.isForMainFrame) {
-                    onPageLoadError("ページの読み込みに失敗しました")
+                    onPageLoadError(view.context.getString(R.string.main_page_load_failed))
                 }
             }
         }
