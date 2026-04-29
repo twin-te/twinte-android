@@ -45,4 +45,37 @@
     <string name="google_server_client_id" tools:ignore="TypographyDashes">617914047709-9dgo7djtadc11tf1tlrh8fj70v3glahe.apps.googleusercontent.com</string>
     <string name="snackbar_notification_not_granted_text">通知を許可して振替日程の通知を受け取る</string>
     <string name="snackbar_notification_not_granted_settings">設定</string>
+    <string name="main_reload">再読み込み</string>
+    <string name="main_google_sign_in_in_progress">Googleアカウントを確認中</string>
+    <string name="main_google_sign_in_failed">Googleログインを完了できませんでした</string>
+    <string name="main_page_load_failed">ページの読み込みに失敗しました</string>
+    <string name="settings_title">Androidアプリの設定</string>
+    <string name="settings_license_title">オープンソースライセンス</string>
+    <string name="settings_license_debug_message">debug ビルドではライセンス一覧が生成されないため、release ビルドで確認してください</string>
+    <string name="settings_back">戻る</string>
+    <string name="settings_section_schedule">スケジュール</string>
+    <string name="settings_section_feedback">フィードバック</string>
+    <string name="settings_section_info">情報</string>
+    <string name="settings_notification_timing">通知のタイミング</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_cancel">キャンセル</string>
+    <string name="settings_schedule_notification_title">振替日程を通知する</string>
+    <string name="settings_schedule_notification_summary">本来の曜日とは異なる授業日程の場合にお知らせします</string>
+    <string name="settings_twitter_title">Twin:te 公式Twitter</string>
+    <string name="settings_twitter_summary">リプライ、DMでご連絡ください</string>
+    <string name="settings_mail_title">メール</string>
+    <string name="settings_mail_address">info@twinte.net</string>
+    <string name="settings_site_title">公式サイト</string>
+    <string name="settings_site_url">https://www.twinte.net</string>
+    <string name="settings_github_title">Github</string>
+    <string name="settings_github_url">https://github.com/twin-te</string>
+    <string name="settings_app_version_title">Twin:te for Android</string>
+    <string name="settings_app_version_format">version: %1$s</string>
+    <string name="settings_version_easter_egg_done">開発者の方々はGithubでお待ちしています！</string>
+    <string name="settings_version_easter_egg_progress">あと%1$dステップで開発者になります</string>
+    <string name="settings_unselected">未選択</string>
+    <string name="settings_summary_separator"> / </string>
+    <string name="settings_twitter_url">https://twitter.com/te_twin</string>
+    <string name="settings_github_profile_url">https://github.com/twin-te</string>
+    <string name="settings_mailto">mailto:info@twinte.net</string>
 </resources>

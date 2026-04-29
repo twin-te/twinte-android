@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,7 +30,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -43,6 +41,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,11 +53,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 private const val ENABLE_SCHEDULE_NOTIFICATION_KEY = "enable_schedule_notification"
 private const val NOTIFICATION_TIMING_KEY = "notification_timing"
@@ -89,8 +91,8 @@ fun SettingsScreen(
     }
     var showTimingDialog by remember { mutableStateOf(false) }
     var githubVisible by remember { mutableStateOf(false) }
-    var versionTapTime by remember { mutableStateOf(0L) }
-    var versionTapCount by remember { mutableStateOf(0) }
+    var versionTapTime by remember { mutableLongStateOf(0L) }
+    var versionTapCount by remember { mutableIntStateOf(0) }
 
     DisposableEffect(sharedPreferences, defaultScheduleTiming) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { preferences, key ->
@@ -114,9 +116,9 @@ fun SettingsScreen(
             mutableStateOf(notificationTimings.toSet())
         }
         AlertDialog(
-            onDismissRequest = { showTimingDialog = false },
+            onDismissRequest = { },
             title = {
-                Text(text = "通知のタイミング", fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(R.string.settings_notification_timing), fontWeight = FontWeight.SemiBold)
             },
             text = {
                 Column(
@@ -153,19 +155,18 @@ fun SettingsScreen(
                         val sortedTimings = draftTimings.toList().sortedBy(String::toInt)
                         notificationTimings = sortedTimings
                         sharedPreferences
-                            .edit()
-                            .putStringSet(NOTIFICATION_TIMING_KEY, sortedTimings.toSet())
-                            .apply()
+                            .edit {
+                                putStringSet(NOTIFICATION_TIMING_KEY, sortedTimings.toSet())
+                            }
                         onScheduleNotificationChanged()
-                        showTimingDialog = false
                     },
                 ) {
-                    Text("保存")
+                    Text(stringResource(R.string.settings_save))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showTimingDialog = false }) {
-                    Text("キャンセル")
+                TextButton(onClick = { }) {
+                    Text(stringResource(R.string.settings_cancel))
                 }
             },
         )
@@ -186,7 +187,7 @@ fun SettingsScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "戻る",
+                                contentDescription = stringResource(R.string.settings_back),
                             )
                         }
                     },
@@ -206,75 +207,79 @@ fun SettingsScreen(
                     .navigationBarsPadding(),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                SettingsSection(title = "スケジュール") {
+                SettingsSection(title = stringResource(R.string.settings_section_schedule)) {
                     SwitchSettingsRow(
                         iconResId = R.drawable.ic_event,
-                        title = "振替日程を通知する",
-                        summary = "本来の曜日とは異なる授業日程の場合にお知らせします",
+                        title = stringResource(R.string.settings_schedule_notification_title),
+                        summary = stringResource(R.string.settings_schedule_notification_summary),
                         checked = notificationsEnabled,
                         onCheckedChange = { checked ->
                             notificationsEnabled = checked
                             sharedPreferences
-                                .edit()
-                                .putBoolean(ENABLE_SCHEDULE_NOTIFICATION_KEY, checked)
-                                .apply()
+                                .edit {
+                                    putBoolean(ENABLE_SCHEDULE_NOTIFICATION_KEY, checked)
+                                }
                             onScheduleNotificationChanged()
                         },
                     )
                     SettingsDivider()
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_alarm,
-                        title = "通知のタイミング",
-                        summary = notificationTimings.toSummary(labelMap),
+                        title = stringResource(R.string.settings_notification_timing),
+                        summary = notificationTimings.toSummary(
+                            labelMap = labelMap,
+                            emptyLabel = stringResource(R.string.settings_unselected),
+                            separator = stringResource(R.string.settings_summary_separator),
+                        ),
                         enabled = notificationsEnabled,
-                        onClick = { showTimingDialog = true },
+                        onClick = { },
                     )
                 }
 
-                SettingsSection(title = "フィードバック") {
+                SettingsSection(title = stringResource(R.string.settings_section_feedback)) {
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_twitter,
-                        title = "Twin:te 公式Twitter",
-                        summary = "リプライ、DMでご連絡ください",
+                        title = stringResource(R.string.settings_twitter_title),
+                        summary = stringResource(R.string.settings_twitter_summary),
                         onClick = onOpenTwitter,
                     )
                     SettingsDivider()
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_mail_outline,
-                        title = "メール",
-                        summary = "info@twinte.net",
+                        title = stringResource(R.string.settings_mail_title),
+                        summary = stringResource(R.string.settings_mail_address),
                         onClick = onOpenMail,
                     )
                 }
 
-                SettingsSection(title = "情報") {
+                SettingsSection(title = stringResource(R.string.settings_section_info)) {
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_source,
-                        title = "オープンソースライセンス",
+                        title = stringResource(R.string.settings_license_title),
                         summary = "",
                         onClick = onOpenLicense,
                     )
                     SettingsDivider()
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_web,
-                        title = "公式サイト",
-                        summary = "https://www.twinte.net",
+                        title = stringResource(R.string.settings_site_title),
+                        summary = stringResource(R.string.settings_site_url),
                         onClick = onOpenWebsite,
                     )
                     if (githubVisible) {
                         SettingsDivider()
                         ActionSettingsRow(
                             iconResId = R.drawable.ic_github,
-                            title = "Github",
-                            summary = "https://github.com/twin-te",
+                            title = stringResource(R.string.settings_github_title),
+                            summary = stringResource(R.string.settings_github_url),
                             onClick = onOpenGithub,
                         )
                     }
                     SettingsDivider()
                     ActionSettingsRow(
                         iconResId = R.drawable.ic_icon_small,
-                        title = "Twin:te for Android",
-                        summary = "version: $versionName",
+                        title = stringResource(R.string.settings_app_version_title),
+                        summary = stringResource(R.string.settings_app_version_format, versionName),
                         onClick = {
                             val currentTime = System.currentTimeMillis()
                             if (currentTime - versionTapTime < 500) {
@@ -282,7 +287,7 @@ fun SettingsScreen(
                                 if (versionTapCount >= 7) {
                                     Toast.makeText(
                                         context,
-                                        "開発者の方々はGithubでお待ちしています！",
+                                        context.getString(R.string.settings_version_easter_egg_done),
                                         Toast.LENGTH_LONG,
                                     ).show()
                                     if (!githubVisible) {
@@ -294,7 +299,10 @@ fun SettingsScreen(
                                 } else if (versionTapCount >= 4) {
                                     Toast.makeText(
                                         context,
-                                        "あと${7 - versionTapCount}ステップで開発者になります",
+                                        context.getString(
+                                            R.string.settings_version_easter_egg_progress,
+                                            7 - versionTapCount,
+                                        ),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                                 }
@@ -491,7 +499,11 @@ private fun Set<String>.toggle(value: String): Set<String> =
         this + value
     }
 
-private fun List<String>.toSummary(labelMap: Map<String, String>): String =
+private fun List<String>.toSummary(
+    labelMap: Map<String, String>,
+    emptyLabel: String,
+    separator: String,
+): String =
     mapNotNull(labelMap::get)
-        .ifEmpty { listOf("未選択") }
-        .joinToString(" / ")
+        .ifEmpty { listOf(emptyLabel) }
+        .joinToString(separator)

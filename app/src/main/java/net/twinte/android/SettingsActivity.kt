@@ -11,6 +11,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.twinte.android.datastore.schedulenotification.ScheduleNotificationDataStore
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
@@ -30,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
 
         setContent {
             SettingsScreen(
-                title = "Androidアプリの設定",
+                title = getString(R.string.settings_title),
                 sharedPreferences = sharedPreferences,
                 versionName = versionName,
                 scheduleOptionLabels = scheduleOptionLabels,
@@ -41,29 +42,29 @@ class SettingsActivity : AppCompatActivity() {
                     if (BuildConfig.DEBUG) {
                         Toast.makeText(
                             this,
-                            "debug ビルドではライセンス一覧が生成されないため、release ビルドで確認してください",
+                            getString(R.string.settings_license_debug_message),
                             Toast.LENGTH_LONG,
                         ).show()
                     } else {
-                        OssLicensesMenuActivity.setActivityTitle("オープンソースライセンス")
+                        OssLicensesMenuActivity.setActivityTitle(getString(R.string.settings_license_title))
                         startActivity(Intent(this, OssLicensesMenuActivity::class.java))
                     }
                 },
                 onOpenTwitter = {
-                    openUrl("https://twitter.com/te_twin")
+                    openUrl(getString(R.string.settings_twitter_url))
                 },
                 onOpenMail = {
                     startActivity(
                         Intent(Intent.ACTION_SENDTO).apply {
-                            data = Uri.parse("mailto:info@twinte.net")
+                            data = getString(R.string.settings_mailto).toUri()
                         },
                     )
                 },
                 onOpenWebsite = {
-                    openUrl("https://www.twinte.net")
+                    openUrl(getString(R.string.settings_site_url))
                 },
                 onOpenGithub = {
-                    openUrl("https://github.com/twin-te")
+                    openUrl(getString(R.string.settings_github_profile_url))
                 },
             )
         }
@@ -72,7 +73,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun openUrl(url: String) {
         startActivity(
             Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
+                data = url.toUri()
             },
         )
     }
