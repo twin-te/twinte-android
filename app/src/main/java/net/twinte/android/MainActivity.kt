@@ -14,11 +14,30 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
@@ -34,8 +53,8 @@ const val TWINTE_DEBUG = false
 class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var mainWebView: WebView? = null
-    private var isGoogleSignInInProgress = false
     private lateinit var mainWebViewController: MainWebViewController
+    private val mainViewModel: MainViewModel by viewModels()
 
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -82,6 +101,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         mainWebViewController = MainWebViewController(
             cookieManager = cookieManager,
             serverSettings = serverSettings,
+            onPageLoadingChanged = mainViewModel::onPageLoadingChanged,
             onGoogleSignInRequest = ::startGoogleSignIn,
             onOpenExternalIntentRequest = ::startActivity,
             onOpenSubWebViewRequest = { urlToOpen ->
@@ -100,7 +120,11 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         )
 
         setContent {
-            MainWebView(initialUrl = url)
+            val uiState by mainViewModel.uiState.collectAsState()
+            MainScreen(
+                initialUrl = url,
+                uiState = uiState,
+            )
         }
 
         onBackPressedDispatcher.addCallback(
@@ -139,16 +163,63 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     @Composable
-    private fun MainWebView(initialUrl: String) {
-        AndroidViewBinding(ActivityMainBinding::inflate) {
-            if (mainWebView !== mainWebview) {
-                mainWebView = mainWebview
-                mainWebViewController.attach(mainWebview)
+    private fun MainScreen(
+        initialUrl: String,
+        uiState: MainUiState,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.background)),
+        ) {
+            AndroidViewBinding(ActivityMainBinding::inflate) {
+                if (mainWebView !== mainWebview) {
+                    mainWebView = mainWebview
+                    mainWebViewController.attach(mainWebview)
+                }
+                if (mainWebview.url == null) {
+                    mainWebview.post {
+                        if (mainWebview.url == null) {
+                            mainWebview.loadUrl(initialUrl)
+                        }
+                    }
+                }
             }
-            if (mainWebview.url == null) {
-                mainWebview.post {
-                    if (mainWebview.url == null) {
-                        mainWebview.loadUrl(initialUrl)
+
+            if (uiState.isPageLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter),
+                    color = colorResource(R.color.colorPrimary),
+                )
+            }
+
+            if (uiState.isGoogleSignInInProgress) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.16f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = RoundedCornerShape(20.dp),
+                            ),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 28.dp, vertical = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator(color = colorResource(R.color.colorPrimary))
+                            Text(
+                                text = "Googleアカウントを確認中",
+                                modifier = Modifier.padding(top = 12.dp),
+                                color = colorResource(R.color.widget_text_main),
+                            )
+                        }
                     }
                 }
             }
@@ -156,12 +227,12 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     }
 
     private fun startGoogleSignIn() {
-        if (isGoogleSignInInProgress) {
+        if (mainViewModel.uiState.value.isGoogleSignInInProgress) {
             return
         }
 
         lifecycleScope.launch {
-            isGoogleSignInInProgress = true
+            mainViewModel.onGoogleSignInStarted()
             try {
                 val idToken = googleIdTokenAuthenticator.requestIdToken(
                     activity = this@MainActivity,
@@ -179,7 +250,7 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 }
                 mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
             } finally {
-                isGoogleSignInInProgress = false
+                mainViewModel.onGoogleSignInFinished()
             }
         }
     }

@@ -15,6 +15,7 @@ import net.twinte.android.network.serversettings.ServerSettings
 class MainWebViewController(
     private val cookieManager: CookieManager,
     private val serverSettings: ServerSettings,
+    private val onPageLoadingChanged: (Boolean) -> Unit,
     private val onGoogleSignInRequest: () -> Unit,
     private val onOpenExternalIntentRequest: (Intent) -> Unit,
     private val onOpenSubWebViewRequest: (String) -> Unit,
@@ -50,6 +51,14 @@ class MainWebViewController(
                     }
                     else -> false
                 }
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                onPageLoadingChanged(true)
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                onPageLoadingChanged(false)
+            }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
