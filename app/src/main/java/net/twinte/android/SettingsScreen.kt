@@ -57,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
@@ -82,6 +83,8 @@ fun SettingsScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val scope = rememberCoroutineScope()
     val labelMap = remember(scheduleOptionLabels) { scheduleOptionLabels.toMap() }
+    val versionEasterEggDoneMessage = stringResource(R.string.settings_version_easter_egg_done)
+    val versionEasterEggProgressFormat = stringResource(R.string.settings_version_easter_egg_progress)
 
     var notificationsEnabled by remember {
         mutableStateOf(sharedPreferences.getBoolean(ENABLE_SCHEDULE_NOTIFICATION_KEY, true))
@@ -192,7 +195,7 @@ fun SettingsScreen(
                         }
                     },
                     backgroundColor = MaterialTheme.colors.primary,
-                    contentColor = MaterialTheme.colors.onPrimary,
+                    contentColor = Color.White,
                     elevation = 6.dp,
                 )
             },
@@ -287,7 +290,7 @@ fun SettingsScreen(
                                 if (versionTapCount >= 7) {
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.settings_version_easter_egg_done),
+                                        versionEasterEggDoneMessage,
                                         Toast.LENGTH_LONG,
                                     ).show()
                                     if (!githubVisible) {
@@ -299,8 +302,9 @@ fun SettingsScreen(
                                 } else if (versionTapCount >= 4) {
                                     Toast.makeText(
                                         context,
-                                        context.getString(
-                                            R.string.settings_version_easter_egg_progress,
+                                        String.format(
+                                            Locale.getDefault(),
+                                            versionEasterEggProgressFormat,
                                             7 - versionTapCount,
                                         ),
                                         Toast.LENGTH_SHORT,
@@ -329,8 +333,6 @@ private fun TwinteSettingsTheme(content: @Composable () -> Unit) {
             secondary = secondary,
             background = background,
             surface = Color(0xFF252C39),
-            onPrimary = Color.White,
-            onSecondary = Color.White,
             onBackground = onSurface,
             onSurface = onSurface,
         )
@@ -340,8 +342,6 @@ private fun TwinteSettingsTheme(content: @Composable () -> Unit) {
             secondary = secondary,
             background = background,
             surface = Color.White,
-            onPrimary = Color.White,
-            onSecondary = Color.White,
             onBackground = onSurface,
             onSurface = onSurface,
         )
