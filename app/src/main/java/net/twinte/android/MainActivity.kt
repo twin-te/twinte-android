@@ -103,19 +103,21 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
             onPageLoadingChanged = mainViewModel::onPageLoadingChanged,
             onPageLoadError = mainViewModel::onPageLoadError,
             onGoogleSignInRequest = ::startGoogleSignIn,
-            onOpenExternalIntentRequest = ::startActivity,
+            onOpenExternalUrlRequest = { url ->
+                mainViewModel.emitEvent(MainUiEventPayload.OpenExternalUrl(url))
+            },
             onOpenSubWebViewRequest = { urlToOpen ->
-                SubWebViewFragment.open(urlToOpen, supportFragmentManager)
+                mainViewModel.emitEvent(MainUiEventPayload.OpenSubWebView(urlToOpen))
             },
             onShowFileChooserRequest = { callback, params ->
                 filePathCallback = callback
                 fileChooserLauncher.launch(params.createIntent())
             },
             onOpenSettingsRequest = {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                mainViewModel.emitEvent(MainUiEventPayload.OpenSettings)
             },
             onShareRequest = { body ->
-                mainWebView?.shareScreen(body)
+                mainViewModel.emitEvent(MainUiEventPayload.Share(body))
             },
         )
 
@@ -180,6 +182,12 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 handleMainMessageAction(message.action)
             }
             mainViewModel.clearMessage(message.id)
+        }
+
+        LaunchedEffect(uiState.event?.id) {
+            val event = uiState.event ?: return@LaunchedEffect
+            handleMainUiEvent(event.payload)
+            mainViewModel.clearEvent(event.id)
         }
 
         Scaffold(
@@ -314,7 +322,9 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                     mainViewModel.showMessage(getString(R.string.common_google_play_services_unknown_issue))
                 }
                 mainViewModel.clearPageLoadError()
-                mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).buildUrl())
+                mainViewModel.emitEvent(
+                    MainUiEventPayload.LoadUrl(twinteUrlBuilder(serverSettings).buildUrl()),
+                )
             } finally {
                 mainViewModel.onGoogleSignInFinished()
             }
@@ -349,14 +359,18 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
         intent.getStringExtra("REGISTERED_COURSE_ID")
             ?.let {
                 mainViewModel.clearPageLoadError()
-                mainWebView?.loadUrl(twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl())
+                mainViewModel.emitEvent(
+                    MainUiEventPayload.LoadUrl(
+                        twinteUrlBuilder(serverSettings).appendPath("course").appendPath(it).buildUrl(),
+                    ),
+                )
             }
     }
 
     // SubWebViewでMainWebViewに読み込ませたくなった時に呼び出される
     override fun subWebViewCallback(url: String) {
         mainViewModel.clearPageLoadError()
-        mainWebView?.loadUrl(url)
+        mainViewModel.emitEvent(MainUiEventPayload.LoadUrl(url))
     }
 
     private fun handleMainMessageAction(action: MainUiMessageAction?) {
@@ -369,6 +383,32 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                 )
             }
             null -> Unit
+        }
+    }
+
+    private fun handleMainUiEvent(event: MainUiEventPayload) {
+        when (event) {
+            is MainUiEventPayload.LoadUrl -> {
+                mainViewModel.clearPageLoadError()
+                mainWebViewController.onMainFrameLoadRequested()
+                mainWebView?.loadUrl(event.url)
+            }
+            is MainUiEventPayload.OpenExternalUrl -> {
+                startActivity(
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(event.url)
+                    },
+                )
+            }
+            is MainUiEventPayload.OpenSettings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
+            is MainUiEventPayload.OpenSubWebView -> {
+                SubWebViewFragment.open(event.url, supportFragmentManager)
+            }
+            is MainUiEventPayload.Share -> {
+                mainWebView?.shareScreen(event.body)
+            }
         }
     }
 }

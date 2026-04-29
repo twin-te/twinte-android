@@ -19,11 +19,29 @@ data class MainUiMessage(
     val action: MainUiMessageAction? = null,
 )
 
+sealed interface MainUiEventPayload {
+    data class OpenExternalUrl(val url: String) : MainUiEventPayload
+
+    data class OpenSubWebView(val url: String) : MainUiEventPayload
+
+    data object OpenSettings : MainUiEventPayload
+
+    data class Share(val body: String) : MainUiEventPayload
+
+    data class LoadUrl(val url: String) : MainUiEventPayload
+}
+
+data class MainUiEvent(
+    val id: Long,
+    val payload: MainUiEventPayload,
+)
+
 data class MainUiState(
     val isPageLoading: Boolean = false,
     val isGoogleSignInInProgress: Boolean = false,
     val pageLoadErrorMessage: String? = null,
     val message: MainUiMessage? = null,
+    val event: MainUiEvent? = null,
 )
 
 @HiltViewModel
@@ -91,6 +109,27 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 current
             } else {
                 current.copy(message = null)
+            }
+        }
+    }
+
+    fun emitEvent(payload: MainUiEventPayload) {
+        _uiState.update { current ->
+            current.copy(
+                event = MainUiEvent(
+                    id = ++nextMessageId,
+                    payload = payload,
+                ),
+            )
+        }
+    }
+
+    fun clearEvent(eventId: Long) {
+        _uiState.update { current ->
+            if (current.event?.id != eventId) {
+                current
+            } else {
+                current.copy(event = null)
             }
         }
     }

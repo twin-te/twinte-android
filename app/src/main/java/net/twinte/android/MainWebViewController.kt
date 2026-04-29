@@ -1,7 +1,6 @@
 package net.twinte.android
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.net.Uri
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -19,7 +18,7 @@ class MainWebViewController(
     private val onPageLoadingChanged: (Boolean) -> Unit,
     private val onPageLoadError: (String) -> Unit,
     private val onGoogleSignInRequest: () -> Unit,
-    private val onOpenExternalIntentRequest: (Intent) -> Unit,
+    private val onOpenExternalUrlRequest: (String) -> Unit,
     private val onOpenSubWebViewRequest: (String) -> Unit,
     private val onShowFileChooserRequest: (ValueCallback<Array<Uri>>, WebChromeClient.FileChooserParams) -> Unit,
     private val onOpenSettingsRequest: () -> Unit,
@@ -44,11 +43,7 @@ class MainWebViewController(
                         true
                     }
                     request.url.toString().startsWith("https://www.google.com/maps") -> {
-                        onOpenExternalIntentRequest(
-                            Intent(Intent.ACTION_VIEW).apply {
-                                data = request.url
-                            },
-                        )
+                        onOpenExternalUrlRequest(request.url.toString())
                         true
                     }
                     request.url.host != serverSettings.twinteBackendApiEndpointHost -> {
