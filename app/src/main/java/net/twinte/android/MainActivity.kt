@@ -157,8 +157,8 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
                         startActivityForResult(signInClient.signInIntent, RC_SIGN_IN)
                         true
                     }
-                    // GoogleMap対応
-                    request.url.toString().startsWith("https://www.google.com/maps") -> {
+                    // 外部アプリで開くURL(地図・カレンダー)
+                    EXTERNAL_APP_URL_PREFIXES.any { request.url.toString().startsWith(it) } -> {
                         startActivity(
                             Intent(Intent.ACTION_VIEW).apply {
                                 data = request.url
@@ -291,5 +291,13 @@ class MainActivity : AppCompatActivity(), SubWebViewFragment.Callback {
     companion object {
         const val RC_SIGN_IN = 1
         const val FILE_CHOOSER_REQUEST = 2
+
+        private val EXTERNAL_APP_URL_PREFIXES = listOf(
+            // Google Map対応用
+            "https://www.google.com/maps",
+            // カレンダー追加対応用 (twin-te/front/src/ui/pages/settings.vue参照)
+            "https://calendar.google.com/calendar/r?cid=",
+            "https://outlook.office.com/calendar/addcalendar?name=",
+        )
     }
 }
